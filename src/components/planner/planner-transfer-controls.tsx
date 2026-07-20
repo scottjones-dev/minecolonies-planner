@@ -17,7 +17,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getStylePackById, stylePacks } from "@/data";
+import {
+  builtInStylePackManifest,
+  fortressStylePack,
+  getStylePackById,
+  isBuiltInStylePackId,
+  loadBuiltInStylePacks,
+} from "@/data";
 import {
   createLayoutTransferDocument,
   createStylePackTransferDocument,
@@ -71,7 +77,7 @@ export function PlannerTransferControls() {
   useEffect(() => {
     setImportedStylePacks(
       readImportedStylePacks().filter(
-        (imported) => !stylePacks.some((builtIn) => builtIn.id === imported.id),
+        (imported) => !isBuiltInStylePackId(imported.id),
       ),
     );
   }, [setImportedStylePacks]);
@@ -89,7 +95,7 @@ export function PlannerTransferControls() {
     const stylePack =
       getStylePackById(activeStylePackId) ??
       importedStylePacks[0] ??
-      stylePacks[0];
+      fortressStylePack;
     const document = createStylePackTransferDocument(stylePack);
     downloadJson(`${safeFileName(stylePack.name)}-style.json`, document);
   };
@@ -101,6 +107,10 @@ export function PlannerTransferControls() {
       );
 
       if (document.kind === "minecolonies-planner-layout") {
+        await loadBuiltInStylePacks([
+          document.planner.activeStylePackId,
+          ...document.planner.buildings.map((building) => building.stylePackId),
+        ]);
         usePlannerStore.getState().loadSnapshot(document.planner);
         setResult({
           title: "Layout imported",
@@ -109,10 +119,12 @@ export function PlannerTransferControls() {
         });
       } else {
         if (
-          stylePacks.some((stylePack) => stylePack.id === document.stylePack.id)
+          builtInStylePackManifest.some(
+            (stylePack) => stylePack.id === document.stylePack.id,
+          )
         ) {
           throw new Error(
-            "That style ID belongs to the built-in Fortress fallback and cannot be replaced.",
+            "That style ID belongs to a built-in MineColonies pack and cannot be replaced.",
           );
         }
 

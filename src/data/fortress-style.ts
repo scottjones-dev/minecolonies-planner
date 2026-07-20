@@ -1,30 +1,6 @@
-import sourceData from "@/data/generated/minecolonies-1.20.1.json";
-import type { BuildingVariant, StylePack } from "@/types/minecolonies";
+import fortressSource from "@/data/generated/styles/fortress.json";
+import { adaptBuiltInStylePack } from "@/data/style-pack-adapter";
 
-const variants: BuildingVariant[] = sourceData.stylePack.variants.map(
-  (variant) => ({
-    id: variant.id,
-    name: variant.name,
-    buildingType: variant.buildingType,
-    category: variant.category as BuildingVariant["category"],
-    categoryPath: variant.categoryPath,
-    gameOrder: variant.gameOrder,
-    role: variant.role as BuildingVariant["role"],
-    ...(variant.isGuard === true ? { isGuard: true } : {}),
-    levels: variant.levels.map((level) => ({
-      level: level.level,
-      bounds: level.bounds,
-      anchor: level.anchor,
-      hutBlock: level.hutBlock,
-    })),
-  }),
+export const fortressStylePack = adaptBuiltInStylePack(
+  fortressSource.stylePack,
 );
-
-export const fortressStylePack: StylePack = {
-  id: sourceData.stylePack.id,
-  name: sourceData.stylePack.name,
-  source: "built-in",
-  categoryOrder: sourceData.stylePack
-    .categoryOrder as StylePack["categoryOrder"],
-  variants,
-};

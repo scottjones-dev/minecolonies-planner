@@ -1,8 +1,9 @@
 "use client";
 
 import { useDraggable } from "@dnd-kit/core";
-import { GripVertical, Search } from "lucide-react";
+import { GripVertical, Loader2, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import {
   Accordion,
   AccordionContent,
@@ -18,7 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { stylePacks as builtInStylePacks } from "@/data";
+import {
+  builtInStylePackManifest,
+  fortressStylePack,
+  getStylePackById,
+  isBuiltInStylePackId,
+  loadBuiltInStylePack,
+} from "@/data";
 import { getBuildingLibraryGroups } from "@/lib/building-library";
 import { cn } from "@/lib/utils";
 import { usePlannerStore } from "@/stores/planner-store";
@@ -144,6 +151,9 @@ function DraggableBuildingCard({
 
 export function BuildingLibraryPanel() {
   const [search, setSearch] = useState("");
+  const [loadingStylePackId, setLoadingStylePackId] = useState<string | null>(
+    null,
+  );
   const activeStylePackId = usePlannerStore((state) => state.activeStylePackId);
   const setActiveStylePack = usePlannerStore(
     (state) => state.setActiveStylePack,
@@ -151,10 +161,16 @@ export function BuildingLibraryPanel() {
   const importedStylePacks = useStylePackStore(
     (state) => state.importedStylePacks,
   );
-  const stylePacks = [...builtInStylePacks, ...importedStylePacks];
+  const stylePackOptions = [
+    ...builtInStylePackManifest,
+    ...importedStylePacks.map((stylePack) => ({
+      id: stylePack.id,
+      name: stylePack.name,
+      variantCount: stylePack.variants.length,
+    })),
+  ];
   const activeStylePack =
-    stylePacks.find((stylePack) => stylePack.id === activeStylePackId) ??
-    stylePacks[0];
+    getStylePackById(activeStylePackId) ?? fortressStylePack;
 
   const groups = useMemo(() => {
     return getBuildingLibraryGroups(activeStylePack, search);
@@ -173,18 +189,31 @@ export function BuildingLibraryPanel() {
         <Select
           value={activeStylePack.id}
           onValueChange={(value) => {
-            if (value) {
-              setActiveStylePack(value);
-            }
+            if (!value) return;
+            void (async () => {
+              try {
+                if (isBuiltInStylePackId(value)) {
+                  setLoadingStylePackId(value);
+                  await loadBuiltInStylePack(value);
+                }
+                setActiveStylePack(value);
+              } catch {
+                toast.error(
+                  "That MineColonies style pack could not be loaded.",
+                );
+              } finally {
+                setLoadingStylePackId(null);
+              }
+            })();
           }}
         >
           <SelectTrigger className="w-full" aria-label="Style pack">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {stylePacks.map((stylePack) => (
+            {stylePackOptions.map((stylePack) => (
               <SelectItem key={stylePack.id} value={stylePack.id}>
-                {stylePack.name}
+                {stylePack.name} ({stylePack.variantCount})
               </SelectItem>
             ))}
           </SelectContent>
@@ -263,8 +292,17 @@ export function BuildingLibraryPanel() {
       </div>
 
       <div className="border-t px-4 py-3 text-xs text-muted-foreground">
-        {activeStylePack.variants.length} {activeStylePack.name} blueprints in
-        MineColonies build-tool order
+        {loadingStylePackId ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+            Loading style pack…
+          </span>
+        ) : (
+          <>
+            {activeStylePack.variants.length} {activeStylePack.name} blueprints
+            in MineColonies build-tool order
+          </>
+        )}
       </div>
     </div>
   );
