@@ -19,6 +19,10 @@ import {
   getReservedFootprint,
 } from "@/lib/building-geometry";
 import { BLOCK_SIZE } from "@/lib/planner-coordinates";
+import {
+  findBuildingCollisions,
+  getCollidingBuildingIds,
+} from "@/lib/validation/collisions";
 import { usePlannerStore } from "@/stores/planner-store";
 
 const CHUNK_SIZE = 16;
@@ -120,6 +124,10 @@ export function PlannerCanvas() {
   const gridLines = useMemo(
     () => getGridLines(size, zoom, panX, panY),
     [size, zoom, panX, panY],
+  );
+  const collidingBuildingIds = useMemo(
+    () => getCollidingBuildingIds(findBuildingCollisions(buildings)),
+    [buildings],
   );
 
   const handleWheel = (event: Konva.KonvaEventObject<WheelEvent>) => {
@@ -238,6 +246,12 @@ export function PlannerCanvas() {
                 ? getEntranceMarker(level, building.rotation)
                 : null;
               const selected = building.id === selectedBuildingId;
+              const colliding = collidingBuildingIds.has(building.id);
+              const accentColor = colliding
+                ? "#dc2626"
+                : selected
+                  ? "#0f766e"
+                  : "#475569";
 
               return (
                 <Group
@@ -264,6 +278,20 @@ export function PlannerCanvas() {
                       x: Math.round(event.target.x() / BLOCK_SIZE) * BLOCK_SIZE,
                       y: Math.round(event.target.y() / BLOCK_SIZE) * BLOCK_SIZE,
                     });
+                    const x = Math.round(event.target.x() / BLOCK_SIZE);
+                    const z = Math.round(event.target.y() / BLOCK_SIZE);
+                    const currentBuilding = usePlannerStore
+                      .getState()
+                      .buildings.find(
+                        (candidate) => candidate.id === building.id,
+                      );
+
+                    if (
+                      currentBuilding &&
+                      (currentBuilding.x !== x || currentBuilding.z !== z)
+                    ) {
+                      updateBuilding(building.id, { x, z });
+                    }
                   }}
                   onDragEnd={(event) => {
                     event.cancelBubble = true;
@@ -280,8 +308,8 @@ export function PlannerCanvas() {
                       width={reservedFootprint.width * BLOCK_SIZE}
                       height={reservedFootprint.depth * BLOCK_SIZE}
                       fill="transparent"
-                      stroke={selected ? "#0f766e" : "#475569"}
-                      strokeWidth={2 / zoom}
+                      stroke={accentColor}
+                      strokeWidth={(selected || colliding ? 3 : 2) / zoom}
                       dash={[8 / zoom, 6 / zoom]}
                     />
                   ) : null}
@@ -291,16 +319,24 @@ export function PlannerCanvas() {
                       y={currentFootprint.minZ * BLOCK_SIZE}
                       width={currentFootprint.width * BLOCK_SIZE}
                       height={currentFootprint.depth * BLOCK_SIZE}
-                      fill={selected ? "#0f766e55" : "#33415533"}
-                      stroke={selected ? "#0f766e" : "#64748b"}
-                      strokeWidth={(selected ? 3 : 1.5) / zoom}
-                      shadowColor={selected ? "#0f766e" : undefined}
-                      shadowBlur={selected ? 8 / zoom : 0}
+                      fill={
+                        colliding
+                          ? "#dc262644"
+                          : selected
+                            ? "#0f766e55"
+                            : "#33415533"
+                      }
+                      stroke={accentColor}
+                      strokeWidth={(selected || colliding ? 3 : 1.5) / zoom}
+                      shadowColor={
+                        selected || colliding ? accentColor : undefined
+                      }
+                      shadowBlur={selected || colliding ? 8 / zoom : 0}
                     />
                   ) : null}
                   <Circle
                     radius={3 / zoom}
-                    fill={selected ? "#0f766e" : "#475569"}
+                    fill={accentColor}
                     stroke="#ffffff"
                     strokeWidth={1 / zoom}
                   />
@@ -320,8 +356,8 @@ export function PlannerCanvas() {
                           entranceMarker.direction.z * 0.75) *
                           BLOCK_SIZE,
                       ]}
-                      fill={selected ? "#0f766e" : "#334155"}
-                      stroke={selected ? "#0f766e" : "#334155"}
+                      fill={accentColor}
+                      stroke={accentColor}
                       strokeWidth={2 / zoom}
                       pointerLength={7 / zoom}
                       pointerWidth={7 / zoom}
@@ -333,7 +369,7 @@ export function PlannerCanvas() {
                       (reservedFootprint?.minZ ?? -0.5) * BLOCK_SIZE - 20 / zoom
                     }
                     text={variant?.name ?? building.variantId}
-                    fill="#0f172a"
+                    fill={colliding ? "#b91c1c" : "#0f172a"}
                     fontSize={12 / zoom}
                     padding={2 / zoom}
                     listening={false}
