@@ -3,14 +3,13 @@ import {
   Building2,
   Castle,
   Download,
-  Grid3X3,
-  Map,
   Save,
   Settings2,
   Shield,
   Upload,
 } from "lucide-react";
-
+import { PlannerMapPanel } from "@/components/planner/planner-map-panel";
+import { PlannerStatusBar } from "@/components/planner/planner-status-bar";
 import { Button } from "@/components/ui/button";
 
 const librarySections = [
@@ -59,7 +58,8 @@ export default function Home() {
           <div className="border-b px-4 py-3">
             <h2 className="text-sm font-semibold">Building library</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Buildings from the selected MineColonies style pack will appear here.
+              Buildings from the selected MineColonies style pack will appear
+              here.
             </p>
           </div>
 
@@ -67,7 +67,10 @@ export default function Home() {
             {librarySections.map(({ name, count, icon: Icon }) => (
               <section key={name} className="rounded-lg border bg-background">
                 <div className="flex items-center gap-2 px-3 py-2.5">
-                  <Icon className="size-4 text-muted-foreground" aria-hidden="true" />
+                  <Icon
+                    className="size-4 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <h3 className="flex-1 text-sm font-medium">{name}</h3>
                   <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                     {count}
@@ -82,24 +85,7 @@ export default function Home() {
           </div>
         </aside>
 
-        <section className="relative min-h-0 min-w-0 overflow-hidden bg-muted/30" aria-label="Planner map">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40" />
-          <div className="relative flex h-full min-h-[24rem] items-center justify-center p-6 lg:min-h-0">
-            <div className="flex max-w-md flex-col items-center rounded-xl border border-dashed bg-background/90 p-8 text-center shadow-sm backdrop-blur">
-              <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-muted">
-                <Map className="size-6 text-muted-foreground" aria-hidden="true" />
-              </div>
-              <h2 className="text-base font-semibold">Planner map</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                The interactive Minecraft block and chunk grid will be added in a later step.
-              </p>
-              <Button className="mt-5" variant="outline" disabled>
-                <Grid3X3 data-icon="inline-start" aria-hidden="true" />
-                Map not initialised
-              </Button>
-            </div>
-          </div>
-        </section>
+        <PlannerMapPanel />
 
         <aside className="hidden min-h-0 flex-col border-l bg-card lg:flex">
           <div className="border-b px-4 py-3">
@@ -112,27 +98,22 @@ export default function Home() {
           <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto p-6">
             <div className="text-center">
               <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-lg bg-muted">
-                <Building2 className="size-5 text-muted-foreground" aria-hidden="true" />
+                <Building2
+                  className="size-5 text-muted-foreground"
+                  aria-hidden="true"
+                />
               </div>
               <p className="text-sm font-medium">Nothing selected</p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                Select a placed building to inspect its level, rotation, footprint, and validation state.
+                Select a placed building to inspect its level, rotation,
+                footprint, and validation state.
               </p>
             </div>
           </div>
         </aside>
       </div>
 
-      <footer className="flex min-h-9 items-center justify-between gap-4 border-t bg-card px-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-4">
-          <span>Buildings: 0</span>
-          <span className="hidden sm:inline">Warnings: 0</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="hidden sm:inline">Position: X 0 · Z 0</span>
-          <span>Zoom: 100%</span>
-        </div>
-      </footer>
+      <PlannerStatusBar />
     </main>
   );
 }
