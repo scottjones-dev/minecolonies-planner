@@ -13,6 +13,9 @@ type PlannerState = {
   rules: {
     colonyRadiusChunks: number;
     colonyBoundaryMode: "warning" | "invalid";
+    preferredCommuteDistance: number;
+    warningCommuteDistance: number;
+    showCommuteConnections: boolean;
   };
 };
 
@@ -29,6 +32,9 @@ type PlannerActions = {
   setMapPan: (panX: number, panY: number) => void;
   setColonyRadiusChunks: (radiusChunks: number) => void;
   setColonyBoundaryMode: (mode: "warning" | "invalid") => void;
+  setPreferredCommuteDistance: (distance: number) => void;
+  setWarningCommuteDistance: (distance: number) => void;
+  setShowCommuteConnections: (show: boolean) => void;
   resetPlanner: () => void;
 };
 
@@ -46,6 +52,9 @@ const getInitialState = (): PlannerState => ({
   rules: {
     colonyRadiusChunks: 8,
     colonyBoundaryMode: "warning",
+    preferredCommuteDistance: 64,
+    warningCommuteDistance: 128,
+    showCommuteConnections: true,
   },
 });
 
@@ -78,7 +87,13 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
   },
   removeBuilding: (id) => {
     set((state) => ({
-      buildings: state.buildings.filter((building) => building.id !== id),
+      buildings: state.buildings
+        .filter((building) => building.id !== id)
+        .map((building) =>
+          building.assignedResidenceId === id
+            ? { ...building, assignedResidenceId: null }
+            : building,
+        ),
       selectedBuildingId:
         state.selectedBuildingId === id ? null : state.selectedBuildingId,
     }));
@@ -121,6 +136,43 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       rules: {
         ...state.rules,
         colonyBoundaryMode,
+      },
+    }));
+  },
+  setPreferredCommuteDistance: (distance) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        preferredCommuteDistance: Number.isFinite(distance)
+          ? Math.min(
+              state.rules.warningCommuteDistance,
+              Math.max(1, Math.round(distance)),
+            )
+          : state.rules.preferredCommuteDistance,
+      },
+    }));
+  },
+  setWarningCommuteDistance: (distance) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        warningCommuteDistance: Number.isFinite(distance)
+          ? Math.min(
+              512,
+              Math.max(
+                state.rules.preferredCommuteDistance,
+                Math.round(distance),
+              ),
+            )
+          : state.rules.warningCommuteDistance,
+      },
+    }));
+  },
+  setShowCommuteConnections: (showCommuteConnections) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        showCommuteConnections,
       },
     }));
   },

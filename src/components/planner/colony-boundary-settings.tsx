@@ -19,17 +19,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { usePlannerStore } from "@/stores/planner-store";
 
 export function ColonyBoundarySettings() {
-  const { colonyRadiusChunks, colonyBoundaryMode } = usePlannerStore(
-    (state) => state.rules,
-  );
+  const {
+    colonyRadiusChunks,
+    colonyBoundaryMode,
+    preferredCommuteDistance,
+    warningCommuteDistance,
+    showCommuteConnections,
+  } = usePlannerStore((state) => state.rules);
   const setColonyRadiusChunks = usePlannerStore(
     (state) => state.setColonyRadiusChunks,
   );
   const setColonyBoundaryMode = usePlannerStore(
     (state) => state.setColonyBoundaryMode,
+  );
+  const setPreferredCommuteDistance = usePlannerStore(
+    (state) => state.setPreferredCommuteDistance,
+  );
+  const setWarningCommuteDistance = usePlannerStore(
+    (state) => state.setWarningCommuteDistance,
+  );
+  const setShowCommuteConnections = usePlannerStore(
+    (state) => state.setShowCommuteConnections,
   );
 
   return (
@@ -42,11 +57,14 @@ export function ColonyBoundarySettings() {
       </PopoverTrigger>
       <PopoverContent align="end">
         <PopoverHeader>
-          <PopoverTitle>Colony boundary</PopoverTitle>
+          <PopoverTitle>Planner settings</PopoverTitle>
           <PopoverDescription>
-            The first Town Hall sets the centre of the build radius.
+            Configure colony validation and map overlays.
           </PopoverDescription>
         </PopoverHeader>
+        <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Colony boundary
+        </h3>
         <div className="space-y-2">
           <Label htmlFor="colony-radius">Radius in chunks</Label>
           <div className="flex items-center gap-2">
@@ -91,6 +109,48 @@ export function ColonyBoundarySettings() {
         >
           Reset to 8 chunks
         </Button>
+        <Separator />
+        <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Commute distance
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="preferred-commute">Preferred blocks</Label>
+            <Input
+              id="preferred-commute"
+              type="number"
+              min={1}
+              max={warningCommuteDistance}
+              value={preferredCommuteDistance}
+              onChange={(event) =>
+                setPreferredCommuteDistance(Number(event.target.value))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="warning-commute">Maximum blocks</Label>
+            <Input
+              id="warning-commute"
+              type="number"
+              min={preferredCommuteDistance}
+              max={512}
+              value={warningCommuteDistance}
+              onChange={(event) =>
+                setWarningCommuteDistance(Number(event.target.value))
+              }
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="commute-lines" className="leading-5">
+            Show assignment lines
+          </Label>
+          <Switch
+            id="commute-lines"
+            checked={showCommuteConnections}
+            onCheckedChange={setShowCommuteConnections}
+          />
+        </div>
       </PopoverContent>
     </Popover>
   );

@@ -24,6 +24,11 @@ import {
   getCollisionPartners,
 } from "@/lib/validation/collisions";
 import { findColonyBoundaryViolations } from "@/lib/validation/colony-boundary";
+import {
+  findCommuteResults,
+  getPlacedBuildingRole,
+  getPlacedBuildingVariant,
+} from "@/lib/validation/commute";
 import { usePlannerStore } from "@/stores/planner-store";
 import type { BuildingRotation, Direction } from "@/types/minecolonies";
 
@@ -51,9 +56,12 @@ export function BuildingInspectorPanel() {
   const selectedBuildingId = usePlannerStore(
     (state) => state.selectedBuildingId,
   );
-  const { colonyRadiusChunks, colonyBoundaryMode } = usePlannerStore(
-    (state) => state.rules,
-  );
+  const {
+    colonyRadiusChunks,
+    colonyBoundaryMode,
+    preferredCommuteDistance,
+    warningCommuteDistance,
+  } = usePlannerStore((state) => state.rules);
   const selectedBuilding = buildings.find(
     (building) => building.id === selectedBuildingId,
   );
@@ -73,6 +81,14 @@ export function BuildingInspectorPanel() {
   const outsideBoundary = selectedBuilding
     ? boundaryViolationIds.includes(selectedBuilding.id)
     : false;
+  const commuteResults = useMemo(
+    () =>
+      findCommuteResults(buildings, {
+        preferredDistance: preferredCommuteDistance,
+        warningDistance: warningCommuteDistance,
+      }),
+    [buildings, preferredCommuteDistance, warningCommuteDistance],
+  );
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -147,6 +163,12 @@ export function BuildingInspectorPanel() {
   const entranceDirection = level?.entrance
     ? getRotatedDirection(level.entrance.direction, selectedBuilding.rotation)
     : null;
+  const residences = buildings.filter(
+    (building) => getPlacedBuildingRole(building) === "residence",
+  );
+  const commuteResult = commuteResults.find(
+    (result) => result.workplaceId === selectedBuilding.id,
+  );
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
@@ -167,6 +189,79 @@ export function BuildingInspectorPanel() {
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+        {variant?.role === "workplace" ? (
+          <section className="space-y-3" aria-labelledby="residence-assignment">
+            <h3
+              id="residence-assignment"
+              className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+            >
+              Residence assignment
+            </h3>
+            <div className="space-y-2">
+              <Label htmlFor="assigned-residence">Assigned residence</Label>
+              <Select
+                value={selectedBuilding.assignedResidenceId ?? "unassigned"}
+                onValueChange={(value) =>
+                  updateBuilding(selectedBuilding.id, {
+                    assignedResidenceId: value === "unassigned" ? null : value,
+                  })
+                }
+              >
+                <SelectTrigger id="assigned-residence" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {residences.map((residence) => (
+                    <SelectItem key={residence.id} value={residence.id}>
+                      {getPlacedBuildingVariant(residence)?.name ??
+                        residence.variantId}{" "}
+                      · X {residence.x}, Z {residence.z}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {commuteResult?.state === "preferred" ? (
+              <Alert className="border-emerald-600 text-emerald-700">
+                <AlertTitle>Preferred commute</AlertTitle>
+                <AlertDescription>
+                  {commuteResult.distance?.toFixed(1)} blocks between anchors.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+            {commuteResult?.state === "warning" ? (
+              <Alert className="border-amber-600 text-amber-700">
+                <AlertTriangle aria-hidden="true" />
+                <AlertTitle>Long commute</AlertTitle>
+                <AlertDescription>
+                  {commuteResult.distance?.toFixed(1)} blocks exceeds the
+                  preferred {preferredCommuteDistance}-block distance.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+            {commuteResult?.state === "invalid" ? (
+              <Alert variant="destructive">
+                <AlertTriangle aria-hidden="true" />
+                <AlertTitle>Commute too far</AlertTitle>
+                <AlertDescription>
+                  {commuteResult.distance?.toFixed(1)} blocks exceeds the
+                  configured {warningCommuteDistance}-block maximum.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+            {commuteResult?.state === "unassigned" ? (
+              <Alert className="border-amber-600 text-amber-700">
+                <AlertTriangle aria-hidden="true" />
+                <AlertTitle>Workplace is unassigned</AlertTitle>
+                <AlertDescription>
+                  Select a placed residence to validate the commute.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+          </section>
+        ) : null}
+
         {outsideBoundary ? (
           <Alert
             variant={

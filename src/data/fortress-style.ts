@@ -10,6 +10,7 @@ export const fortressStylePack: StylePack = {
       name: "Fortress Town Hall 1",
       buildingType: "town_hall",
       category: "services",
+      role: "other",
       levels: [
         {
           level: 1,
@@ -52,6 +53,7 @@ export const fortressStylePack: StylePack = {
       name: "Fortress Residence 1",
       buildingType: "residence",
       category: "housing",
+      role: "residence",
       levels: [
         {
           level: 1,
@@ -94,6 +96,7 @@ export const fortressStylePack: StylePack = {
       name: "Fortress Bakery 1",
       buildingType: "bakery",
       category: "food",
+      role: "workplace",
       levels: [
         {
           level: 1,
@@ -136,6 +139,7 @@ export const fortressStylePack: StylePack = {
       name: "Fortress Guard Tower 1",
       buildingType: "guard_tower",
       category: "military",
+      role: "workplace",
       levels: [
         {
           level: 1,

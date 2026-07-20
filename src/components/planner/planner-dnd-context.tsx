@@ -89,6 +89,7 @@ export function PlannerDndContext({ children }: { children: ReactNode }) {
       rotation: 0,
       currentLevel: Math.min(...levels),
       reserveThroughLevel: Math.max(...levels),
+      assignedResidenceId: null,
     });
   };
 

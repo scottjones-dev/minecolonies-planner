@@ -11,6 +11,7 @@ export type BuildingCategory =
   | "decoration";
 
 export type Direction = "north" | "east" | "south" | "west";
+export type BuildingRole = "residence" | "workplace" | "other";
 
 export type Vector3 = {
   x: number;
@@ -45,6 +46,7 @@ export type BuildingVariant = {
   name: string;
   buildingType: string;
   category: BuildingCategory;
+  role: BuildingRole;
   levels: BuildingLevelDefinition[];
 };
 
@@ -65,6 +67,7 @@ export type PlacedBuilding = {
   rotation: BuildingRotation;
   currentLevel: number;
   reserveThroughLevel: number;
+  assignedResidenceId: string | null;
 };
 
 export function getBoundsWidth(bounds: RelativeBounds): number {
