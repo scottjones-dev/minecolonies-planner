@@ -140,6 +140,7 @@ export const fortressStylePack: StylePack = {
       buildingType: "guard_tower",
       category: "military",
       role: "workplace",
+      isGuard: true,
       levels: [
         {
           level: 1,

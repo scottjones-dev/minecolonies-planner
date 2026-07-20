@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { findBuildingCollisions } from "@/lib/validation/collisions";
 import { findColonyBoundaryViolations } from "@/lib/validation/colony-boundary";
 import { findCommuteResults } from "@/lib/validation/commute";
+import { findGuardCoverageResults } from "@/lib/validation/guard-coverage";
 import { usePlannerStore } from "@/stores/planner-store";
 
 export function PlannerStatusBar() {
@@ -12,9 +13,12 @@ export function PlannerStatusBar() {
   const colonyRadiusChunks = usePlannerStore(
     (state) => state.rules.colonyRadiusChunks,
   );
-  const { preferredCommuteDistance, warningCommuteDistance } = usePlannerStore(
-    (state) => state.rules,
-  );
+  const {
+    preferredCommuteDistance,
+    warningCommuteDistance,
+    guardCoverageRadius,
+    guardCoverageMode,
+  } = usePlannerStore((state) => state.rules);
   const collisionCount = useMemo(
     () => findBuildingCollisions(buildings).length,
     [buildings],
@@ -31,6 +35,15 @@ export function PlannerStatusBar() {
       }).filter((result) => result.state !== "preferred").length,
     [buildings, preferredCommuteDistance, warningCommuteDistance],
   );
+  const guardCoverageWarningCount = useMemo(
+    () =>
+      findGuardCoverageResults(
+        buildings,
+        guardCoverageRadius,
+        guardCoverageMode,
+      ).filter((result) => !result.ruleValid).length,
+    [buildings, guardCoverageRadius, guardCoverageMode],
+  );
 
   return (
     <footer className="flex min-h-9 shrink-0 items-center justify-between gap-4 border-t bg-card px-4 text-xs text-muted-foreground">
@@ -38,7 +51,10 @@ export function PlannerStatusBar() {
         <span>Buildings: {buildings.length}</span>
         <span className="hidden sm:inline">
           Warnings:{" "}
-          {collisionCount + boundaryViolationCount + commuteWarningCount}
+          {collisionCount +
+            boundaryViolationCount +
+            commuteWarningCount +
+            guardCoverageWarningCount}
         </span>
       </div>
       <div className="flex items-center gap-4">

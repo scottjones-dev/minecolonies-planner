@@ -29,6 +29,7 @@ import {
   getPlacedBuildingRole,
   getPlacedBuildingVariant,
 } from "@/lib/validation/commute";
+import { findGuardCoverageResults } from "@/lib/validation/guard-coverage";
 import { usePlannerStore } from "@/stores/planner-store";
 import type { BuildingRotation, Direction } from "@/types/minecolonies";
 
@@ -61,6 +62,8 @@ export function BuildingInspectorPanel() {
     colonyBoundaryMode,
     preferredCommuteDistance,
     warningCommuteDistance,
+    guardCoverageRadius,
+    guardCoverageMode,
   } = usePlannerStore((state) => state.rules);
   const selectedBuilding = buildings.find(
     (building) => building.id === selectedBuildingId,
@@ -88,6 +91,15 @@ export function BuildingInspectorPanel() {
         warningDistance: warningCommuteDistance,
       }),
     [buildings, preferredCommuteDistance, warningCommuteDistance],
+  );
+  const guardCoverageResults = useMemo(
+    () =>
+      findGuardCoverageResults(
+        buildings,
+        guardCoverageRadius,
+        guardCoverageMode,
+      ),
+    [buildings, guardCoverageRadius, guardCoverageMode],
   );
 
   useEffect(() => {
@@ -168,6 +180,9 @@ export function BuildingInspectorPanel() {
   );
   const commuteResult = commuteResults.find(
     (result) => result.workplaceId === selectedBuilding.id,
+  );
+  const guardCoverageResult = guardCoverageResults.find(
+    (result) => result.buildingId === selectedBuilding.id,
   );
 
   return (
@@ -260,6 +275,56 @@ export function BuildingInspectorPanel() {
               </Alert>
             ) : null}
           </section>
+        ) : null}
+
+        {guardCoverageResult ? (
+          <Alert
+            variant={guardCoverageResult.ruleValid ? "default" : "destructive"}
+            className={
+              guardCoverageResult.ruleValid
+                ? "border-emerald-600 text-emerald-700"
+                : undefined
+            }
+          >
+            {!guardCoverageResult.ruleValid ? (
+              <AlertTriangle aria-hidden="true" />
+            ) : null}
+            <AlertTitle>
+              {guardCoverageResult.ruleValid
+                ? "Guard coverage satisfied"
+                : "Missing guard coverage"}
+            </AlertTitle>
+            <AlertDescription>
+              {guardCoverageResult.role === "residence" ? (
+                <>
+                  This residence anchor is{" "}
+                  {guardCoverageResult.covered ? "within" : "outside"} the{" "}
+                  {guardCoverageRadius}-block radius of a Guard Tower.
+                </>
+              ) : guardCoverageResult.assignedResidenceId ? (
+                <>
+                  Workplace:{" "}
+                  {guardCoverageResult.covered ? "covered" : "uncovered"}.
+                  Assigned residence:{" "}
+                  {guardCoverageResult.assignedResidenceCovered
+                    ? "covered"
+                    : "uncovered"}
+                  . The current rule requires{" "}
+                  {guardCoverageMode === "both"
+                    ? "both anchors"
+                    : "either anchor"}{" "}
+                  within {guardCoverageRadius} blocks of a Guard Tower.
+                </>
+              ) : (
+                <>
+                  This workplace anchor is{" "}
+                  {guardCoverageResult.covered ? "within" : "outside"} the{" "}
+                  {guardCoverageRadius}-block radius of a Guard Tower. Assign a
+                  residence to evaluate the {guardCoverageMode} location rule.
+                </>
+              )}
+            </AlertDescription>
+          </Alert>
         ) : null}
 
         {outsideBoundary ? (
