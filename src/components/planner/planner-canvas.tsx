@@ -2,10 +2,11 @@
 
 import type Konva from "konva";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Circle, Group, Layer, Line, Stage, Text } from "react-konva";
+import { Arrow, Group, Layer, Line, Rect, Stage, Text } from "react-konva";
 import { fortressStylePack } from "@/data";
 import { BLOCK_SIZE } from "@/lib/planner-coordinates";
 import { usePlannerStore } from "@/stores/planner-store";
+import { getBoundsDepth, getBoundsWidth } from "@/types/minecolonies";
 
 const CHUNK_SIZE = 16;
 const MIN_ZOOM = 0.25;
@@ -71,6 +72,7 @@ function getGridLines(
 export function PlannerCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<Size>({ width: 0, height: 0 });
+  const [movingBuildingId, setMovingBuildingId] = useState<string | null>(null);
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
   const buildings = usePlannerStore((state) => state.buildings);
   const selectedBuildingId = usePlannerStore(
@@ -78,6 +80,8 @@ export function PlannerCanvas() {
   );
   const setMapZoom = usePlannerStore((state) => state.setMapZoom);
   const setMapPan = usePlannerStore((state) => state.setMapPan);
+  const selectBuilding = usePlannerStore((state) => state.selectBuilding);
+  const updateBuilding = usePlannerStore((state) => state.updateBuilding);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -138,6 +142,14 @@ export function PlannerCanvas() {
     setMapPan(event.target.x(), event.target.y());
   };
 
+  const handleEmptyMapPointerDown = (
+    event: Konva.KonvaEventObject<MouseEvent | TouchEvent>,
+  ) => {
+    if (event.target === event.target.getStage()) {
+      selectBuilding(null);
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -151,8 +163,10 @@ export function PlannerCanvas() {
           y={panY}
           scaleX={zoom}
           scaleY={zoom}
-          draggable
+          draggable={movingBuildingId === null}
           onDragMove={handleDragMove}
+          onMouseDown={handleEmptyMapPointerDown}
+          onTouchStart={handleEmptyMapPointerDown}
           onWheel={handleWheel}
         >
           <Layer listening={false}>
@@ -186,10 +200,22 @@ export function PlannerCanvas() {
               fontSize={12 / zoom}
               listening={false}
             />
+          </Layer>
+          <Layer>
             {buildings.map((building) => {
               const variant = fortressStylePack.variants.find(
                 (candidate) => candidate.id === building.variantId,
               );
+              const level =
+                variant?.levels.find(
+                  (candidate) => candidate.level === building.currentLevel,
+                ) ?? variant?.levels[0];
+              const footprintWidth = level
+                ? getBoundsWidth(level.bounds) * BLOCK_SIZE
+                : BLOCK_SIZE;
+              const footprintDepth = level
+                ? getBoundsDepth(level.bounds) * BLOCK_SIZE
+                : BLOCK_SIZE;
               const selected = building.id === selectedBuildingId;
 
               return (
@@ -197,20 +223,66 @@ export function PlannerCanvas() {
                   key={building.id}
                   x={building.x * BLOCK_SIZE}
                   y={building.z * BLOCK_SIZE}
+                  draggable
+                  onClick={(event) => {
+                    event.cancelBubble = true;
+                    selectBuilding(building.id);
+                  }}
+                  onTap={(event) => {
+                    event.cancelBubble = true;
+                    selectBuilding(building.id);
+                  }}
+                  onDragStart={(event) => {
+                    event.cancelBubble = true;
+                    setMovingBuildingId(building.id);
+                    selectBuilding(building.id);
+                  }}
+                  onDragMove={(event) => {
+                    event.cancelBubble = true;
+                    event.target.position({
+                      x: Math.round(event.target.x() / BLOCK_SIZE) * BLOCK_SIZE,
+                      y: Math.round(event.target.y() / BLOCK_SIZE) * BLOCK_SIZE,
+                    });
+                  }}
+                  onDragEnd={(event) => {
+                    event.cancelBubble = true;
+                    const x = Math.round(event.target.x() / BLOCK_SIZE);
+                    const z = Math.round(event.target.y() / BLOCK_SIZE);
+                    updateBuilding(building.id, { x, z });
+                    setMovingBuildingId(null);
+                  }}
                 >
-                  <Circle
-                    radius={selected ? 7 / zoom : 6 / zoom}
-                    fill={selected ? "#0f766e" : "#334155"}
-                    stroke="#ffffff"
-                    strokeWidth={2 / zoom}
-                  />
+                  <Group rotation={building.rotation}>
+                    <Rect
+                      x={-footprintWidth / 2}
+                      y={-footprintDepth / 2}
+                      width={footprintWidth}
+                      height={footprintDepth}
+                      fill={selected ? "#0f766e55" : "#33415533"}
+                      stroke={selected ? "#0f766e" : "#64748b"}
+                      strokeWidth={(selected ? 3 : 1.5) / zoom}
+                      shadowColor={selected ? "#0f766e" : undefined}
+                      shadowBlur={selected ? 8 / zoom : 0}
+                    />
+                    {level?.entrance ? (
+                      <Arrow
+                        points={[0, 0, 0, Math.min(footprintDepth / 2, 36)]}
+                        fill={selected ? "#0f766e" : "#334155"}
+                        stroke={selected ? "#0f766e" : "#334155"}
+                        strokeWidth={2 / zoom}
+                        pointerLength={6 / zoom}
+                        pointerWidth={6 / zoom}
+                      />
+                    ) : null}
+                  </Group>
                   <Text
-                    x={10 / zoom}
-                    y={-7 / zoom}
+                    x={-footprintWidth / 2}
+                    y={-footprintDepth / 2 - 20 / zoom}
                     text={variant?.name ?? building.variantId}
                     fill="#0f172a"
                     fontSize={12 / zoom}
                     padding={2 / zoom}
+                    listening={false}
                   />
                 </Group>
               );
