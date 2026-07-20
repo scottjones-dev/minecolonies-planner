@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { initialColonyRadiusChunks } from "@/data/minecolonies-rules";
 import type { PlacedBuilding } from "@/types/minecolonies";
 
 export type PlannerMapState = {
@@ -13,8 +14,6 @@ export type PlannerRules = {
   preferredCommuteDistance: number;
   warningCommuteDistance: number;
   showCommuteConnections: boolean;
-  guardCoverageRadius: number;
-  guardCoverageMode: "either" | "both";
   showGuardCoverage: boolean;
 };
 
@@ -45,8 +44,6 @@ type PlannerActions = {
   setPreferredCommuteDistance: (distance: number) => void;
   setWarningCommuteDistance: (distance: number) => void;
   setShowCommuteConnections: (show: boolean) => void;
-  setGuardCoverageRadius: (radius: number) => void;
-  setGuardCoverageMode: (mode: "either" | "both") => void;
   setShowGuardCoverage: (show: boolean) => void;
   loadSnapshot: (snapshot: PlannerSnapshot) => void;
   resetPlanner: () => void;
@@ -64,13 +61,11 @@ const getInitialState = (): PlannerState => ({
     panY: 0,
   },
   rules: {
-    colonyRadiusChunks: 8,
+    colonyRadiusChunks: initialColonyRadiusChunks,
     colonyBoundaryMode: "warning",
     preferredCommuteDistance: 64,
     warningCommuteDistance: 128,
     showCommuteConnections: true,
-    guardCoverageRadius: 64,
-    guardCoverageMode: "either",
     showGuardCoverage: true,
   },
 });
@@ -193,24 +188,6 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       },
     }));
   },
-  setGuardCoverageRadius: (radius) => {
-    set((state) => ({
-      rules: {
-        ...state.rules,
-        guardCoverageRadius: Number.isFinite(radius)
-          ? Math.min(512, Math.max(1, Math.round(radius)))
-          : state.rules.guardCoverageRadius,
-      },
-    }));
-  },
-  setGuardCoverageMode: (guardCoverageMode) => {
-    set((state) => ({
-      rules: {
-        ...state.rules,
-        guardCoverageMode,
-      },
-    }));
-  },
   setShowGuardCoverage: (showGuardCoverage) => {
     set((state) => ({
       rules: {
@@ -224,7 +201,14 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       buildings: snapshot.buildings,
       activeStylePackId: snapshot.activeStylePackId,
       map: snapshot.map,
-      rules: snapshot.rules,
+      rules: {
+        colonyRadiusChunks: snapshot.rules.colonyRadiusChunks,
+        colonyBoundaryMode: snapshot.rules.colonyBoundaryMode,
+        preferredCommuteDistance: snapshot.rules.preferredCommuteDistance,
+        warningCommuteDistance: snapshot.rules.warningCommuteDistance,
+        showCommuteConnections: snapshot.rules.showCommuteConnections,
+        showGuardCoverage: snapshot.rules.showGuardCoverage,
+      },
       selectedBuildingId: null,
     });
   },

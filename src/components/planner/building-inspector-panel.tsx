@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { getStylePackById } from "@/data";
+import { maximumColonyRadiusChunks } from "@/data/minecolonies-rules";
 import {
   getLevelFootprint,
   getReservedFootprint,
@@ -29,7 +30,6 @@ import {
   getPlacedBuildingRole,
   getPlacedBuildingVariant,
 } from "@/lib/validation/commute";
-import { findGuardCoverageResults } from "@/lib/validation/guard-coverage";
 import { usePlannerStore } from "@/stores/planner-store";
 import type { BuildingRotation, Direction } from "@/types/minecolonies";
 
@@ -62,8 +62,6 @@ export function BuildingInspectorPanel() {
     colonyBoundaryMode,
     preferredCommuteDistance,
     warningCommuteDistance,
-    guardCoverageRadius,
-    guardCoverageMode,
   } = usePlannerStore((state) => state.rules);
   const selectedBuilding = buildings.find(
     (building) => building.id === selectedBuildingId,
@@ -78,8 +76,8 @@ export function BuildingInspectorPanel() {
     ? getCollisionPartners(selectedBuilding.id, collisions)
     : [];
   const boundaryViolationIds = useMemo(
-    () => findColonyBoundaryViolations(buildings, colonyRadiusChunks),
-    [buildings, colonyRadiusChunks],
+    () => findColonyBoundaryViolations(buildings),
+    [buildings],
   );
   const outsideBoundary = selectedBuilding
     ? boundaryViolationIds.includes(selectedBuilding.id)
@@ -92,16 +90,6 @@ export function BuildingInspectorPanel() {
       }),
     [buildings, preferredCommuteDistance, warningCommuteDistance],
   );
-  const guardCoverageResults = useMemo(
-    () =>
-      findGuardCoverageResults(
-        buildings,
-        guardCoverageRadius,
-        guardCoverageMode,
-      ),
-    [buildings, guardCoverageRadius, guardCoverageMode],
-  );
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target;
@@ -192,10 +180,6 @@ export function BuildingInspectorPanel() {
   const commuteResult = commuteResults.find(
     (result) => result.workplaceId === selectedBuilding.id,
   );
-  const guardCoverageResult = guardCoverageResults.find(
-    (result) => result.buildingId === selectedBuilding.id,
-  );
-
   return (
     <div className="flex h-full min-h-0 flex-col bg-card">
       <div className="border-b px-4 py-3">
@@ -288,56 +272,6 @@ export function BuildingInspectorPanel() {
           </section>
         ) : null}
 
-        {guardCoverageResult ? (
-          <Alert
-            variant={guardCoverageResult.ruleValid ? "default" : "destructive"}
-            className={
-              guardCoverageResult.ruleValid
-                ? "border-emerald-600 text-emerald-700"
-                : undefined
-            }
-          >
-            {!guardCoverageResult.ruleValid ? (
-              <AlertTriangle aria-hidden="true" />
-            ) : null}
-            <AlertTitle>
-              {guardCoverageResult.ruleValid
-                ? "Guard coverage satisfied"
-                : "Missing guard coverage"}
-            </AlertTitle>
-            <AlertDescription>
-              {guardCoverageResult.role === "residence" ? (
-                <>
-                  This residence anchor is{" "}
-                  {guardCoverageResult.covered ? "within" : "outside"} the{" "}
-                  {guardCoverageRadius}-block radius of a Guard Tower.
-                </>
-              ) : guardCoverageResult.assignedResidenceId ? (
-                <>
-                  Workplace:{" "}
-                  {guardCoverageResult.covered ? "covered" : "uncovered"}.
-                  Assigned residence:{" "}
-                  {guardCoverageResult.assignedResidenceCovered
-                    ? "covered"
-                    : "uncovered"}
-                  . The current rule requires{" "}
-                  {guardCoverageMode === "both"
-                    ? "both anchors"
-                    : "either anchor"}{" "}
-                  within {guardCoverageRadius} blocks of a Guard Tower.
-                </>
-              ) : (
-                <>
-                  This workplace anchor is{" "}
-                  {guardCoverageResult.covered ? "within" : "outside"} the{" "}
-                  {guardCoverageRadius}-block radius of a Guard Tower. Assign a
-                  residence to evaluate the {guardCoverageMode} location rule.
-                </>
-              )}
-            </AlertDescription>
-          </Alert>
-        ) : null}
-
         {outsideBoundary ? (
           <Alert
             variant={
@@ -355,9 +289,11 @@ export function BuildingInspectorPanel() {
               outside colony boundary
             </AlertTitle>
             <AlertDescription>
-              The entire reserved footprint must fit inside the square claim
-              boundary extending {colonyRadiusChunks} chunks (
-              {colonyRadiusChunks * 16} blocks) from the first Town Hall.
+              The reserved footprint reaches beyond MineColonies&apos; maximum
+              claim envelope of {maximumColonyRadiusChunks} chunks from the
+              first Town Hall. The initial claim is a{" "}
+              {colonyRadiusChunks * 2 + 1}×{colonyRadiusChunks * 2 + 1} chunk
+              square.
             </AlertDescription>
           </Alert>
         ) : null}

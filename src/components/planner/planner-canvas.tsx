@@ -25,11 +25,11 @@ import {
 } from "@/lib/validation/collisions";
 import {
   findColonyBoundaryViolations,
-  getColonyBoundary,
+  getClaimedChunks,
 } from "@/lib/validation/colony-boundary";
 import { findCommuteResults } from "@/lib/validation/commute";
 import {
-  findGuardCoverageResults,
+  getGuardPatrolRadius,
   isGuardBuilding,
 } from "@/lib/validation/guard-coverage";
 import { usePlannerStore } from "@/stores/planner-store";
@@ -106,8 +106,6 @@ export function PlannerCanvas() {
     preferredCommuteDistance,
     warningCommuteDistance,
     showCommuteConnections,
-    guardCoverageRadius,
-    guardCoverageMode,
     showGuardCoverage,
   } = usePlannerStore((state) => state.rules);
   const buildings = usePlannerStore((state) => state.buildings);
@@ -148,13 +146,13 @@ export function PlannerCanvas() {
     () => getCollidingBuildingIds(findBuildingCollisions(buildings)),
     [buildings],
   );
-  const colonyBoundary = useMemo(
-    () => getColonyBoundary(buildings, colonyRadiusChunks),
+  const claimedChunks = useMemo(
+    () => getClaimedChunks(buildings, colonyRadiusChunks),
     [buildings, colonyRadiusChunks],
   );
   const boundaryViolationIds = useMemo(
-    () => new Set(findColonyBoundaryViolations(buildings, colonyRadiusChunks)),
-    [buildings, colonyRadiusChunks],
+    () => new Set(findColonyBoundaryViolations(buildings)),
+    [buildings],
   );
   const commuteResults = useMemo(
     () =>
@@ -164,23 +162,6 @@ export function PlannerCanvas() {
       }),
     [buildings, preferredCommuteDistance, warningCommuteDistance],
   );
-  const guardCoverageResults = useMemo(
-    () =>
-      findGuardCoverageResults(
-        buildings,
-        guardCoverageRadius,
-        guardCoverageMode,
-      ),
-    [buildings, guardCoverageRadius, guardCoverageMode],
-  );
-  const guardCoverageByBuildingId = useMemo(
-    () =>
-      new Map(
-        guardCoverageResults.map((result) => [result.buildingId, result]),
-      ),
-    [guardCoverageResults],
-  );
-
   const handleWheel = (event: Konva.KonvaEventObject<WheelEvent>) => {
     event.evt.preventDefault();
     const stage = event.target.getStage();
@@ -284,28 +265,23 @@ export function PlannerCanvas() {
               fontSize={12 / zoom}
               listening={false}
             />
-            {colonyBoundary ? (
+            {claimedChunks.map((chunk) => (
               <Rect
-                x={
-                  (colonyBoundary.centerX - colonyBoundary.radiusBlocks) *
-                  BLOCK_SIZE
-                }
-                y={
-                  (colonyBoundary.centerZ - colonyBoundary.radiusBlocks) *
-                  BLOCK_SIZE
-                }
-                width={colonyBoundary.radiusBlocks * 2 * BLOCK_SIZE}
-                height={colonyBoundary.radiusBlocks * 2 * BLOCK_SIZE}
+                key={`claim-${chunk.x}-${chunk.z}`}
+                x={chunk.x * CHUNK_SIZE * BLOCK_SIZE}
+                y={chunk.z * CHUNK_SIZE * BLOCK_SIZE}
+                width={CHUNK_SIZE * BLOCK_SIZE}
+                height={CHUNK_SIZE * BLOCK_SIZE}
                 fill={
                   colonyBoundaryMode === "invalid" ? "#dc26260a" : "#d977060a"
                 }
                 stroke={
                   colonyBoundaryMode === "invalid" ? "#dc2626" : "#d97706"
                 }
-                strokeWidth={3 / zoom}
-                dash={[12 / zoom, 8 / zoom]}
+                strokeWidth={1 / zoom}
+                listening={false}
               />
-            ) : null}
+            ))}
             {showGuardCoverage
               ? buildings
                   .filter(isGuardBuilding)
@@ -314,7 +290,7 @@ export function PlannerCanvas() {
                       key={`guard-coverage-${guard.id}`}
                       x={guard.x * BLOCK_SIZE}
                       y={guard.z * BLOCK_SIZE}
-                      radius={guardCoverageRadius * BLOCK_SIZE}
+                      radius={getGuardPatrolRadius(guard) * BLOCK_SIZE}
                       fill="#2563eb0d"
                       stroke="#2563eb"
                       strokeWidth={2 / zoom}
@@ -392,7 +368,6 @@ export function PlannerCanvas() {
               const selected = building.id === selectedBuildingId;
               const colliding = collidingBuildingIds.has(building.id);
               const outsideBoundary = boundaryViolationIds.has(building.id);
-              const guardCoverage = guardCoverageByBuildingId.get(building.id);
               const invalid =
                 colliding ||
                 (outsideBoundary && colonyBoundaryMode === "invalid");
@@ -496,14 +471,8 @@ export function PlannerCanvas() {
                   <Circle
                     radius={3 / zoom}
                     fill={accentColor}
-                    stroke={
-                      guardCoverage
-                        ? guardCoverage.covered
-                          ? "#059669"
-                          : "#d97706"
-                        : "#ffffff"
-                    }
-                    strokeWidth={guardCoverage ? 4 / zoom : 1 / zoom}
+                    stroke="#ffffff"
+                    strokeWidth={1 / zoom}
                   />
                   {entranceMarker ? (
                     <Arrow

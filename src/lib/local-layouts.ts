@@ -96,11 +96,6 @@ function isPlannerRules(value: unknown): value is PlannerRules {
     value.warningCommuteDistance >= value.preferredCommuteDistance &&
     value.warningCommuteDistance <= 512 &&
     typeof value.showCommuteConnections === "boolean" &&
-    isInteger(value.guardCoverageRadius) &&
-    value.guardCoverageRadius >= 1 &&
-    value.guardCoverageRadius <= 512 &&
-    (value.guardCoverageMode === "either" ||
-      value.guardCoverageMode === "both") &&
     typeof value.showGuardCoverage === "boolean"
   );
 }
