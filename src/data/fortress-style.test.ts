@@ -12,6 +12,20 @@ describe("source-backed Fortress style pack", () => {
         0,
       ),
     ).toBe(461);
+    expect(fortressStylePack.categoryOrder).toEqual([
+      "agriculture",
+      "craftsmanship",
+      "decorations",
+      "education",
+      "fundamentals",
+      "infrastructure",
+      "military",
+      "mystic",
+      "walls",
+    ]);
+    expect(
+      fortressStylePack.variants.map((variant) => variant.gameOrder),
+    ).toEqual(Array.from({ length: 167 }, (_, index) => index));
   });
 
   it("keeps stable IDs for existing Town Hall, Residence, and Guard Tower plans", () => {

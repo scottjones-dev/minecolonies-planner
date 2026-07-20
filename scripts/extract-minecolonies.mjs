@@ -211,23 +211,6 @@ function titleCase(value) {
     .replaceAll(/\b\w/g, (character) => character.toUpperCase());
 }
 
-function categoryFor(directory, baseName) {
-  if (/residence|citizen/.test(baseName)) return "housing";
-  if (
-    /bakery|cook|restaurant|compost|fisher|farmer|swine|cowboy|shepherd|chicken/.test(
-      baseName,
-    )
-  )
-    return "food";
-  if (/warehouse|courier|stash/.test(baseName)) return "storage";
-  if (directory === "military") return "military";
-  if (directory === "education") return "education";
-  if (directory === "craftsmanship" || directory === "agriculture")
-    return "production";
-  if (directory === "decorations" || directory === "walls") return "decoration";
-  return "services";
-}
-
 function normalizeBuildingType(baseName) {
   const normalized = baseName
     .replace(/^alt/, "")
@@ -250,6 +233,25 @@ const stableVariantIds = {
   "military/guardtower": "fortress-guard-tower-1",
 };
 
+const categoryOrder = readdirSync(blueprintRoot, { withFileTypes: true })
+  .filter(
+    (entry) =>
+      entry.isDirectory() &&
+      existsSync(join(blueprintRoot, entry.name, "icon.png")),
+  )
+  .map((entry) => entry.name)
+  .sort();
+
+function getGameSortPath(directoryPath, sourcePath) {
+  const hasSubCategories = readdirSync(join(blueprintRoot, directoryPath), {
+    withFileTypes: true,
+  }).some((entry) => entry.isDirectory());
+  const fileName = sourcePath.split("/").at(-1);
+  return hasSubCategories
+    ? `${directoryPath}/./${fileName}`
+    : `${directoryPath}/${fileName}`;
+}
+
 const groups = new Map();
 for (const path of walkBlueprints(blueprintRoot).sort()) {
   const sourcePath = relative(blueprintRoot, path).split(sep).join("/");
@@ -258,10 +260,6 @@ for (const path of walkBlueprints(blueprintRoot).sort()) {
     sourcePath.match(/^(.+)\/([^/]+)\.blueprint$/);
   if (!match) continue;
   const [, directoryPath, baseName, levelText = "1"] = match;
-  const category = categoryFor(
-    directoryPath.split("/")[0],
-    baseName.toLowerCase(),
-  );
   const topLevelDirectory = directoryPath.split("/")[0];
   const key = `${directoryPath}/${baseName}`;
   const group = groups.get(key) ?? {
@@ -270,10 +268,12 @@ for (const path of walkBlueprints(blueprintRoot).sort()) {
       `fortress-${key.replaceAll(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`,
     name: `Fortress ${titleCase(baseName)}`,
     buildingType: normalizeBuildingType(baseName),
-    category,
+    category: topLevelDirectory,
+    categoryPath: directoryPath,
+    gameSortPath: getGameSortPath(directoryPath, sourcePath),
     role: /residence|citizen/i.test(baseName)
       ? "residence"
-      : category === "decoration"
+      : topLevelDirectory === "decorations" || topLevelDirectory === "walls"
         ? "other"
         : "workplace",
     ...(topLevelDirectory === "military" &&
@@ -314,12 +314,30 @@ function readGitCommit(repositoryRoot) {
 }
 
 const commit = readGitCommit(sourceRoot);
-const minecraftVersion = readFileSync(
+const gradleProperties = readFileSync(
   join(sourceRoot, "gradle.properties"),
   "utf8",
-)
+);
+const minecraftVersion = gradleProperties
   .match(/^minecraftVersion=(.+)$/m)?.[1]
   ?.trim();
+const structurizeVersion = gradleProperties
+  .match(/^structurize_version=(.+)$/m)?.[1]
+  ?.trim();
+
+const orderedVariants = [...groups.values()]
+  .sort((left, right) =>
+    left.gameSortPath < right.gameSortPath
+      ? -1
+      : left.gameSortPath > right.gameSortPath
+        ? 1
+        : 0,
+  )
+  .map(({ gameSortPath: _gameSortPath, ...group }, gameOrder) => ({
+    ...group,
+    gameOrder,
+    levels: group.levels.sort((left, right) => left.level - right.level),
+  }));
 
 const document = {
   schemaVersion: 1,
@@ -328,6 +346,15 @@ const document = {
     commit,
     minecraftVersion,
     license: "GPL-3.0",
+    structurize: {
+      version: structurizeVersion,
+      tag: "v1.20.1-1.0.806-snapshot",
+      commit: "8f6cad27f311eec2d8aee8b7c7bd58aa52edcd84",
+      categoryOrdering:
+        "StructurePacks.getCategories sorts by Category.toString (subPath)",
+      blueprintOrdering:
+        "StructurePacks.getBlueprints sorts by Blueprint.getFileName",
+    },
     sources: {
       blueprints: "src/main/resources/blueprints/minecolonies/fortress",
       serverConfiguration:
@@ -360,12 +387,8 @@ const document = {
     id: "fortress",
     name: "Fortress",
     source: "built-in",
-    variants: [...groups.values()]
-      .map((group) => ({
-        ...group,
-        levels: group.levels.sort((left, right) => left.level - right.level),
-      }))
-      .sort((left, right) => left.id.localeCompare(right.id)),
+    categoryOrder,
+    variants: orderedVariants,
   },
 };
 

@@ -5,6 +5,13 @@
     "commit": "b2fa2b6232ca33944d1489827e95ea5b40328325",
     "minecraftVersion": "1.20.1",
     "license": "GPL-3.0",
+    "structurize": {
+      "version": "1.20.1-1.0.806-snapshot",
+      "tag": "v1.20.1-1.0.806-snapshot",
+      "commit": "8f6cad27f311eec2d8aee8b7c7bd58aa52edcd84",
+      "categoryOrdering": "StructurePacks.getCategories sorts by Category.toString (subPath)",
+      "blueprintOrdering": "StructurePacks.getBlueprints sorts by Blueprint.getFileName"
+    },
     "sources": {
       "blueprints": "src/main/resources/blueprints/minecolonies/fortress",
       "serverConfiguration": "src/main/java/com/minecolonies/api/configuration/ServerConfiguration.java",
@@ -55,12 +62,24 @@
     "id": "fortress",
     "name": "Fortress",
     "source": "built-in",
+    "categoryOrder": [
+      "agriculture",
+      "craftsmanship",
+      "decorations",
+      "education",
+      "fundamentals",
+      "infrastructure",
+      "military",
+      "mystic",
+      "walls"
+    ],
     "variants": [
       {
         "id": "fortress-agriculture-fields-bamboo",
         "name": "Fortress Bamboo",
         "buildingType": "bamboo",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -90,13 +109,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 0
       },
       {
         "id": "fortress-agriculture-fields-cactbamboo",
         "name": "Fortress Cactbamboo",
         "buildingType": "cactbamboo",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -126,13 +147,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 1
       },
       {
         "id": "fortress-agriculture-fields-cocoa-vine",
         "name": "Fortress Cocoa Vine",
         "buildingType": "cocoa_vine",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -162,13 +185,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 2
       },
       {
         "id": "fortress-agriculture-fields-glowberry",
         "name": "Fortress Glowberry",
         "buildingType": "glowberry",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -198,13 +223,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 3
       },
       {
         "id": "fortress-agriculture-fields-kelp",
         "name": "Fortress Kelp",
         "buildingType": "kelp",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -234,13 +261,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 4
       },
       {
         "id": "fortress-agriculture-fields-pickle-seagrass",
         "name": "Fortress Pickle Seagrass",
         "buildingType": "pickle_seagrass",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -270,13 +299,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 5
       },
       {
         "id": "fortress-agriculture-fields-sugarcane",
         "name": "Fortress Sugarcane",
         "buildingType": "sugarcane",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -306,13 +337,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 6
       },
       {
         "id": "fortress-agriculture-fields-warped-crimson-plants",
         "name": "Fortress Warped Crimson Plants",
         "buildingType": "warped_crimson_plants",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -342,13 +375,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 7
       },
       {
         "id": "fortress-agriculture-fields-weeping-twisting",
         "name": "Fortress Weeping Twisting",
         "buildingType": "weeping_twisting",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/fields",
         "role": "workplace",
         "levels": [
           {
@@ -378,13 +413,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 8
       },
       {
         "id": "fortress-agriculture-horticulture-composter",
         "name": "Fortress Composter",
         "buildingType": "composter",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/horticulture",
         "role": "workplace",
         "levels": [
           {
@@ -522,13 +559,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 9
       },
       {
         "id": "fortress-agriculture-horticulture-farmer",
         "name": "Fortress Farmer",
         "buildingType": "farmer",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/horticulture",
         "role": "workplace",
         "levels": [
           {
@@ -666,13 +705,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 10
       },
       {
         "id": "fortress-agriculture-horticulture-florist",
         "name": "Fortress Florist",
         "buildingType": "florist",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/horticulture",
         "role": "workplace",
         "levels": [
           {
@@ -810,13 +851,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 11
       },
       {
         "id": "fortress-agriculture-horticulture-plantation",
         "name": "Fortress Plantation",
         "buildingType": "plantation",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/horticulture",
         "role": "workplace",
         "levels": [
           {
@@ -954,13 +997,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 12
       },
       {
         "id": "fortress-agriculture-husbandry-beekeeper",
         "name": "Fortress Beekeeper",
         "buildingType": "beekeeper",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -1098,13 +1143,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 13
       },
       {
         "id": "fortress-agriculture-husbandry-chickenherder",
         "name": "Fortress Chickenherder",
         "buildingType": "chickenherder",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -1242,13 +1289,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 14
       },
       {
         "id": "fortress-agriculture-husbandry-cowboy",
         "name": "Fortress Cowboy",
         "buildingType": "cowboy",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -1386,13 +1435,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 15
       },
       {
         "id": "fortress-agriculture-husbandry-fisherman",
         "name": "Fortress Fisherman",
         "buildingType": "fisherman",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -1530,13 +1581,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 16
       },
       {
         "id": "fortress-agriculture-husbandry-fishermanalt",
         "name": "Fortress Fishermanalt",
         "buildingType": "fisherman",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -1674,13 +1727,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 17
       },
       {
         "id": "fortress-agriculture-husbandry-rabbithutch",
         "name": "Fortress Rabbithutch",
         "buildingType": "rabbithutch",
-        "category": "production",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -1818,13 +1873,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 18
       },
       {
         "id": "fortress-agriculture-husbandry-shepherd",
         "name": "Fortress Shepherd",
         "buildingType": "shepherd",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -1962,13 +2019,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 19
       },
       {
         "id": "fortress-agriculture-husbandry-swineherder",
         "name": "Fortress Swineherder",
         "buildingType": "swineherder",
-        "category": "food",
+        "category": "agriculture",
+        "categoryPath": "agriculture/husbandry",
         "role": "workplace",
         "levels": [
           {
@@ -2106,13 +2165,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 20
       },
       {
         "id": "fortress-craftsmanship-carpentry-fletcher",
         "name": "Fortress Fletcher",
         "buildingType": "fletcher",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/carpentry",
         "role": "workplace",
         "levels": [
           {
@@ -2250,13 +2311,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 21
       },
       {
         "id": "fortress-craftsmanship-carpentry-sawmill",
         "name": "Fortress Sawmill",
         "buildingType": "sawmill",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/carpentry",
         "role": "workplace",
         "levels": [
           {
@@ -2394,13 +2457,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 22
       },
       {
         "id": "fortress-craftsmanship-luxury-alchemist",
         "name": "Fortress Alchemist",
         "buildingType": "alchemist",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/luxury",
         "role": "workplace",
         "levels": [
           {
@@ -2538,13 +2603,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 23
       },
       {
         "id": "fortress-craftsmanship-luxury-baker",
         "name": "Fortress Baker",
         "buildingType": "baker",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/luxury",
         "role": "workplace",
         "levels": [
           {
@@ -2682,13 +2749,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 24
       },
       {
         "id": "fortress-craftsmanship-luxury-concretemixer",
         "name": "Fortress Concretemixer",
         "buildingType": "concretemixer",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/luxury",
         "role": "workplace",
         "levels": [
           {
@@ -2826,13 +2895,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 25
       },
       {
         "id": "fortress-craftsmanship-luxury-dyer",
         "name": "Fortress Dyer",
         "buildingType": "dyer",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/luxury",
         "role": "workplace",
         "levels": [
           {
@@ -2970,13 +3041,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 26
       },
       {
         "id": "fortress-craftsmanship-luxury-glassblower",
         "name": "Fortress Glassblower",
         "buildingType": "glassblower",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/luxury",
         "role": "workplace",
         "levels": [
           {
@@ -3114,13 +3187,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 27
       },
       {
         "id": "fortress-craftsmanship-luxury-kitchen",
         "name": "Fortress Kitchen",
         "buildingType": "kitchen",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/luxury",
         "role": "workplace",
         "levels": [
           {
@@ -3258,13 +3333,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 28
       },
       {
         "id": "fortress-craftsmanship-masonry-crusher",
         "name": "Fortress Crusher",
         "buildingType": "crusher",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/masonry",
         "role": "workplace",
         "levels": [
           {
@@ -3402,13 +3479,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 29
       },
       {
         "id": "fortress-craftsmanship-masonry-sifter",
         "name": "Fortress Sifter",
         "buildingType": "sifter",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/masonry",
         "role": "workplace",
         "levels": [
           {
@@ -3546,13 +3625,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 30
       },
       {
         "id": "fortress-craftsmanship-masonry-stonemason",
         "name": "Fortress Stonemason",
         "buildingType": "stonemason",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/masonry",
         "role": "workplace",
         "levels": [
           {
@@ -3690,13 +3771,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 31
       },
       {
         "id": "fortress-craftsmanship-masonry-stonesmeltery",
         "name": "Fortress Stonesmeltery",
         "buildingType": "stonesmeltery",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/masonry",
         "role": "workplace",
         "levels": [
           {
@@ -3834,13 +3917,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 32
       },
       {
         "id": "fortress-craftsmanship-metallurgy-blacksmith",
         "name": "Fortress Blacksmith",
         "buildingType": "blacksmith",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/metallurgy",
         "role": "workplace",
         "levels": [
           {
@@ -3978,13 +4063,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 33
       },
       {
         "id": "fortress-craftsmanship-metallurgy-mechanic",
         "name": "Fortress Mechanic",
         "buildingType": "mechanic",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/metallurgy",
         "role": "workplace",
         "levels": [
           {
@@ -4122,13 +4209,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 34
       },
       {
         "id": "fortress-craftsmanship-metallurgy-smeltery",
         "name": "Fortress Smeltery",
         "buildingType": "smeltery",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/metallurgy",
         "role": "workplace",
         "levels": [
           {
@@ -4266,13 +4355,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 35
       },
       {
         "id": "fortress-craftsmanship-storage-altwarehouse",
         "name": "Fortress Altwarehouse",
         "buildingType": "warehouse",
-        "category": "storage",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/storage",
         "role": "workplace",
         "levels": [
           {
@@ -4410,13 +4501,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 36
       },
       {
         "id": "fortress-craftsmanship-storage-deliveryman",
         "name": "Fortress Deliveryman",
         "buildingType": "deliveryman",
-        "category": "production",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/storage",
         "role": "workplace",
         "levels": [
           {
@@ -4554,13 +4647,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 37
       },
       {
         "id": "fortress-craftsmanship-storage-warehouse",
         "name": "Fortress Warehouse",
         "buildingType": "warehouse",
-        "category": "storage",
+        "category": "craftsmanship",
+        "categoryPath": "craftsmanship/storage",
         "role": "workplace",
         "levels": [
           {
@@ -4698,13 +4793,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 38
       },
       {
         "id": "fortress-decorations-misc-concert",
         "name": "Fortress Concert",
         "buildingType": "concert",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4734,13 +4831,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 39
       },
       {
         "id": "fortress-decorations-misc-cornerfountain",
         "name": "Fortress Cornerfountain",
         "buildingType": "cornerfountain",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4770,13 +4869,15 @@
               "z": 24
             }
           }
-        ]
+        ],
+        "gameOrder": 40
       },
       {
         "id": "fortress-decorations-misc-cornerguard",
         "name": "Fortress Cornerguard",
         "buildingType": "cornerguard",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4806,13 +4907,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 41
       },
       {
         "id": "fortress-decorations-misc-cornerinside",
         "name": "Fortress Cornerinside",
         "buildingType": "cornerinside",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4842,13 +4945,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 42
       },
       {
         "id": "fortress-decorations-misc-cornerkennel",
         "name": "Fortress Cornerkennel",
         "buildingType": "cornerkennel",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4878,13 +4983,15 @@
               "z": 24
             }
           }
-        ]
+        ],
+        "gameOrder": 43
       },
       {
         "id": "fortress-decorations-misc-cornermarket",
         "name": "Fortress Cornermarket",
         "buildingType": "cornermarket",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4914,13 +5021,15 @@
               "z": 24
             }
           }
-        ]
+        ],
+        "gameOrder": 44
       },
       {
         "id": "fortress-decorations-misc-fullchunk",
         "name": "Fortress Fullchunk",
         "buildingType": "fullchunk",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4950,13 +5059,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 45
       },
       {
         "id": "fortress-decorations-misc-halfchunk",
         "name": "Fortress Halfchunk",
         "buildingType": "halfchunk",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -4986,13 +5097,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 46
       },
       {
         "id": "fortress-decorations-misc-kelpfarm",
         "name": "Fortress Kelpfarm",
         "buildingType": "kelpfarm",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5022,13 +5135,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 47
       },
       {
         "id": "fortress-decorations-misc-kelpfarmcombo",
         "name": "Fortress Kelpfarmcombo",
         "buildingType": "kelpfarmcombo",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5058,13 +5173,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 48
       },
       {
         "id": "fortress-decorations-misc-kelpfarmdual",
         "name": "Fortress Kelpfarmdual",
         "buildingType": "kelpfarmdual",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5121,13 +5238,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 49
       },
       {
         "id": "fortress-decorations-misc-kelpsmoked",
         "name": "Fortress Kelpsmoked",
         "buildingType": "kelpsmoked",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5157,13 +5276,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 50
       },
       {
         "id": "fortress-decorations-misc-kelpsmokeddual",
         "name": "Fortress Kelpsmokeddual",
         "buildingType": "kelpsmokeddual",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5193,13 +5314,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 51
       },
       {
         "id": "fortress-decorations-misc-market",
         "name": "Fortress Market",
         "buildingType": "market",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5229,13 +5352,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 52
       },
       {
         "id": "fortress-decorations-misc-mausoleum",
         "name": "Fortress Mausoleum",
         "buildingType": "mausoleum",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5265,13 +5390,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 53
       },
       {
         "id": "fortress-decorations-misc-netherportal",
         "name": "Fortress Netherportal",
         "buildingType": "netherportal",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5328,13 +5455,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 54
       },
       {
         "id": "fortress-decorations-misc-park",
         "name": "Fortress Park",
         "buildingType": "park",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5364,13 +5493,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 55
       },
       {
         "id": "fortress-decorations-misc-playground",
         "name": "Fortress Playground",
         "buildingType": "playground",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5400,13 +5531,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 56
       },
       {
         "id": "fortress-decorations-misc-pond",
         "name": "Fortress Pond",
         "buildingType": "pond",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5436,13 +5569,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 57
       },
       {
         "id": "fortress-decorations-misc-threelong",
         "name": "Fortress Threelong",
         "buildingType": "threelong",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5472,13 +5607,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 58
       },
       {
         "id": "fortress-decorations-misc-twosquared",
         "name": "Fortress Twosquared",
         "buildingType": "twosquared",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5508,13 +5645,15 @@
               "z": 32
             }
           }
-        ]
+        ],
+        "gameOrder": 59
       },
       {
         "id": "fortress-decorations-misc-twowide",
         "name": "Fortress Twowide",
         "buildingType": "twowide",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/misc",
         "role": "other",
         "levels": [
           {
@@ -5544,13 +5683,15 @@
               "z": 32
             }
           }
-        ]
+        ],
+        "gameOrder": 60
       },
       {
         "id": "fortress-decorations-supplies-camp",
         "name": "Fortress Camp",
         "buildingType": "camp",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/supplies",
         "role": "other",
         "levels": [
           {
@@ -5580,13 +5721,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 61
       },
       {
         "id": "fortress-decorations-supplies-ship",
         "name": "Fortress Ship",
         "buildingType": "ship",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/supplies",
         "role": "other",
         "levels": [
           {
@@ -5616,13 +5759,15 @@
               "z": 15
             }
           }
-        ]
+        ],
+        "gameOrder": 62
       },
       {
         "id": "fortress-decorations-supplies-supplycamp",
         "name": "Fortress Supplycamp",
         "buildingType": "supplycamp",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/supplies",
         "role": "other",
         "levels": [
           {
@@ -5652,13 +5797,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 63
       },
       {
         "id": "fortress-decorations-supplies-supplyship",
         "name": "Fortress Supplyship",
         "buildingType": "supplyship",
-        "category": "decoration",
+        "category": "decorations",
+        "categoryPath": "decorations/supplies",
         "role": "other",
         "levels": [
           {
@@ -5688,13 +5835,15 @@
               "z": 15
             }
           }
-        ]
+        ],
+        "gameOrder": 64
       },
       {
         "id": "fortress-education-altuniversity",
         "name": "Fortress Altuniversity",
         "buildingType": "university",
         "category": "education",
+        "categoryPath": "education",
         "role": "workplace",
         "levels": [
           {
@@ -5832,13 +5981,15 @@
               "z": 32
             }
           }
-        ]
+        ],
+        "gameOrder": 65
       },
       {
         "id": "fortress-education-library",
         "name": "Fortress Library",
         "buildingType": "library",
         "category": "education",
+        "categoryPath": "education",
         "role": "workplace",
         "levels": [
           {
@@ -5976,13 +6127,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 66
       },
       {
         "id": "fortress-education-libraryalt",
         "name": "Fortress Libraryalt",
         "buildingType": "library",
         "category": "education",
+        "categoryPath": "education",
         "role": "workplace",
         "levels": [
           {
@@ -6120,13 +6273,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 67
       },
       {
         "id": "fortress-education-school",
         "name": "Fortress School",
         "buildingType": "school",
         "category": "education",
+        "categoryPath": "education",
         "role": "workplace",
         "levels": [
           {
@@ -6264,13 +6419,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 68
       },
       {
         "id": "fortress-education-university",
         "name": "Fortress University",
         "buildingType": "university",
         "category": "education",
+        "categoryPath": "education",
         "role": "workplace",
         "levels": [
           {
@@ -6408,13 +6565,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 69
       },
       {
         "id": "fortress-fundamentals-althospital",
         "name": "Fortress Althospital",
         "buildingType": "hospital",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -6552,13 +6711,15 @@
               "z": 32
             }
           }
-        ]
+        ],
+        "gameOrder": 70
       },
       {
         "id": "fortress-fundamentals-altresidence",
         "name": "Fortress Altresidence",
         "buildingType": "residence",
-        "category": "housing",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "residence",
         "levels": [
           {
@@ -6696,13 +6857,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 71
       },
       {
         "id": "fortress-fundamentals-builder",
         "name": "Fortress Builder",
         "buildingType": "builder",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -6840,13 +7003,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 72
       },
       {
         "id": "fortress-fundamentals-cook",
         "name": "Fortress Cook",
         "buildingType": "cook",
-        "category": "food",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -6984,13 +7149,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 73
       },
       {
         "id": "fortress-fundamentals-hospital",
         "name": "Fortress Hospital",
         "buildingType": "hospital",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -7128,13 +7295,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 74
       },
       {
         "id": "fortress-fundamentals-lumberjack",
         "name": "Fortress Lumberjack",
         "buildingType": "lumberjack",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -7272,13 +7441,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 75
       },
       {
         "id": "fortress-fundamentals-mineguard",
         "name": "Fortress Mineguard",
         "buildingType": "mineguard",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -7416,13 +7587,15 @@
               "z": 3
             }
           }
-        ]
+        ],
+        "gameOrder": 76
       },
       {
         "id": "fortress-fundamentals-miner",
         "name": "Fortress Miner",
         "buildingType": "miner",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -7560,13 +7733,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 77
       },
       {
         "id": "fortress-fundamentals-mineralt",
         "name": "Fortress Mineralt",
         "buildingType": "miner",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -7704,13 +7879,161 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 78
+      },
+      {
+        "id": "fortress-residence-1",
+        "name": "Fortress Residence",
+        "buildingType": "residence",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
+        "role": "residence",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 15,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "hutBlock": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "sourcePath": "fundamentals/residence1.blueprint",
+            "size": {
+              "x": 16,
+              "y": 16,
+              "z": 16
+            }
+          },
+          {
+            "level": 2,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 15,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "hutBlock": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "sourcePath": "fundamentals/residence2.blueprint",
+            "size": {
+              "x": 16,
+              "y": 16,
+              "z": 16
+            }
+          },
+          {
+            "level": 3,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 15,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "hutBlock": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "sourcePath": "fundamentals/residence3.blueprint",
+            "size": {
+              "x": 16,
+              "y": 16,
+              "z": 16
+            }
+          },
+          {
+            "level": 4,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 15,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "hutBlock": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "sourcePath": "fundamentals/residence4.blueprint",
+            "size": {
+              "x": 16,
+              "y": 16,
+              "z": 16
+            }
+          },
+          {
+            "level": 5,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 15,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "hutBlock": {
+              "x": 14,
+              "y": 1,
+              "z": 7
+            },
+            "sourcePath": "fundamentals/residence5.blueprint",
+            "size": {
+              "x": 16,
+              "y": 16,
+              "z": 16
+            }
+          }
+        ],
+        "gameOrder": 79
       },
       {
         "id": "fortress-fundamentals-tavern",
         "name": "Fortress Tavern",
         "buildingType": "tavern",
-        "category": "services",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
         "levels": [
           {
@@ -7794,158 +8117,161 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 80
       },
       {
-        "id": "fortress-guard-tower-1",
-        "name": "Fortress Guardtower",
-        "buildingType": "guard_tower",
-        "category": "military",
+        "id": "fortress-town-hall-1",
+        "name": "Fortress Townhall",
+        "buildingType": "town_hall",
+        "category": "fundamentals",
+        "categoryPath": "fundamentals",
         "role": "workplace",
-        "isGuard": true,
         "levels": [
           {
             "level": 1,
             "bounds": {
               "minX": 0,
-              "maxX": 15,
+              "maxX": 31,
               "minY": 0,
-              "maxY": 18,
+              "maxY": 46,
               "minZ": 0,
-              "maxZ": 7
+              "maxZ": 31
             },
             "anchor": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
             "hutBlock": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
-            "sourcePath": "military/guardtower1.blueprint",
+            "sourcePath": "fundamentals/townhall1.blueprint",
             "size": {
-              "x": 16,
-              "y": 19,
-              "z": 8
+              "x": 32,
+              "y": 47,
+              "z": 32
             }
           },
           {
             "level": 2,
             "bounds": {
               "minX": 0,
-              "maxX": 15,
+              "maxX": 31,
               "minY": 0,
-              "maxY": 18,
+              "maxY": 46,
               "minZ": 0,
-              "maxZ": 7
+              "maxZ": 31
             },
             "anchor": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
             "hutBlock": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
-            "sourcePath": "military/guardtower2.blueprint",
+            "sourcePath": "fundamentals/townhall2.blueprint",
             "size": {
-              "x": 16,
-              "y": 19,
-              "z": 8
+              "x": 32,
+              "y": 47,
+              "z": 32
             }
           },
           {
             "level": 3,
             "bounds": {
               "minX": 0,
-              "maxX": 15,
+              "maxX": 31,
               "minY": 0,
-              "maxY": 18,
+              "maxY": 46,
               "minZ": 0,
-              "maxZ": 7
+              "maxZ": 31
             },
             "anchor": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
             "hutBlock": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
-            "sourcePath": "military/guardtower3.blueprint",
+            "sourcePath": "fundamentals/townhall3.blueprint",
             "size": {
-              "x": 16,
-              "y": 19,
-              "z": 8
+              "x": 32,
+              "y": 47,
+              "z": 32
             }
           },
           {
             "level": 4,
             "bounds": {
               "minX": 0,
-              "maxX": 15,
+              "maxX": 31,
               "minY": 0,
-              "maxY": 18,
+              "maxY": 46,
               "minZ": 0,
-              "maxZ": 7
+              "maxZ": 31
             },
             "anchor": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
             "hutBlock": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
-            "sourcePath": "military/guardtower4.blueprint",
+            "sourcePath": "fundamentals/townhall4.blueprint",
             "size": {
-              "x": 16,
-              "y": 19,
-              "z": 8
+              "x": 32,
+              "y": 47,
+              "z": 32
             }
           },
           {
             "level": 5,
             "bounds": {
               "minX": 0,
-              "maxX": 15,
+              "maxX": 31,
               "minY": 0,
-              "maxY": 18,
+              "maxY": 46,
               "minZ": 0,
-              "maxZ": 7
+              "maxZ": 31
             },
             "anchor": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
             "hutBlock": {
-              "x": 12,
+              "x": 15,
               "y": 1,
-              "z": 3
+              "z": 15
             },
-            "sourcePath": "military/guardtower5.blueprint",
+            "sourcePath": "fundamentals/townhall5.blueprint",
             "size": {
-              "x": 16,
-              "y": 19,
-              "z": 8
+              "x": 32,
+              "y": 47,
+              "z": 32
             }
           }
-        ]
+        ],
+        "gameOrder": 81
       },
       {
         "id": "fortress-infrastructure-adapters-cavern",
         "name": "Fortress Cavern",
         "buildingType": "cavern",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/adapters",
         "role": "workplace",
         "levels": [
           {
@@ -8056,13 +8382,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 82
       },
       {
         "id": "fortress-infrastructure-adapters-cf-landing",
         "name": "Fortress Cf Landing",
         "buildingType": "cf_landing",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/adapters",
         "role": "workplace",
         "levels": [
           {
@@ -8092,13 +8420,15 @@
               "z": 23
             }
           }
-        ]
+        ],
+        "gameOrder": 83
       },
       {
         "id": "fortress-infrastructure-adapters-cf-stair",
         "name": "Fortress Cf Stair",
         "buildingType": "cf_stair",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/adapters",
         "role": "workplace",
         "levels": [
           {
@@ -8128,13 +8458,15 @@
               "z": 15
             }
           }
-        ]
+        ],
+        "gameOrder": 84
       },
       {
         "id": "fortress-infrastructure-fields-fortressfarma",
         "name": "Fortress Fortressfarma",
         "buildingType": "fortressfarma",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8164,13 +8496,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 85
       },
       {
         "id": "fortress-infrastructure-fields-fortressfarmb",
         "name": "Fortress Fortressfarmb",
         "buildingType": "fortressfarmb",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8200,13 +8534,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 86
       },
       {
         "id": "fortress-infrastructure-fields-fortressfarmc",
         "name": "Fortress Fortressfarmc",
         "buildingType": "fortressfarmc",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8236,13 +8572,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 87
       },
       {
         "id": "fortress-infrastructure-fields-fortressfield",
         "name": "Fortress Fortressfield",
         "buildingType": "fortressfield",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8272,13 +8610,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 88
       },
       {
         "id": "fortress-infrastructure-fields-greenhouse",
         "name": "Fortress Greenhouse",
         "buildingType": "greenhouse",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8389,13 +8729,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 89
       },
       {
         "id": "fortress-infrastructure-fields-melonfarm",
         "name": "Fortress Melonfarm",
         "buildingType": "melonfarm",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8425,13 +8767,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 90
       },
       {
         "id": "fortress-infrastructure-fields-mushroomfarm",
         "name": "Fortress Mushroomfarm",
         "buildingType": "mushroomfarm",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8461,13 +8805,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 91
       },
       {
         "id": "fortress-infrastructure-fields-treefarm",
         "name": "Fortress Treefarm",
         "buildingType": "treefarm",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/fields",
         "role": "workplace",
         "levels": [
           {
@@ -8497,13 +8843,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 92
       },
       {
         "id": "fortress-infrastructure-mineshafts-mediumquarry",
         "name": "Fortress Mediumquarry",
         "buildingType": "mediumquarry",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8533,13 +8881,15 @@
               "z": 42
             }
           }
-        ]
+        ],
+        "gameOrder": 93
       },
       {
         "id": "fortress-infrastructure-mineshafts-mediumquarryshaft",
         "name": "Fortress Mediumquarryshaft",
         "buildingType": "mediumquarryshaft",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8569,13 +8919,15 @@
               "z": 42
             }
           }
-        ]
+        ],
+        "gameOrder": 94
       },
       {
         "id": "fortress-infrastructure-mineshafts-minermainshaft",
         "name": "Fortress Minermainshaft",
         "buildingType": "minermainshaft",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8605,49 +8957,15 @@
               "z": 9
             }
           }
-        ]
-      },
-      {
-        "id": "fortress-infrastructure-mineshafts-minerx",
-        "name": "Fortress Minerx",
-        "buildingType": "minerx",
-        "category": "services",
-        "role": "workplace",
-        "levels": [
-          {
-            "level": 4,
-            "bounds": {
-              "minX": 0,
-              "maxX": 6,
-              "minY": 0,
-              "maxY": 4,
-              "minZ": 0,
-              "maxZ": 6
-            },
-            "anchor": {
-              "x": 3,
-              "y": 0,
-              "z": 3
-            },
-            "hutBlock": {
-              "x": 3,
-              "y": 0,
-              "z": 3
-            },
-            "sourcePath": "infrastructure/mineshafts/minerx4.blueprint",
-            "size": {
-              "x": 7,
-              "y": 5,
-              "z": 7
-            }
-          }
-        ]
+        ],
+        "gameOrder": 95
       },
       {
         "id": "fortress-infrastructure-mineshafts-minerx2left",
         "name": "Fortress Minerx2left",
         "buildingType": "minerx2left",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8677,13 +8995,15 @@
               "z": 7
             }
           }
-        ]
+        ],
+        "gameOrder": 96
       },
       {
         "id": "fortress-infrastructure-mineshafts-minerx2right",
         "name": "Fortress Minerx2right",
         "buildingType": "minerx2right",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8713,13 +9033,15 @@
               "z": 7
             }
           }
-        ]
+        ],
+        "gameOrder": 97
       },
       {
         "id": "fortress-infrastructure-mineshafts-minerx2top",
         "name": "Fortress Minerx2top",
         "buildingType": "minerx2top",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8749,13 +9071,15 @@
               "z": 7
             }
           }
-        ]
+        ],
+        "gameOrder": 98
       },
       {
         "id": "fortress-infrastructure-mineshafts-minerx3leftright",
         "name": "Fortress Minerx3leftright",
         "buildingType": "minerx3leftright",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8785,13 +9109,15 @@
               "z": 7
             }
           }
-        ]
+        ],
+        "gameOrder": 99
       },
       {
         "id": "fortress-infrastructure-mineshafts-minerx3topleft",
         "name": "Fortress Minerx3topleft",
         "buildingType": "minerx3topleft",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8821,13 +9147,15 @@
               "z": 7
             }
           }
-        ]
+        ],
+        "gameOrder": 100
       },
       {
         "id": "fortress-infrastructure-mineshafts-minerx3topright",
         "name": "Fortress Minerx3topright",
         "buildingType": "minerx3topright",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8857,13 +9185,53 @@
               "z": 7
             }
           }
-        ]
+        ],
+        "gameOrder": 101
+      },
+      {
+        "id": "fortress-infrastructure-mineshafts-minerx",
+        "name": "Fortress Minerx",
+        "buildingType": "minerx",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
+        "role": "workplace",
+        "levels": [
+          {
+            "level": 4,
+            "bounds": {
+              "minX": 0,
+              "maxX": 6,
+              "minY": 0,
+              "maxY": 4,
+              "minZ": 0,
+              "maxZ": 6
+            },
+            "anchor": {
+              "x": 3,
+              "y": 0,
+              "z": 3
+            },
+            "hutBlock": {
+              "x": 3,
+              "y": 0,
+              "z": 3
+            },
+            "sourcePath": "infrastructure/mineshafts/minerx4.blueprint",
+            "size": {
+              "x": 7,
+              "y": 5,
+              "z": 7
+            }
+          }
+        ],
+        "gameOrder": 102
       },
       {
         "id": "fortress-infrastructure-mineshafts-simplequarry",
         "name": "Fortress Simplequarry",
         "buildingType": "simplequarry",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8893,13 +9261,15 @@
               "z": 25
             }
           }
-        ]
+        ],
+        "gameOrder": 103
       },
       {
         "id": "fortress-infrastructure-mineshafts-simplequarryshaft",
         "name": "Fortress Simplequarryshaft",
         "buildingType": "simplequarryshaft",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/mineshafts",
         "role": "workplace",
         "levels": [
           {
@@ -8929,13 +9299,15 @@
               "z": 25
             }
           }
-        ]
+        ],
+        "gameOrder": 104
       },
       {
         "id": "fortress-infrastructure-rails-cornerrailroad",
         "name": "Fortress Cornerrailroad",
         "buildingType": "cornerrailroad",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9019,13 +9391,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 105
       },
       {
         "id": "fortress-infrastructure-rails-endrail",
         "name": "Fortress Endrail",
         "buildingType": "endrail",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9109,13 +9483,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 106
       },
       {
         "id": "fortress-infrastructure-rails-intersectrail",
         "name": "Fortress Intersectrail",
         "buildingType": "intersectrail",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9199,13 +9575,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 107
       },
       {
         "id": "fortress-infrastructure-rails-longrailroad",
         "name": "Fortress Longrailroad",
         "buildingType": "longrailroad",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9289,13 +9667,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 108
       },
       {
         "id": "fortress-infrastructure-rails-minirail",
         "name": "Fortress Minirail",
         "buildingType": "minirail",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9379,13 +9759,15 @@
               "z": 4
             }
           }
-        ]
+        ],
+        "gameOrder": 109
       },
       {
         "id": "fortress-infrastructure-rails-shortrailroad",
         "name": "Fortress Shortrailroad",
         "buildingType": "shortrailroad",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9469,13 +9851,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 110
       },
       {
         "id": "fortress-infrastructure-rails-step-rail-dual",
         "name": "Fortress Step Rail Dual",
         "buildingType": "step_rail_dual",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9559,13 +9943,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 111
       },
       {
         "id": "fortress-infrastructure-rails-step-rail-quad",
         "name": "Fortress Step Rail Quad",
         "buildingType": "step_rail_quad",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9649,13 +10035,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 112
       },
       {
         "id": "fortress-infrastructure-rails-trail",
         "name": "Fortress Trail",
         "buildingType": "trail",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9739,13 +10127,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 113
       },
       {
         "id": "fortress-infrastructure-rails-tunnelintersect",
         "name": "Fortress Tunnelintersect",
         "buildingType": "tunnelintersect",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9775,13 +10165,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 114
       },
       {
         "id": "fortress-infrastructure-rails-tunnellong",
         "name": "Fortress Tunnellong",
         "buildingType": "tunnellong",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9811,13 +10203,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 115
       },
       {
         "id": "fortress-infrastructure-rails-tunnelmini",
         "name": "Fortress Tunnelmini",
         "buildingType": "tunnelmini",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9847,13 +10241,15 @@
               "z": 4
             }
           }
-        ]
+        ],
+        "gameOrder": 116
       },
       {
         "id": "fortress-infrastructure-rails-tunnelshort",
         "name": "Fortress Tunnelshort",
         "buildingType": "tunnelshort",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9883,13 +10279,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 117
       },
       {
         "id": "fortress-infrastructure-rails-tunnelt",
         "name": "Fortress Tunnelt",
         "buildingType": "tunnelt",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/rails",
         "role": "workplace",
         "levels": [
           {
@@ -9919,13 +10317,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 118
       },
       {
         "id": "fortress-infrastructure-roads-corneralt",
         "name": "Fortress Corneralt",
         "buildingType": "corner",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10009,13 +10409,15 @@
               "z": 4
             }
           }
-        ]
+        ],
+        "gameOrder": 119
       },
       {
         "id": "fortress-infrastructure-roads-endroad",
         "name": "Fortress Endroad",
         "buildingType": "endroad",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10099,13 +10501,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 120
       },
       {
         "id": "fortress-infrastructure-roads-footpath",
         "name": "Fortress Footpath",
         "buildingType": "footpath",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10135,13 +10539,15 @@
               "z": 6
             }
           }
-        ]
+        ],
+        "gameOrder": 121
       },
       {
         "id": "fortress-infrastructure-roads-footpathhosp",
         "name": "Fortress Footpathhosp",
         "buildingType": "footpathhosp",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10171,13 +10577,15 @@
               "z": 15
             }
           }
-        ]
+        ],
+        "gameOrder": 122
       },
       {
         "id": "fortress-infrastructure-roads-footpathuni",
         "name": "Fortress Footpathuni",
         "buildingType": "footpathuni",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10207,13 +10615,15 @@
               "z": 15
             }
           }
-        ]
+        ],
+        "gameOrder": 123
       },
       {
         "id": "fortress-infrastructure-roads-intersection",
         "name": "Fortress Intersection",
         "buildingType": "intersection",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10297,13 +10707,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 124
       },
       {
         "id": "fortress-infrastructure-roads-longpath",
         "name": "Fortress Longpath",
         "buildingType": "longpath",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10387,13 +10799,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 125
       },
       {
         "id": "fortress-infrastructure-roads-minipath",
         "name": "Fortress Minipath",
         "buildingType": "minipath",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10477,13 +10891,15 @@
               "z": 4
             }
           }
-        ]
+        ],
+        "gameOrder": 126
       },
       {
         "id": "fortress-infrastructure-roads-rcorner",
         "name": "Fortress Rcorner",
         "buildingType": "rcorner",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10567,13 +10983,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 127
       },
       {
         "id": "fortress-infrastructure-roads-shortpath",
         "name": "Fortress Shortpath",
         "buildingType": "shortpath",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10657,13 +11075,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 128
       },
       {
         "id": "fortress-infrastructure-roads-step-road-dual",
         "name": "Fortress Step Road Dual",
         "buildingType": "step_road_dual",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10747,13 +11167,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 129
       },
       {
         "id": "fortress-infrastructure-roads-step-road-quad",
         "name": "Fortress Step Road Quad",
         "buildingType": "step_road_quad",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10837,13 +11259,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 130
       },
       {
         "id": "fortress-infrastructure-roads-tjunction",
         "name": "Fortress Tjunction",
         "buildingType": "tjunction",
-        "category": "services",
+        "category": "infrastructure",
+        "categoryPath": "infrastructure/roads",
         "role": "workplace",
         "levels": [
           {
@@ -10927,13 +11351,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 131
       },
       {
         "id": "fortress-military-altbarracks",
         "name": "Fortress Altbarracks",
         "buildingType": "barracks",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "levels": [
           {
@@ -11071,13 +11497,15 @@
               "z": 32
             }
           }
-        ]
+        ],
+        "gameOrder": 132
       },
       {
         "id": "fortress-military-altbarrackstower",
         "name": "Fortress Altbarrackstower",
         "buildingType": "barrackstower",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "isGuard": true,
         "levels": [
@@ -11216,13 +11644,15 @@
               "z": 3
             }
           }
-        ]
+        ],
+        "gameOrder": 133
       },
       {
         "id": "fortress-military-altguardtower",
         "name": "Fortress Altguardtower",
         "buildingType": "guard_tower",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "isGuard": true,
         "levels": [
@@ -11361,13 +11791,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 134
       },
       {
         "id": "fortress-military-archery",
         "name": "Fortress Archery",
         "buildingType": "archery",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "levels": [
           {
@@ -11505,13 +11937,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 135
       },
       {
         "id": "fortress-military-barracks",
         "name": "Fortress Barracks",
         "buildingType": "barracks",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "levels": [
           {
@@ -11649,13 +12083,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 136
       },
       {
         "id": "fortress-military-barrackstower",
         "name": "Fortress Barrackstower",
         "buildingType": "barrackstower",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "isGuard": true,
         "levels": [
@@ -11794,13 +12230,15 @@
               "z": 3
             }
           }
-        ]
+        ],
+        "gameOrder": 137
       },
       {
         "id": "fortress-military-combatacademy",
         "name": "Fortress Combatacademy",
         "buildingType": "combatacademy",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "levels": [
           {
@@ -11938,13 +12376,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 138
       },
       {
         "id": "fortress-military-gatehouse",
         "name": "Fortress Gatehouse",
         "buildingType": "gatehouse",
         "category": "military",
+        "categoryPath": "military",
         "role": "workplace",
         "isGuard": true,
         "levels": [
@@ -12029,13 +12469,162 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 139
+      },
+      {
+        "id": "fortress-guard-tower-1",
+        "name": "Fortress Guardtower",
+        "buildingType": "guard_tower",
+        "category": "military",
+        "categoryPath": "military",
+        "role": "workplace",
+        "isGuard": true,
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "hutBlock": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "sourcePath": "military/guardtower1.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 8
+            }
+          },
+          {
+            "level": 2,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "hutBlock": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "sourcePath": "military/guardtower2.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 8
+            }
+          },
+          {
+            "level": 3,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "hutBlock": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "sourcePath": "military/guardtower3.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 8
+            }
+          },
+          {
+            "level": 4,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "hutBlock": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "sourcePath": "military/guardtower4.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 8
+            }
+          },
+          {
+            "level": 5,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "hutBlock": {
+              "x": 12,
+              "y": 1,
+              "z": 3
+            },
+            "sourcePath": "military/guardtower5.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 8
+            }
+          }
+        ],
+        "gameOrder": 140
       },
       {
         "id": "fortress-mystic-enchanter",
         "name": "Fortress Enchanter",
         "buildingType": "enchanter",
-        "category": "services",
+        "category": "mystic",
+        "categoryPath": "mystic",
         "role": "workplace",
         "levels": [
           {
@@ -12173,13 +12762,15 @@
               "z": 32
             }
           }
-        ]
+        ],
+        "gameOrder": 141
       },
       {
         "id": "fortress-mystic-graveyard",
         "name": "Fortress Graveyard",
         "buildingType": "graveyard",
-        "category": "services",
+        "category": "mystic",
+        "categoryPath": "mystic",
         "role": "workplace",
         "levels": [
           {
@@ -12317,13 +12908,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 142
       },
       {
         "id": "fortress-mystic-mysticalsite",
         "name": "Fortress Mysticalsite",
         "buildingType": "mysticalsite",
-        "category": "services",
+        "category": "mystic",
+        "categoryPath": "mystic",
         "role": "workplace",
         "levels": [
           {
@@ -12461,13 +13054,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 143
       },
       {
         "id": "fortress-mystic-netherworker",
         "name": "Fortress Netherworker",
         "buildingType": "netherworker",
-        "category": "services",
+        "category": "mystic",
+        "categoryPath": "mystic",
         "role": "workplace",
         "levels": [
           {
@@ -12605,1030 +13200,15 @@
               "z": 8
             }
           }
-        ]
-      },
-      {
-        "id": "fortress-residence-1",
-        "name": "Fortress Residence",
-        "buildingType": "residence",
-        "category": "housing",
-        "role": "residence",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 15,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "hutBlock": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "sourcePath": "fundamentals/residence1.blueprint",
-            "size": {
-              "x": 16,
-              "y": 16,
-              "z": 16
-            }
-          },
-          {
-            "level": 2,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 15,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "hutBlock": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "sourcePath": "fundamentals/residence2.blueprint",
-            "size": {
-              "x": 16,
-              "y": 16,
-              "z": 16
-            }
-          },
-          {
-            "level": 3,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 15,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "hutBlock": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "sourcePath": "fundamentals/residence3.blueprint",
-            "size": {
-              "x": 16,
-              "y": 16,
-              "z": 16
-            }
-          },
-          {
-            "level": 4,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 15,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "hutBlock": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "sourcePath": "fundamentals/residence4.blueprint",
-            "size": {
-              "x": 16,
-              "y": 16,
-              "z": 16
-            }
-          },
-          {
-            "level": 5,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 15,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "hutBlock": {
-              "x": 14,
-              "y": 1,
-              "z": 7
-            },
-            "sourcePath": "fundamentals/residence5.blueprint",
-            "size": {
-              "x": 16,
-              "y": 16,
-              "z": 16
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-town-hall-1",
-        "name": "Fortress Townhall",
-        "buildingType": "town_hall",
-        "category": "services",
-        "role": "workplace",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 31,
-              "minY": 0,
-              "maxY": 46,
-              "minZ": 0,
-              "maxZ": 31
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "sourcePath": "fundamentals/townhall1.blueprint",
-            "size": {
-              "x": 32,
-              "y": 47,
-              "z": 32
-            }
-          },
-          {
-            "level": 2,
-            "bounds": {
-              "minX": 0,
-              "maxX": 31,
-              "minY": 0,
-              "maxY": 46,
-              "minZ": 0,
-              "maxZ": 31
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "sourcePath": "fundamentals/townhall2.blueprint",
-            "size": {
-              "x": 32,
-              "y": 47,
-              "z": 32
-            }
-          },
-          {
-            "level": 3,
-            "bounds": {
-              "minX": 0,
-              "maxX": 31,
-              "minY": 0,
-              "maxY": 46,
-              "minZ": 0,
-              "maxZ": 31
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "sourcePath": "fundamentals/townhall3.blueprint",
-            "size": {
-              "x": 32,
-              "y": 47,
-              "z": 32
-            }
-          },
-          {
-            "level": 4,
-            "bounds": {
-              "minX": 0,
-              "maxX": 31,
-              "minY": 0,
-              "maxY": 46,
-              "minZ": 0,
-              "maxZ": 31
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "sourcePath": "fundamentals/townhall4.blueprint",
-            "size": {
-              "x": 32,
-              "y": 47,
-              "z": 32
-            }
-          },
-          {
-            "level": 5,
-            "bounds": {
-              "minX": 0,
-              "maxX": 31,
-              "minY": 0,
-              "maxY": 46,
-              "minZ": 0,
-              "maxZ": 31
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 15
-            },
-            "sourcePath": "fundamentals/townhall5.blueprint",
-            "size": {
-              "x": 32,
-              "y": 47,
-              "z": 32
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-corner-corner",
-        "name": "Fortress Corner",
-        "buildingType": "corner",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 18,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "sourcePath": "walls/corner/corner1.blueprint",
-            "size": {
-              "x": 16,
-              "y": 19,
-              "z": 16
-            }
-          },
-          {
-            "level": 2,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 18,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "sourcePath": "walls/corner/corner2.blueprint",
-            "size": {
-              "x": 16,
-              "y": 19,
-              "z": 16
-            }
-          },
-          {
-            "level": 3,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 18,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "sourcePath": "walls/corner/corner3.blueprint",
-            "size": {
-              "x": 16,
-              "y": 19,
-              "z": 16
-            }
-          },
-          {
-            "level": 4,
-            "bounds": {
-              "minX": 0,
-              "maxX": 15,
-              "minY": 0,
-              "maxY": 18,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "hutBlock": {
-              "x": 15,
-              "y": 1,
-              "z": 1
-            },
-            "sourcePath": "walls/corner/corner4.blueprint",
-            "size": {
-              "x": 16,
-              "y": 19,
-              "z": 16
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-gate-gatelarge",
-        "name": "Fortress Gatelarge",
-        "buildingType": "gatelarge",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 6,
-              "minY": 0,
-              "maxY": 13,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 3,
-              "y": 0,
-              "z": 8
-            },
-            "hutBlock": {
-              "x": 3,
-              "y": 0,
-              "z": 8
-            },
-            "sourcePath": "walls/gate/gatelarge.blueprint",
-            "size": {
-              "x": 7,
-              "y": 14,
-              "z": 16
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-gate-gatelargeb",
-        "name": "Fortress Gatelargeb",
-        "buildingType": "gatelargeb",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 9,
-              "minY": 0,
-              "maxY": 13,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 5,
-              "y": 0,
-              "z": 8
-            },
-            "hutBlock": {
-              "x": 5,
-              "y": 0,
-              "z": 8
-            },
-            "sourcePath": "walls/gate/gatelargeb.blueprint",
-            "size": {
-              "x": 10,
-              "y": 14,
-              "z": 16
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-gate-gatesmall",
-        "name": "Fortress Gatesmall",
-        "buildingType": "gatesmall",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 6,
-              "minY": 0,
-              "maxY": 13,
-              "minZ": 0,
-              "maxZ": 7
-            },
-            "anchor": {
-              "x": 3,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 3,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/gate/gatesmall.blueprint",
-            "size": {
-              "x": 7,
-              "y": 14,
-              "z": 8
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatcornercobble",
-        "name": "Fortress Moatcornercobble",
-        "buildingType": "moatcornercobble",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 9,
-              "minY": 0,
-              "maxY": 11,
-              "minZ": 0,
-              "maxZ": 9
-            },
-            "anchor": {
-              "x": 5,
-              "y": 0,
-              "z": 5
-            },
-            "hutBlock": {
-              "x": 5,
-              "y": 0,
-              "z": 5
-            },
-            "sourcePath": "walls/moat/moatcornercobble.blueprint",
-            "size": {
-              "x": 10,
-              "y": 12,
-              "z": 10
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatcornernether",
-        "name": "Fortress Moatcornernether",
-        "buildingType": "moatcornernether",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 0,
-              "minY": 0,
-              "maxY": 11,
-              "minZ": 0,
-              "maxZ": 9
-            },
-            "anchor": {
-              "x": 0,
-              "y": 0,
-              "z": 5
-            },
-            "hutBlock": {
-              "x": 0,
-              "y": 0,
-              "z": 5
-            },
-            "sourcePath": "walls/moat/moatcornernether.blueprint",
-            "size": {
-              "x": 1,
-              "y": 12,
-              "z": 10
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatcornerstone",
-        "name": "Fortress Moatcornerstone",
-        "buildingType": "moatcornerstone",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 9,
-              "minY": 0,
-              "maxY": 11,
-              "minZ": 0,
-              "maxZ": 9
-            },
-            "anchor": {
-              "x": 5,
-              "y": 0,
-              "z": 5
-            },
-            "hutBlock": {
-              "x": 5,
-              "y": 0,
-              "z": 5
-            },
-            "sourcePath": "walls/moat/moatcornerstone.blueprint",
-            "size": {
-              "x": 10,
-              "y": 12,
-              "z": 10
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatgatehouse",
-        "name": "Fortress Moatgatehouse",
-        "buildingType": "moatgatehouse",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 21,
-              "minY": 0,
-              "maxY": 25,
-              "minZ": 0,
-              "maxZ": 15
-            },
-            "anchor": {
-              "x": 11,
-              "y": 0,
-              "z": 8
-            },
-            "hutBlock": {
-              "x": 11,
-              "y": 0,
-              "z": 8
-            },
-            "sourcePath": "walls/moat/moatgatehouse.blueprint",
-            "size": {
-              "x": 22,
-              "y": 26,
-              "z": 16
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatinnercornercobble",
-        "name": "Fortress Moatinnercornercobble",
-        "buildingType": "moatinnercornercobble",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 13,
-              "minZ": 0,
-              "maxZ": 8
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/moat/moatinnercornercobble.blueprint",
-            "size": {
-              "x": 9,
-              "y": 14,
-              "z": 9
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatinnercornernether",
-        "name": "Fortress Moatinnercornernether",
-        "buildingType": "moatinnercornernether",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 13,
-              "minZ": 0,
-              "maxZ": 8
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/moat/moatinnercornernether.blueprint",
-            "size": {
-              "x": 9,
-              "y": 14,
-              "z": 9
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatinnercornerstone",
-        "name": "Fortress Moatinnercornerstone",
-        "buildingType": "moatinnercornerstone",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 13,
-              "minZ": 0,
-              "maxZ": 8
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/moat/moatinnercornerstone.blueprint",
-            "size": {
-              "x": 9,
-              "y": 14,
-              "z": 9
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatlargecobble",
-        "name": "Fortress Moatlargecobble",
-        "buildingType": "moatlargecobble",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 10,
-              "minZ": 0,
-              "maxZ": 7
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/moat/moatlargecobble.blueprint",
-            "size": {
-              "x": 9,
-              "y": 11,
-              "z": 8
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatlargenether",
-        "name": "Fortress Moatlargenether",
-        "buildingType": "moatlargenether",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 10,
-              "minZ": 0,
-              "maxZ": 7
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/moat/moatlargenether.blueprint",
-            "size": {
-              "x": 9,
-              "y": 11,
-              "z": 8
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatlargestone",
-        "name": "Fortress Moatlargestone",
-        "buildingType": "moatlargestone",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 11,
-              "minZ": 0,
-              "maxZ": 7
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/moat/moatlargestone.blueprint",
-            "size": {
-              "x": 9,
-              "y": 12,
-              "z": 8
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatsmallcobble",
-        "name": "Fortress Moatsmallcobble",
-        "buildingType": "moatsmallcobble",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 11,
-              "minZ": 0,
-              "maxZ": 2
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 1
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 1
-            },
-            "sourcePath": "walls/moat/moatsmallcobble.blueprint",
-            "size": {
-              "x": 9,
-              "y": 12,
-              "z": 3
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatsmallgate",
-        "name": "Fortress Moatsmallgate",
-        "buildingType": "moatsmallgate",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 20,
-              "minY": 0,
-              "maxY": 27,
-              "minZ": 0,
-              "maxZ": 7
-            },
-            "anchor": {
-              "x": 10,
-              "y": 0,
-              "z": 4
-            },
-            "hutBlock": {
-              "x": 10,
-              "y": 0,
-              "z": 4
-            },
-            "sourcePath": "walls/moat/moatsmallgate.blueprint",
-            "size": {
-              "x": 21,
-              "y": 28,
-              "z": 8
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatsmallnether",
-        "name": "Fortress Moatsmallnether",
-        "buildingType": "moatsmallnether",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 11,
-              "minZ": 0,
-              "maxZ": 2
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 1
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 1
-            },
-            "sourcePath": "walls/moat/moatsmallnether.blueprint",
-            "size": {
-              "x": 9,
-              "y": 12,
-              "z": 3
-            }
-          }
-        ]
-      },
-      {
-        "id": "fortress-walls-moat-moatsmallstone",
-        "name": "Fortress Moatsmallstone",
-        "buildingType": "moatsmallstone",
-        "category": "decoration",
-        "role": "other",
-        "levels": [
-          {
-            "level": 1,
-            "bounds": {
-              "minX": 0,
-              "maxX": 8,
-              "minY": 0,
-              "maxY": 11,
-              "minZ": 0,
-              "maxZ": 2
-            },
-            "anchor": {
-              "x": 4,
-              "y": 0,
-              "z": 1
-            },
-            "hutBlock": {
-              "x": 4,
-              "y": 0,
-              "z": 1
-            },
-            "sourcePath": "walls/moat/moatsmallstone.blueprint",
-            "size": {
-              "x": 9,
-              "y": 12,
-              "z": 3
-            }
-          }
-        ]
+        ],
+        "gameOrder": 144
       },
       {
         "id": "fortress-walls-step-wall-dual",
         "name": "Fortress Step Wall Dual",
         "buildingType": "step_wall_dual",
-        "category": "decoration",
+        "category": "walls",
+        "categoryPath": "walls",
         "role": "other",
         "levels": [
           {
@@ -13739,13 +13319,15 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 145
       },
       {
         "id": "fortress-walls-step-wall-quad",
         "name": "Fortress Step Wall Quad",
         "buildingType": "step_wall_quad",
-        "category": "decoration",
+        "category": "walls",
+        "categoryPath": "walls",
         "role": "other",
         "levels": [
           {
@@ -13856,13 +13438,780 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 146
+      },
+      {
+        "id": "fortress-walls-corner-corner",
+        "name": "Fortress Corner",
+        "buildingType": "corner",
+        "category": "walls",
+        "categoryPath": "walls/corner",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "hutBlock": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "sourcePath": "walls/corner/corner1.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 16
+            }
+          },
+          {
+            "level": 2,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "hutBlock": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "sourcePath": "walls/corner/corner2.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 16
+            }
+          },
+          {
+            "level": 3,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "hutBlock": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "sourcePath": "walls/corner/corner3.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 16
+            }
+          },
+          {
+            "level": 4,
+            "bounds": {
+              "minX": 0,
+              "maxX": 15,
+              "minY": 0,
+              "maxY": 18,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "hutBlock": {
+              "x": 15,
+              "y": 1,
+              "z": 1
+            },
+            "sourcePath": "walls/corner/corner4.blueprint",
+            "size": {
+              "x": 16,
+              "y": 19,
+              "z": 16
+            }
+          }
+        ],
+        "gameOrder": 147
+      },
+      {
+        "id": "fortress-walls-gate-gatelarge",
+        "name": "Fortress Gatelarge",
+        "buildingType": "gatelarge",
+        "category": "walls",
+        "categoryPath": "walls/gate",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 6,
+              "minY": 0,
+              "maxY": 13,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 3,
+              "y": 0,
+              "z": 8
+            },
+            "hutBlock": {
+              "x": 3,
+              "y": 0,
+              "z": 8
+            },
+            "sourcePath": "walls/gate/gatelarge.blueprint",
+            "size": {
+              "x": 7,
+              "y": 14,
+              "z": 16
+            }
+          }
+        ],
+        "gameOrder": 148
+      },
+      {
+        "id": "fortress-walls-gate-gatelargeb",
+        "name": "Fortress Gatelargeb",
+        "buildingType": "gatelargeb",
+        "category": "walls",
+        "categoryPath": "walls/gate",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 9,
+              "minY": 0,
+              "maxY": 13,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 5,
+              "y": 0,
+              "z": 8
+            },
+            "hutBlock": {
+              "x": 5,
+              "y": 0,
+              "z": 8
+            },
+            "sourcePath": "walls/gate/gatelargeb.blueprint",
+            "size": {
+              "x": 10,
+              "y": 14,
+              "z": 16
+            }
+          }
+        ],
+        "gameOrder": 149
+      },
+      {
+        "id": "fortress-walls-gate-gatesmall",
+        "name": "Fortress Gatesmall",
+        "buildingType": "gatesmall",
+        "category": "walls",
+        "categoryPath": "walls/gate",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 6,
+              "minY": 0,
+              "maxY": 13,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 3,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 3,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/gate/gatesmall.blueprint",
+            "size": {
+              "x": 7,
+              "y": 14,
+              "z": 8
+            }
+          }
+        ],
+        "gameOrder": 150
+      },
+      {
+        "id": "fortress-walls-moat-moatcornercobble",
+        "name": "Fortress Moatcornercobble",
+        "buildingType": "moatcornercobble",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 9,
+              "minY": 0,
+              "maxY": 11,
+              "minZ": 0,
+              "maxZ": 9
+            },
+            "anchor": {
+              "x": 5,
+              "y": 0,
+              "z": 5
+            },
+            "hutBlock": {
+              "x": 5,
+              "y": 0,
+              "z": 5
+            },
+            "sourcePath": "walls/moat/moatcornercobble.blueprint",
+            "size": {
+              "x": 10,
+              "y": 12,
+              "z": 10
+            }
+          }
+        ],
+        "gameOrder": 151
+      },
+      {
+        "id": "fortress-walls-moat-moatcornernether",
+        "name": "Fortress Moatcornernether",
+        "buildingType": "moatcornernether",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 0,
+              "minY": 0,
+              "maxY": 11,
+              "minZ": 0,
+              "maxZ": 9
+            },
+            "anchor": {
+              "x": 0,
+              "y": 0,
+              "z": 5
+            },
+            "hutBlock": {
+              "x": 0,
+              "y": 0,
+              "z": 5
+            },
+            "sourcePath": "walls/moat/moatcornernether.blueprint",
+            "size": {
+              "x": 1,
+              "y": 12,
+              "z": 10
+            }
+          }
+        ],
+        "gameOrder": 152
+      },
+      {
+        "id": "fortress-walls-moat-moatcornerstone",
+        "name": "Fortress Moatcornerstone",
+        "buildingType": "moatcornerstone",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 9,
+              "minY": 0,
+              "maxY": 11,
+              "minZ": 0,
+              "maxZ": 9
+            },
+            "anchor": {
+              "x": 5,
+              "y": 0,
+              "z": 5
+            },
+            "hutBlock": {
+              "x": 5,
+              "y": 0,
+              "z": 5
+            },
+            "sourcePath": "walls/moat/moatcornerstone.blueprint",
+            "size": {
+              "x": 10,
+              "y": 12,
+              "z": 10
+            }
+          }
+        ],
+        "gameOrder": 153
+      },
+      {
+        "id": "fortress-walls-moat-moatgatehouse",
+        "name": "Fortress Moatgatehouse",
+        "buildingType": "moatgatehouse",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 21,
+              "minY": 0,
+              "maxY": 25,
+              "minZ": 0,
+              "maxZ": 15
+            },
+            "anchor": {
+              "x": 11,
+              "y": 0,
+              "z": 8
+            },
+            "hutBlock": {
+              "x": 11,
+              "y": 0,
+              "z": 8
+            },
+            "sourcePath": "walls/moat/moatgatehouse.blueprint",
+            "size": {
+              "x": 22,
+              "y": 26,
+              "z": 16
+            }
+          }
+        ],
+        "gameOrder": 154
+      },
+      {
+        "id": "fortress-walls-moat-moatinnercornercobble",
+        "name": "Fortress Moatinnercornercobble",
+        "buildingType": "moatinnercornercobble",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 13,
+              "minZ": 0,
+              "maxZ": 8
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/moat/moatinnercornercobble.blueprint",
+            "size": {
+              "x": 9,
+              "y": 14,
+              "z": 9
+            }
+          }
+        ],
+        "gameOrder": 155
+      },
+      {
+        "id": "fortress-walls-moat-moatinnercornernether",
+        "name": "Fortress Moatinnercornernether",
+        "buildingType": "moatinnercornernether",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 13,
+              "minZ": 0,
+              "maxZ": 8
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/moat/moatinnercornernether.blueprint",
+            "size": {
+              "x": 9,
+              "y": 14,
+              "z": 9
+            }
+          }
+        ],
+        "gameOrder": 156
+      },
+      {
+        "id": "fortress-walls-moat-moatinnercornerstone",
+        "name": "Fortress Moatinnercornerstone",
+        "buildingType": "moatinnercornerstone",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 13,
+              "minZ": 0,
+              "maxZ": 8
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/moat/moatinnercornerstone.blueprint",
+            "size": {
+              "x": 9,
+              "y": 14,
+              "z": 9
+            }
+          }
+        ],
+        "gameOrder": 157
+      },
+      {
+        "id": "fortress-walls-moat-moatlargecobble",
+        "name": "Fortress Moatlargecobble",
+        "buildingType": "moatlargecobble",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 10,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/moat/moatlargecobble.blueprint",
+            "size": {
+              "x": 9,
+              "y": 11,
+              "z": 8
+            }
+          }
+        ],
+        "gameOrder": 158
+      },
+      {
+        "id": "fortress-walls-moat-moatlargenether",
+        "name": "Fortress Moatlargenether",
+        "buildingType": "moatlargenether",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 10,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/moat/moatlargenether.blueprint",
+            "size": {
+              "x": 9,
+              "y": 11,
+              "z": 8
+            }
+          }
+        ],
+        "gameOrder": 159
+      },
+      {
+        "id": "fortress-walls-moat-moatlargestone",
+        "name": "Fortress Moatlargestone",
+        "buildingType": "moatlargestone",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 11,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/moat/moatlargestone.blueprint",
+            "size": {
+              "x": 9,
+              "y": 12,
+              "z": 8
+            }
+          }
+        ],
+        "gameOrder": 160
+      },
+      {
+        "id": "fortress-walls-moat-moatsmallcobble",
+        "name": "Fortress Moatsmallcobble",
+        "buildingType": "moatsmallcobble",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 11,
+              "minZ": 0,
+              "maxZ": 2
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 1
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 1
+            },
+            "sourcePath": "walls/moat/moatsmallcobble.blueprint",
+            "size": {
+              "x": 9,
+              "y": 12,
+              "z": 3
+            }
+          }
+        ],
+        "gameOrder": 161
+      },
+      {
+        "id": "fortress-walls-moat-moatsmallgate",
+        "name": "Fortress Moatsmallgate",
+        "buildingType": "moatsmallgate",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 20,
+              "minY": 0,
+              "maxY": 27,
+              "minZ": 0,
+              "maxZ": 7
+            },
+            "anchor": {
+              "x": 10,
+              "y": 0,
+              "z": 4
+            },
+            "hutBlock": {
+              "x": 10,
+              "y": 0,
+              "z": 4
+            },
+            "sourcePath": "walls/moat/moatsmallgate.blueprint",
+            "size": {
+              "x": 21,
+              "y": 28,
+              "z": 8
+            }
+          }
+        ],
+        "gameOrder": 162
+      },
+      {
+        "id": "fortress-walls-moat-moatsmallnether",
+        "name": "Fortress Moatsmallnether",
+        "buildingType": "moatsmallnether",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 11,
+              "minZ": 0,
+              "maxZ": 2
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 1
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 1
+            },
+            "sourcePath": "walls/moat/moatsmallnether.blueprint",
+            "size": {
+              "x": 9,
+              "y": 12,
+              "z": 3
+            }
+          }
+        ],
+        "gameOrder": 163
+      },
+      {
+        "id": "fortress-walls-moat-moatsmallstone",
+        "name": "Fortress Moatsmallstone",
+        "buildingType": "moatsmallstone",
+        "category": "walls",
+        "categoryPath": "walls/moat",
+        "role": "other",
+        "levels": [
+          {
+            "level": 1,
+            "bounds": {
+              "minX": 0,
+              "maxX": 8,
+              "minY": 0,
+              "maxY": 11,
+              "minZ": 0,
+              "maxZ": 2
+            },
+            "anchor": {
+              "x": 4,
+              "y": 0,
+              "z": 1
+            },
+            "hutBlock": {
+              "x": 4,
+              "y": 0,
+              "z": 1
+            },
+            "sourcePath": "walls/moat/moatsmallstone.blueprint",
+            "size": {
+              "x": 9,
+              "y": 12,
+              "z": 3
+            }
+          }
+        ],
+        "gameOrder": 164
       },
       {
         "id": "fortress-walls-wall-intersection",
         "name": "Fortress Intersection",
         "buildingType": "intersection",
-        "category": "decoration",
+        "category": "walls",
+        "categoryPath": "walls/wall",
         "role": "other",
         "levels": [
           {
@@ -13892,13 +14241,15 @@
               "z": 16
             }
           }
-        ]
+        ],
+        "gameOrder": 165
       },
       {
         "id": "fortress-walls-wall-wall",
         "name": "Fortress Wall",
         "buildingType": "wall",
-        "category": "decoration",
+        "category": "walls",
+        "categoryPath": "walls/wall",
         "role": "other",
         "levels": [
           {
@@ -14009,7 +14360,8 @@
               "z": 8
             }
           }
-        ]
+        ],
+        "gameOrder": 166
       }
     ]
   }

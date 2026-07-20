@@ -7,6 +7,8 @@ const variants: BuildingVariant[] = sourceData.stylePack.variants.map(
     name: variant.name,
     buildingType: variant.buildingType,
     category: variant.category as BuildingVariant["category"],
+    categoryPath: variant.categoryPath,
+    gameOrder: variant.gameOrder,
     role: variant.role as BuildingVariant["role"],
     ...(variant.isGuard === true ? { isGuard: true } : {}),
     levels: variant.levels.map((level) => ({
@@ -22,5 +24,7 @@ export const fortressStylePack: StylePack = {
   id: sourceData.stylePack.id,
   name: sourceData.stylePack.name,
   source: "built-in",
+  categoryOrder: sourceData.stylePack
+    .categoryOrder as StylePack["categoryOrder"],
   variants,
 };

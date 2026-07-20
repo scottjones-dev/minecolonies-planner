@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { stylePacks as builtInStylePacks } from "@/data";
+import { getBuildingLibraryGroups } from "@/lib/building-library";
 import { cn } from "@/lib/utils";
 import { usePlannerStore } from "@/stores/planner-store";
 import { useStylePackStore } from "@/stores/style-pack-store";
@@ -30,14 +31,15 @@ import {
 } from "@/types/minecolonies";
 
 const categoryLabels: Record<BuildingCategory, string> = {
-  housing: "Housing",
-  food: "Food",
-  production: "Production",
-  storage: "Storage",
-  military: "Military",
+  agriculture: "Agriculture",
+  craftsmanship: "Craftsmanship",
+  decorations: "Decorations",
   education: "Education",
-  services: "Services",
-  decoration: "Decoration",
+  fundamentals: "Fundamentals",
+  infrastructure: "Infrastructure",
+  military: "Military",
+  mystic: "Mystic",
+  walls: "Walls",
 };
 
 function formatBuildingType(buildingType: string) {
@@ -56,6 +58,22 @@ function getMaximumLevel(variant: BuildingVariant) {
 
     return levelArea > maximumArea ? level : maximum;
   });
+}
+
+function formatCategoryPath(
+  categoryPath: string,
+  category: BuildingCategory,
+): string | null {
+  const subCategories = categoryPath.split("/").slice(1);
+  if (subCategories.length === 0 || categoryPath === category) return null;
+
+  return subCategories
+    .map((part) =>
+      part
+        .replaceAll(/[_-]+/g, " ")
+        .replaceAll(/\b\w/g, (character) => character.toUpperCase()),
+    )
+    .join(" › ");
 }
 
 export function BuildingCardContent({
@@ -139,29 +157,7 @@ export function BuildingLibraryPanel() {
     stylePacks[0];
 
   const groups = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase();
-    const filteredVariants = activeStylePack.variants.filter((variant) => {
-      if (!query) {
-        return true;
-      }
-
-      return [variant.name, variant.buildingType, variant.category].some(
-        (value) => value.toLocaleLowerCase().includes(query),
-      );
-    });
-
-    const variantsByCategory = filteredVariants.reduce<
-      Partial<Record<BuildingCategory, BuildingVariant[]>>
-    >((categories, variant) => {
-      const variants = categories[variant.category] ?? [];
-      categories[variant.category] = [...variants, variant];
-      return categories;
-    }, {});
-
-    return Object.entries(variantsByCategory).filter(
-      (entry): entry is [BuildingCategory, BuildingVariant[]] =>
-        entry[1] !== undefined,
-    );
+    return getBuildingLibraryGroups(activeStylePack, search);
   }, [activeStylePack, search]);
 
   return (
@@ -214,25 +210,44 @@ export function BuildingLibraryPanel() {
         {groups.length > 0 ? (
           <Accordion
             multiple
-            defaultValue={groups.map(([category]) => category)}
+            defaultValue={groups.map(({ category }) => category)}
             className="rounded-xl"
           >
-            {groups.map(([category, variants]) => (
+            {groups.map(({ category, sections }) => (
               <AccordionItem key={category} value={category}>
                 <AccordionTrigger className="px-3 py-3">
                   <span>{categoryLabels[category]}</span>
                   <Badge variant="outline" className="ml-auto">
-                    {variants.length}
+                    {sections.reduce(
+                      (count, section) => count + section.variants.length,
+                      0,
+                    )}
                   </Badge>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-2 px-0">
-                  {variants.map((variant) => (
-                    <DraggableBuildingCard
-                      key={variant.id}
-                      variant={variant}
-                      stylePackId={activeStylePack.id}
-                    />
-                  ))}
+                <AccordionContent className="space-y-4 px-0">
+                  {sections.map(({ categoryPath, variants }) => {
+                    const sectionLabel = formatCategoryPath(
+                      categoryPath,
+                      category,
+                    );
+
+                    return (
+                      <section key={categoryPath} className="space-y-2">
+                        {sectionLabel ? (
+                          <h3 className="px-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                            {sectionLabel}
+                          </h3>
+                        ) : null}
+                        {variants.map((variant) => (
+                          <DraggableBuildingCard
+                            key={variant.id}
+                            variant={variant}
+                            stylePackId={activeStylePack.id}
+                          />
+                        ))}
+                      </section>
+                    );
+                  })}
                 </AccordionContent>
               </AccordionItem>
             ))}
@@ -248,8 +263,8 @@ export function BuildingLibraryPanel() {
       </div>
 
       <div className="border-t px-4 py-3 text-xs text-muted-foreground">
-        {activeStylePack.variants.length} {activeStylePack.name} sample
-        buildings
+        {activeStylePack.variants.length} {activeStylePack.name} blueprints in
+        MineColonies build-tool order
       </div>
     </div>
   );
