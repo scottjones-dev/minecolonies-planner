@@ -23,6 +23,10 @@ import {
   findBuildingCollisions,
   getCollidingBuildingIds,
 } from "@/lib/validation/collisions";
+import {
+  findColonyBoundaryViolations,
+  getColonyBoundary,
+} from "@/lib/validation/colony-boundary";
 import { usePlannerStore } from "@/stores/planner-store";
 
 const CHUNK_SIZE = 16;
@@ -91,6 +95,9 @@ export function PlannerCanvas() {
   const [size, setSize] = useState<Size>({ width: 0, height: 0 });
   const [movingBuildingId, setMovingBuildingId] = useState<string | null>(null);
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
+  const { colonyRadiusChunks, colonyBoundaryMode } = usePlannerStore(
+    (state) => state.rules,
+  );
   const buildings = usePlannerStore((state) => state.buildings);
   const selectedBuildingId = usePlannerStore(
     (state) => state.selectedBuildingId,
@@ -128,6 +135,14 @@ export function PlannerCanvas() {
   const collidingBuildingIds = useMemo(
     () => getCollidingBuildingIds(findBuildingCollisions(buildings)),
     [buildings],
+  );
+  const colonyBoundary = useMemo(
+    () => getColonyBoundary(buildings, colonyRadiusChunks),
+    [buildings, colonyRadiusChunks],
+  );
+  const boundaryViolationIds = useMemo(
+    () => new Set(findColonyBoundaryViolations(buildings, colonyRadiusChunks)),
+    [buildings, colonyRadiusChunks],
   );
 
   const handleWheel = (event: Konva.KonvaEventObject<WheelEvent>) => {
@@ -221,6 +236,21 @@ export function PlannerCanvas() {
               fontSize={12 / zoom}
               listening={false}
             />
+            {colonyBoundary ? (
+              <Circle
+                x={colonyBoundary.centerX * BLOCK_SIZE}
+                y={colonyBoundary.centerZ * BLOCK_SIZE}
+                radius={colonyBoundary.radiusBlocks * BLOCK_SIZE}
+                fill={
+                  colonyBoundaryMode === "invalid" ? "#dc26260a" : "#d977060a"
+                }
+                stroke={
+                  colonyBoundaryMode === "invalid" ? "#dc2626" : "#d97706"
+                }
+                strokeWidth={3 / zoom}
+                dash={[12 / zoom, 8 / zoom]}
+              />
+            ) : null}
           </Layer>
           <Layer>
             {buildings.map((building) => {
@@ -247,11 +277,19 @@ export function PlannerCanvas() {
                 : null;
               const selected = building.id === selectedBuildingId;
               const colliding = collidingBuildingIds.has(building.id);
-              const accentColor = colliding
+              const outsideBoundary = boundaryViolationIds.has(building.id);
+              const invalid =
+                colliding ||
+                (outsideBoundary && colonyBoundaryMode === "invalid");
+              const warning =
+                outsideBoundary && colonyBoundaryMode === "warning";
+              const accentColor = invalid
                 ? "#dc2626"
-                : selected
-                  ? "#0f766e"
-                  : "#475569";
+                : warning
+                  ? "#d97706"
+                  : selected
+                    ? "#0f766e"
+                    : "#475569";
 
               return (
                 <Group
@@ -309,7 +347,9 @@ export function PlannerCanvas() {
                       height={reservedFootprint.depth * BLOCK_SIZE}
                       fill="transparent"
                       stroke={accentColor}
-                      strokeWidth={(selected || colliding ? 3 : 2) / zoom}
+                      strokeWidth={
+                        (selected || invalid || warning ? 3 : 2) / zoom
+                      }
                       dash={[8 / zoom, 6 / zoom]}
                     />
                   ) : null}
@@ -320,18 +360,22 @@ export function PlannerCanvas() {
                       width={currentFootprint.width * BLOCK_SIZE}
                       height={currentFootprint.depth * BLOCK_SIZE}
                       fill={
-                        colliding
+                        invalid
                           ? "#dc262644"
-                          : selected
-                            ? "#0f766e55"
-                            : "#33415533"
+                          : warning
+                            ? "#d9770644"
+                            : selected
+                              ? "#0f766e55"
+                              : "#33415533"
                       }
                       stroke={accentColor}
-                      strokeWidth={(selected || colliding ? 3 : 1.5) / zoom}
-                      shadowColor={
-                        selected || colliding ? accentColor : undefined
+                      strokeWidth={
+                        (selected || invalid || warning ? 3 : 1.5) / zoom
                       }
-                      shadowBlur={selected || colliding ? 8 / zoom : 0}
+                      shadowColor={
+                        selected || invalid || warning ? accentColor : undefined
+                      }
+                      shadowBlur={selected || invalid || warning ? 8 / zoom : 0}
                     />
                   ) : null}
                   <Circle
@@ -369,7 +413,7 @@ export function PlannerCanvas() {
                       (reservedFootprint?.minZ ?? -0.5) * BLOCK_SIZE - 20 / zoom
                     }
                     text={variant?.name ?? building.variantId}
-                    fill={colliding ? "#b91c1c" : "#0f172a"}
+                    fill={invalid ? "#b91c1c" : warning ? "#b45309" : "#0f172a"}
                     fontSize={12 / zoom}
                     padding={2 / zoom}
                     listening={false}

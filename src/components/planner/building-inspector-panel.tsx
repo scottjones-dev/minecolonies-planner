@@ -23,6 +23,7 @@ import {
   findBuildingCollisions,
   getCollisionPartners,
 } from "@/lib/validation/collisions";
+import { findColonyBoundaryViolations } from "@/lib/validation/colony-boundary";
 import { usePlannerStore } from "@/stores/planner-store";
 import type { BuildingRotation, Direction } from "@/types/minecolonies";
 
@@ -50,6 +51,9 @@ export function BuildingInspectorPanel() {
   const selectedBuildingId = usePlannerStore(
     (state) => state.selectedBuildingId,
   );
+  const { colonyRadiusChunks, colonyBoundaryMode } = usePlannerStore(
+    (state) => state.rules,
+  );
   const selectedBuilding = buildings.find(
     (building) => building.id === selectedBuildingId,
   );
@@ -62,6 +66,13 @@ export function BuildingInspectorPanel() {
   const collisionPartners = selectedBuilding
     ? getCollisionPartners(selectedBuilding.id, collisions)
     : [];
+  const boundaryViolationIds = useMemo(
+    () => findColonyBoundaryViolations(buildings, colonyRadiusChunks),
+    [buildings, colonyRadiusChunks],
+  );
+  const outsideBoundary = selectedBuilding
+    ? boundaryViolationIds.includes(selectedBuilding.id)
+    : false;
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -156,6 +167,29 @@ export function BuildingInspectorPanel() {
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+        {outsideBoundary ? (
+          <Alert
+            variant={
+              colonyBoundaryMode === "invalid" ? "destructive" : "default"
+            }
+            className={
+              colonyBoundaryMode === "warning"
+                ? "border-amber-600 text-amber-700"
+                : undefined
+            }
+          >
+            <AlertTriangle aria-hidden="true" />
+            <AlertTitle>
+              {colonyBoundaryMode === "invalid" ? "Invalid" : "Warning"}:
+              outside colony boundary
+            </AlertTitle>
+            <AlertDescription>
+              The entire reserved footprint must fit within {colonyRadiusChunks}{" "}
+              chunks ({colonyRadiusChunks * 16} blocks) of the first Town Hall.
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
         {collisionPartners.length > 0 ? (
           <Alert variant="destructive">
             <AlertTriangle aria-hidden="true" />
