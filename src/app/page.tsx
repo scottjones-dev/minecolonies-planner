@@ -1,6 +1,7 @@
-import { Castle, Download, Save, Settings2, Upload } from "lucide-react";
+import { Castle, Download, Save, Upload } from "lucide-react";
 import { BuildingInspectorPanel } from "@/components/planner/building-inspector-panel";
 import { BuildingLibraryPanel } from "@/components/planner/building-library-panel";
+import { ColonyBoundarySettings } from "@/components/planner/colony-boundary-settings";
 import { PlannerDndContext } from "@/components/planner/planner-dnd-context";
 import { PlannerMapPanel } from "@/components/planner/planner-map-panel";
 import { PlannerStatusBar } from "@/components/planner/planner-status-bar";
@@ -35,9 +36,7 @@ export default function Home() {
             <Save data-icon="inline-start" aria-hidden="true" />
             <span className="hidden sm:inline">Save</span>
           </Button>
-          <Button variant="ghost" size="icon-sm" aria-label="Planner settings">
-            <Settings2 aria-hidden="true" />
-          </Button>
+          <ColonyBoundarySettings />
         </nav>
       </header>
 

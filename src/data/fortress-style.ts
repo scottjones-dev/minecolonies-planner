@@ -6,6 +6,48 @@ export const fortressStylePack: StylePack = {
   source: "built-in",
   variants: [
     {
+      id: "fortress-town-hall-1",
+      name: "Fortress Town Hall 1",
+      buildingType: "town_hall",
+      category: "services",
+      levels: [
+        {
+          level: 1,
+          bounds: {
+            minX: -7,
+            maxX: 7,
+            minY: 0,
+            maxY: 10,
+            minZ: -8,
+            maxZ: 8,
+          },
+          anchor: { x: 0, y: 0, z: 0 },
+          hutBlock: { x: 0, y: 0, z: 0 },
+          entrance: {
+            position: { x: 0, y: 0, z: 8 },
+            direction: "south",
+          },
+        },
+        {
+          level: 5,
+          bounds: {
+            minX: -12,
+            maxX: 12,
+            minY: -1,
+            maxY: 20,
+            minZ: -13,
+            maxZ: 13,
+          },
+          anchor: { x: 0, y: 0, z: 0 },
+          hutBlock: { x: 0, y: 0, z: 0 },
+          entrance: {
+            position: { x: 0, y: 0, z: 13 },
+            direction: "south",
+          },
+        },
+      ],
+    },
+    {
       id: "fortress-residence-1",
       name: "Fortress Residence 1",
       buildingType: "residence",

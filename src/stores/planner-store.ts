@@ -10,6 +10,10 @@ type PlannerState = {
     panX: number;
     panY: number;
   };
+  rules: {
+    colonyRadiusChunks: number;
+    colonyBoundaryMode: "warning" | "invalid";
+  };
 };
 
 type PlannerActions = {
@@ -23,6 +27,8 @@ type PlannerActions = {
   setActiveStylePack: (stylePackId: string) => void;
   setMapZoom: (zoom: number) => void;
   setMapPan: (panX: number, panY: number) => void;
+  setColonyRadiusChunks: (radiusChunks: number) => void;
+  setColonyBoundaryMode: (mode: "warning" | "invalid") => void;
   resetPlanner: () => void;
 };
 
@@ -36,6 +42,10 @@ const getInitialState = (): PlannerState => ({
     zoom: 1,
     panX: 0,
     panY: 0,
+  },
+  rules: {
+    colonyRadiusChunks: 8,
+    colonyBoundaryMode: "warning",
   },
 });
 
@@ -93,6 +103,24 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
         ...state.map,
         panX,
         panY,
+      },
+    }));
+  },
+  setColonyRadiusChunks: (radiusChunks) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        colonyRadiusChunks: Number.isFinite(radiusChunks)
+          ? Math.min(64, Math.max(1, Math.round(radiusChunks)))
+          : state.rules.colonyRadiusChunks,
+      },
+    }));
+  },
+  setColonyBoundaryMode: (colonyBoundaryMode) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        colonyBoundaryMode,
       },
     }));
   },
