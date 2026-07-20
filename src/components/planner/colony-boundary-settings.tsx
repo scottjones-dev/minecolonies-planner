@@ -78,7 +78,7 @@ export function ColonyBoundarySettings() {
           Colony boundary
         </h3>
         <div className="space-y-2">
-          <Label htmlFor="colony-radius">Radius in chunks</Label>
+          <Label htmlFor="colony-radius">Square radius in chunks</Label>
           <div className="flex items-center gap-2">
             <Input
               id="colony-radius"

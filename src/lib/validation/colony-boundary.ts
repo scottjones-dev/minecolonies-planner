@@ -43,23 +43,16 @@ export function getColonyBoundary(
   };
 }
 
-export function boundsWithinCircularBoundary(
+export function boundsWithinColonyBoundary(
   bounds: WorldBounds,
   boundary: ColonyBoundary,
 ): boolean {
-  const radiusSquared = boundary.radiusBlocks ** 2;
-  const corners = [
-    { x: bounds.minX, z: bounds.minZ },
-    { x: bounds.maxX, z: bounds.minZ },
-    { x: bounds.maxX, z: bounds.maxZ },
-    { x: bounds.minX, z: bounds.maxZ },
-  ];
-
-  return corners.every((corner) => {
-    const deltaX = corner.x - boundary.centerX;
-    const deltaZ = corner.z - boundary.centerZ;
-    return deltaX ** 2 + deltaZ ** 2 <= radiusSquared;
-  });
+  return (
+    bounds.minX >= boundary.centerX - boundary.radiusBlocks &&
+    bounds.maxX <= boundary.centerX + boundary.radiusBlocks &&
+    bounds.minZ >= boundary.centerZ - boundary.radiusBlocks &&
+    bounds.maxZ <= boundary.centerZ + boundary.radiusBlocks
+  );
 }
 
 export function findColonyBoundaryViolations(
@@ -75,7 +68,7 @@ export function findColonyBoundaryViolations(
   return buildings.flatMap((building) => {
     const bounds = getPlacedBuildingReservedBounds(building);
 
-    return bounds && !boundsWithinCircularBoundary(bounds, boundary)
+    return bounds && !boundsWithinColonyBoundary(bounds, boundary)
       ? [building.id]
       : [];
   });

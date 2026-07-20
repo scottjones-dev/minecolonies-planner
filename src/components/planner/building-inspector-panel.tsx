@@ -355,8 +355,9 @@ export function BuildingInspectorPanel() {
               outside colony boundary
             </AlertTitle>
             <AlertDescription>
-              The entire reserved footprint must fit within {colonyRadiusChunks}{" "}
-              chunks ({colonyRadiusChunks * 16} blocks) of the first Town Hall.
+              The entire reserved footprint must fit inside the square claim
+              boundary extending {colonyRadiusChunks} chunks (
+              {colonyRadiusChunks * 16} blocks) from the first Town Hall.
             </AlertDescription>
           </Alert>
         ) : null}

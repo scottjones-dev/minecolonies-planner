@@ -285,10 +285,17 @@ export function PlannerCanvas() {
               listening={false}
             />
             {colonyBoundary ? (
-              <Circle
-                x={colonyBoundary.centerX * BLOCK_SIZE}
-                y={colonyBoundary.centerZ * BLOCK_SIZE}
-                radius={colonyBoundary.radiusBlocks * BLOCK_SIZE}
+              <Rect
+                x={
+                  (colonyBoundary.centerX - colonyBoundary.radiusBlocks) *
+                  BLOCK_SIZE
+                }
+                y={
+                  (colonyBoundary.centerZ - colonyBoundary.radiusBlocks) *
+                  BLOCK_SIZE
+                }
+                width={colonyBoundary.radiusBlocks * 2 * BLOCK_SIZE}
+                height={colonyBoundary.radiusBlocks * 2 * BLOCK_SIZE}
                 fill={
                   colonyBoundaryMode === "invalid" ? "#dc26260a" : "#d977060a"
                 }
