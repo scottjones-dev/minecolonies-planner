@@ -2,11 +2,24 @@
 
 import type Konva from "konva";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Arrow, Group, Layer, Line, Rect, Stage, Text } from "react-konva";
-import { fortressStylePack } from "@/data";
+import {
+  Arrow,
+  Circle,
+  Group,
+  Layer,
+  Line,
+  Rect,
+  Stage,
+  Text,
+} from "react-konva";
+import { getStylePackById } from "@/data";
+import {
+  getEntranceMarker,
+  getLevelFootprint,
+  getReservedFootprint,
+} from "@/lib/building-geometry";
 import { BLOCK_SIZE } from "@/lib/planner-coordinates";
 import { usePlannerStore } from "@/stores/planner-store";
-import { getBoundsDepth, getBoundsWidth } from "@/types/minecolonies";
 
 const CHUNK_SIZE = 16;
 const MIN_ZOOM = 0.25;
@@ -203,19 +216,27 @@ export function PlannerCanvas() {
           </Layer>
           <Layer>
             {buildings.map((building) => {
-              const variant = fortressStylePack.variants.find(
+              const stylePack = getStylePackById(building.stylePackId);
+              const variant = stylePack?.variants.find(
                 (candidate) => candidate.id === building.variantId,
               );
               const level =
                 variant?.levels.find(
                   (candidate) => candidate.level === building.currentLevel,
                 ) ?? variant?.levels[0];
-              const footprintWidth = level
-                ? getBoundsWidth(level.bounds) * BLOCK_SIZE
-                : BLOCK_SIZE;
-              const footprintDepth = level
-                ? getBoundsDepth(level.bounds) * BLOCK_SIZE
-                : BLOCK_SIZE;
+              const currentFootprint = level
+                ? getLevelFootprint(level, building.rotation)
+                : null;
+              const reservedFootprint = variant
+                ? getReservedFootprint(
+                    variant.levels,
+                    building.reserveThroughLevel,
+                    building.rotation,
+                  )
+                : null;
+              const entranceMarker = level
+                ? getEntranceMarker(level, building.rotation)
+                : null;
               const selected = building.id === selectedBuildingId;
 
               return (
@@ -252,32 +273,65 @@ export function PlannerCanvas() {
                     setMovingBuildingId(null);
                   }}
                 >
-                  <Group rotation={building.rotation}>
+                  {reservedFootprint ? (
                     <Rect
-                      x={-footprintWidth / 2}
-                      y={-footprintDepth / 2}
-                      width={footprintWidth}
-                      height={footprintDepth}
+                      x={reservedFootprint.minX * BLOCK_SIZE}
+                      y={reservedFootprint.minZ * BLOCK_SIZE}
+                      width={reservedFootprint.width * BLOCK_SIZE}
+                      height={reservedFootprint.depth * BLOCK_SIZE}
+                      fill="transparent"
+                      stroke={selected ? "#0f766e" : "#475569"}
+                      strokeWidth={2 / zoom}
+                      dash={[8 / zoom, 6 / zoom]}
+                    />
+                  ) : null}
+                  {currentFootprint ? (
+                    <Rect
+                      x={currentFootprint.minX * BLOCK_SIZE}
+                      y={currentFootprint.minZ * BLOCK_SIZE}
+                      width={currentFootprint.width * BLOCK_SIZE}
+                      height={currentFootprint.depth * BLOCK_SIZE}
                       fill={selected ? "#0f766e55" : "#33415533"}
                       stroke={selected ? "#0f766e" : "#64748b"}
                       strokeWidth={(selected ? 3 : 1.5) / zoom}
                       shadowColor={selected ? "#0f766e" : undefined}
                       shadowBlur={selected ? 8 / zoom : 0}
                     />
-                    {level?.entrance ? (
-                      <Arrow
-                        points={[0, 0, 0, Math.min(footprintDepth / 2, 36)]}
-                        fill={selected ? "#0f766e" : "#334155"}
-                        stroke={selected ? "#0f766e" : "#334155"}
-                        strokeWidth={2 / zoom}
-                        pointerLength={6 / zoom}
-                        pointerWidth={6 / zoom}
-                      />
-                    ) : null}
-                  </Group>
+                  ) : null}
+                  <Circle
+                    radius={3 / zoom}
+                    fill={selected ? "#0f766e" : "#475569"}
+                    stroke="#ffffff"
+                    strokeWidth={1 / zoom}
+                  />
+                  {entranceMarker ? (
+                    <Arrow
+                      points={[
+                        (entranceMarker.position.x -
+                          entranceMarker.direction.x * 0.75) *
+                          BLOCK_SIZE,
+                        (entranceMarker.position.z -
+                          entranceMarker.direction.z * 0.75) *
+                          BLOCK_SIZE,
+                        (entranceMarker.position.x +
+                          entranceMarker.direction.x * 0.75) *
+                          BLOCK_SIZE,
+                        (entranceMarker.position.z +
+                          entranceMarker.direction.z * 0.75) *
+                          BLOCK_SIZE,
+                      ]}
+                      fill={selected ? "#0f766e" : "#334155"}
+                      stroke={selected ? "#0f766e" : "#334155"}
+                      strokeWidth={2 / zoom}
+                      pointerLength={7 / zoom}
+                      pointerWidth={7 / zoom}
+                    />
+                  ) : null}
                   <Text
-                    x={-footprintWidth / 2}
-                    y={-footprintDepth / 2 - 20 / zoom}
+                    x={(reservedFootprint?.minX ?? -0.5) * BLOCK_SIZE}
+                    y={
+                      (reservedFootprint?.minZ ?? -0.5) * BLOCK_SIZE - 20 / zoom
+                    }
                     text={variant?.name ?? building.variantId}
                     fill="#0f172a"
                     fontSize={12 / zoom}
