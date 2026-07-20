@@ -47,6 +47,7 @@ export type BuildingVariant = {
   buildingType: string;
   category: BuildingCategory;
   role: BuildingRole;
+  isGuard?: boolean;
   levels: BuildingLevelDefinition[];
 };
 

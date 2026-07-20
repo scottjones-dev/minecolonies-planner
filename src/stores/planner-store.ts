@@ -16,6 +16,9 @@ type PlannerState = {
     preferredCommuteDistance: number;
     warningCommuteDistance: number;
     showCommuteConnections: boolean;
+    guardCoverageRadius: number;
+    guardCoverageMode: "either" | "both";
+    showGuardCoverage: boolean;
   };
 };
 
@@ -35,6 +38,9 @@ type PlannerActions = {
   setPreferredCommuteDistance: (distance: number) => void;
   setWarningCommuteDistance: (distance: number) => void;
   setShowCommuteConnections: (show: boolean) => void;
+  setGuardCoverageRadius: (radius: number) => void;
+  setGuardCoverageMode: (mode: "either" | "both") => void;
+  setShowGuardCoverage: (show: boolean) => void;
   resetPlanner: () => void;
 };
 
@@ -55,6 +61,9 @@ const getInitialState = (): PlannerState => ({
     preferredCommuteDistance: 64,
     warningCommuteDistance: 128,
     showCommuteConnections: true,
+    guardCoverageRadius: 64,
+    guardCoverageMode: "either",
+    showGuardCoverage: true,
   },
 });
 
@@ -173,6 +182,32 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       rules: {
         ...state.rules,
         showCommuteConnections,
+      },
+    }));
+  },
+  setGuardCoverageRadius: (radius) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        guardCoverageRadius: Number.isFinite(radius)
+          ? Math.min(512, Math.max(1, Math.round(radius)))
+          : state.rules.guardCoverageRadius,
+      },
+    }));
+  },
+  setGuardCoverageMode: (guardCoverageMode) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        guardCoverageMode,
+      },
+    }));
+  },
+  setShowGuardCoverage: (showGuardCoverage) => {
+    set((state) => ({
+      rules: {
+        ...state.rules,
+        showGuardCoverage,
       },
     }));
   },

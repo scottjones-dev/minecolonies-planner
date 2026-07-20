@@ -30,6 +30,9 @@ export function ColonyBoundarySettings() {
     preferredCommuteDistance,
     warningCommuteDistance,
     showCommuteConnections,
+    guardCoverageRadius,
+    guardCoverageMode,
+    showGuardCoverage,
   } = usePlannerStore((state) => state.rules);
   const setColonyRadiusChunks = usePlannerStore(
     (state) => state.setColonyRadiusChunks,
@@ -45,6 +48,15 @@ export function ColonyBoundarySettings() {
   );
   const setShowCommuteConnections = usePlannerStore(
     (state) => state.setShowCommuteConnections,
+  );
+  const setGuardCoverageRadius = usePlannerStore(
+    (state) => state.setGuardCoverageRadius,
+  );
+  const setGuardCoverageMode = usePlannerStore(
+    (state) => state.setGuardCoverageMode,
+  );
+  const setShowGuardCoverage = usePlannerStore(
+    (state) => state.setShowGuardCoverage,
   );
 
   return (
@@ -149,6 +161,52 @@ export function ColonyBoundarySettings() {
             id="commute-lines"
             checked={showCommuteConnections}
             onCheckedChange={setShowCommuteConnections}
+          />
+        </div>
+        <Separator />
+        <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Guard coverage
+        </h3>
+        <div className="space-y-2">
+          <Label htmlFor="guard-radius">Coverage radius in blocks</Label>
+          <Input
+            id="guard-radius"
+            type="number"
+            min={1}
+            max={512}
+            value={guardCoverageRadius}
+            onChange={(event) =>
+              setGuardCoverageRadius(Number(event.target.value))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="guard-mode">Assignment coverage rule</Label>
+          <Select
+            value={guardCoverageMode}
+            onValueChange={(value) => {
+              if (value === "either" || value === "both") {
+                setGuardCoverageMode(value);
+              }
+            }}
+          >
+            <SelectTrigger id="guard-mode" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="either">Residence or workplace</SelectItem>
+              <SelectItem value="both">Both locations</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="guard-overlays" className="leading-5">
+            Show guard overlays
+          </Label>
+          <Switch
+            id="guard-overlays"
+            checked={showGuardCoverage}
+            onCheckedChange={setShowGuardCoverage}
           />
         </div>
       </PopoverContent>
