@@ -3,6 +3,7 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  rmSync,
   writeFileSync,
 } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
@@ -12,13 +13,18 @@ const plannerRoot = resolve(import.meta.dirname, "..");
 const sourceRoot = resolve(
   process.env.MINECOLONIES_SOURCE ?? join(plannerRoot, "minecolonies"),
 );
-const blueprintRoot = join(
+const blueprintPacksRoot = join(
   sourceRoot,
-  "src/main/resources/blueprints/minecolonies/fortress",
+  "src/main/resources/blueprints/minecolonies",
 );
 const outputPath = join(
   plannerRoot,
   "src/data/generated/minecolonies-1.20.1.json",
+);
+const styleOutputDirectory = join(plannerRoot, "src/data/generated/styles");
+const loaderOutputPath = join(
+  plannerRoot,
+  "src/data/generated/style-pack-loaders.ts",
 );
 const modBuildingsPath = join(
   sourceRoot,
@@ -29,7 +35,7 @@ const modBuildingsInitializerPath = join(
   "src/main/java/com/minecolonies/apiimp/initializer/ModBuildingsInitializer.java",
 );
 
-if (!existsSync(join(sourceRoot, ".git")) || !existsSync(blueprintRoot)) {
+if (!existsSync(join(sourceRoot, ".git")) || !existsSync(blueprintPacksRoot)) {
   throw new Error(
     `MineColonies source was not found at ${sourceRoot}. Clone it there or set MINECOLONIES_SOURCE.`,
   );
@@ -256,23 +262,14 @@ function readClaimingBuildingTypes() {
 
 const claimingBuildingTypes = readClaimingBuildingTypes();
 
-const stableVariantIds = {
+const fortressStableVariantIds = {
   "fundamentals/residence": "fortress-residence-1",
   "fundamentals/townhall": "fortress-town-hall-1",
   "military/guardtower": "fortress-guard-tower-1",
 };
 
-const categoryOrder = readdirSync(blueprintRoot, { withFileTypes: true })
-  .filter(
-    (entry) =>
-      entry.isDirectory() &&
-      existsSync(join(blueprintRoot, entry.name, "icon.png")),
-  )
-  .map((entry) => entry.name)
-  .sort();
-
-function getGameSortPath(directoryPath, sourcePath) {
-  const hasSubCategories = readdirSync(join(blueprintRoot, directoryPath), {
+function getGameSortPath(styleRoot, directoryPath, sourcePath) {
+  const hasSubCategories = readdirSync(join(styleRoot, directoryPath), {
     withFileTypes: true,
   }).some((entry) => entry.isDirectory());
   const fileName = sourcePath.split("/").at(-1);
@@ -281,46 +278,88 @@ function getGameSortPath(directoryPath, sourcePath) {
     : `${directoryPath}/${fileName}`;
 }
 
-const groups = new Map();
-for (const path of walkBlueprints(blueprintRoot).sort()) {
-  const sourcePath = relative(blueprintRoot, path).split(sep).join("/");
-  const match =
-    sourcePath.match(/^(.+)\/([^/]+?)([1-5])\.blueprint$/) ??
-    sourcePath.match(/^(.+)\/([^/]+)\.blueprint$/);
-  if (!match) continue;
-  const [, directoryPath, baseName, levelText = "1"] = match;
-  const topLevelDirectory = directoryPath.split("/")[0];
-  const key = `${directoryPath}/${baseName}`;
-  const group = groups.get(key) ?? {
-    id:
-      stableVariantIds[key] ??
-      `fortress-${key.replaceAll(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`,
-    name: `Fortress ${titleCase(baseName)}`,
-    buildingType: normalizeBuildingType(baseName),
-    category: topLevelDirectory,
-    categoryPath: directoryPath,
-    gameSortPath: getGameSortPath(directoryPath, sourcePath),
-    role: /residence|citizen/i.test(baseName)
-      ? "residence"
-      : topLevelDirectory === "decorations" || topLevelDirectory === "walls"
-        ? "other"
-        : "workplace",
-    ...(topLevelDirectory === "military" &&
-    /(guardtower|barrackstower|gatehouse)/i.test(baseName)
-      ? { isGuard: true }
-      : {}),
-    levels: [],
+function extractStylePack(packId) {
+  const styleRoot = join(blueprintPacksRoot, packId);
+  const packMetadata = JSON.parse(
+    readFileSync(join(styleRoot, "pack.json"), "utf8"),
+  );
+  const categoryOrder = readdirSync(styleRoot, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isDirectory() &&
+        existsSync(join(styleRoot, entry.name, "icon.png")),
+    )
+    .map((entry) => entry.name)
+    .sort();
+  const groups = new Map();
+
+  for (const path of walkBlueprints(styleRoot).sort()) {
+    const sourcePath = relative(styleRoot, path).split(sep).join("/");
+    const match =
+      sourcePath.match(/^(.+)\/([^/]+?)([1-5])\.blueprint$/) ??
+      sourcePath.match(/^(.+)\/([^/]+)\.blueprint$/);
+    if (!match) continue;
+    const [, directoryPath, baseName, levelText = "1"] = match;
+    const topLevelDirectory = directoryPath.split("/")[0];
+    const key = `${directoryPath}/${baseName}`;
+    const stableId =
+      packId === "fortress" ? fortressStableVariantIds[key] : undefined;
+    const group = groups.get(key) ?? {
+      id:
+        stableId ??
+        `${packId}-${key.replaceAll(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`,
+      name: `${packMetadata.name} ${titleCase(baseName)}`,
+      buildingType: normalizeBuildingType(baseName),
+      category: topLevelDirectory,
+      categoryPath: directoryPath,
+      gameSortPath: getGameSortPath(styleRoot, directoryPath, sourcePath),
+      role: /residence|citizen/i.test(baseName)
+        ? "residence"
+        : topLevelDirectory === "decorations" || topLevelDirectory === "walls"
+          ? "other"
+          : "workplace",
+      ...(topLevelDirectory === "military" &&
+      /(guardtower|barrackstower|gatehouse)/i.test(baseName)
+        ? { isGuard: true }
+        : {}),
+      levels: [],
+    };
+    const metadata = readBlueprintMetadata(path);
+    group.levels.push({
+      level: Number(levelText),
+      bounds: metadata.bounds,
+      anchor: metadata.anchor,
+      hutBlock: metadata.anchor,
+      sourcePath,
+      size: metadata.size,
+    });
+    groups.set(key, group);
+  }
+
+  const variants = [...groups.values()]
+    .sort((left, right) =>
+      left.gameSortPath < right.gameSortPath
+        ? -1
+        : left.gameSortPath > right.gameSortPath
+          ? 1
+          : 0,
+    )
+    .map(({ gameSortPath: _gameSortPath, ...group }, gameOrder) => ({
+      ...group,
+      gameOrder,
+      levels: group.levels.sort((left, right) => left.level - right.level),
+    }));
+
+  return {
+    id: packId,
+    name: packMetadata.name,
+    description: packMetadata.desc,
+    authors: packMetadata.authors ?? [],
+    version: String(packMetadata.version ?? ""),
+    source: "built-in",
+    categoryOrder,
+    variants,
   };
-  const metadata = readBlueprintMetadata(path);
-  group.levels.push({
-    level: Number(levelText),
-    bounds: metadata.bounds,
-    anchor: metadata.anchor,
-    hutBlock: metadata.anchor,
-    sourcePath,
-    size: metadata.size,
-  });
-  groups.set(key, group);
 }
 
 function readGitCommit(repositoryRoot) {
@@ -354,92 +393,126 @@ const structurizeVersion = gradleProperties
   .match(/^structurize_version=(.+)$/m)?.[1]
   ?.trim();
 
-const orderedVariants = [...groups.values()]
-  .sort((left, right) =>
-    left.gameSortPath < right.gameSortPath
-      ? -1
-      : left.gameSortPath > right.gameSortPath
-        ? 1
-        : 0,
+const provenance = {
+  project: "ldtteam/minecolonies",
+  commit,
+  minecraftVersion,
+  license: "GPL-3.0",
+  structurize: {
+    version: structurizeVersion,
+    tag: "v1.20.1-1.0.806-snapshot",
+    commit: "8f6cad27f311eec2d8aee8b7c7bd58aa52edcd84",
+    categoryOrdering:
+      "StructurePacks.getCategories sorts by Category.toString (subPath)",
+    blueprintOrdering:
+      "StructurePacks.getBlueprints sorts by Blueprint.getFileName",
+  },
+  sources: {
+    blueprints: "src/main/resources/blueprints/minecolonies",
+    serverConfiguration:
+      "src/main/java/com/minecolonies/api/configuration/ServerConfiguration.java",
+    chunkClaims:
+      "src/main/java/com/minecolonies/core/util/ChunkDataHelper.java",
+    buildingClaims:
+      "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuilding.java",
+    registeredBuildings:
+      "src/main/java/com/minecolonies/apiimp/initializer/ModBuildingsInitializer.java",
+    blueprintPlacement:
+      "src/main/java/com/minecolonies/core/placementhandlers/main/SurvivalHandler.java",
+    townHallClaims:
+      "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingTownHall.java",
+    guardTowerClaims:
+      "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingGuardTower.java",
+    guardPatrol:
+      "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuildingGuards.java",
+    guardProtection:
+      "src/main/java/com/minecolonies/core/colony/managers/RegisteredStructureManager.java",
+    colonyMapRanges:
+      "src/main/java/com/minecolonies/core/client/gui/map/WindowColonyMap.java",
+  },
+};
+const rules = {
+  chunkSizeBlocks: 16,
+  defaults: {
+    initialColonyRadiusChunks: 4,
+    maximumColonyRadiusChunks: 20,
+    minimumColonyDistanceChunks: 8,
+  },
+  limits: {
+    initialColonyRadiusChunks: { min: 1, max: 15 },
+    maximumColonyRadiusChunks: { min: 1, max: 250 },
+    minimumColonyDistanceChunks: { min: 1, max: 200 },
+  },
+  buildingClaimRadiusByLevel: [1, 1, 1, 2, 2],
+  townHallClaimRadiusByLevel: [1, 1, 2, 3, 5],
+  guardTowerClaimRadiusByLevel: [2, 3, 3, 4, 5],
+  gateHouseClaimRadiusByLevel: [1, 1, 2],
+  barracksClaimRadiusByLevel: [2, 2, 2, 2, 2],
+  barracksTowerClaimRadiusByLevel: [0, 0, 0, 0, 0],
+  guardPatrolRadiusBlocksByLevel: [80, 110, 140, 170, 200],
+  claimingBuildingTypes,
+};
+const stylePackIds = readdirSync(blueprintPacksRoot, { withFileTypes: true })
+  .filter(
+    (entry) =>
+      entry.isDirectory() &&
+      existsSync(join(blueprintPacksRoot, entry.name, "pack.json")),
   )
-  .map(({ gameSortPath: _gameSortPath, ...group }, gameOrder) => ({
-    ...group,
-    gameOrder,
-    levels: group.levels.sort((left, right) => left.level - right.level),
-  }));
-
+  .map((entry) => entry.name)
+  .sort();
+const stylePacks = stylePackIds.map(extractStylePack);
 const document = {
   schemaVersion: 1,
-  provenance: {
-    project: "ldtteam/minecolonies",
-    commit,
-    minecraftVersion,
-    license: "GPL-3.0",
-    structurize: {
-      version: structurizeVersion,
-      tag: "v1.20.1-1.0.806-snapshot",
-      commit: "8f6cad27f311eec2d8aee8b7c7bd58aa52edcd84",
-      categoryOrdering:
-        "StructurePacks.getCategories sorts by Category.toString (subPath)",
-      blueprintOrdering:
-        "StructurePacks.getBlueprints sorts by Blueprint.getFileName",
-    },
-    sources: {
-      blueprints: "src/main/resources/blueprints/minecolonies/fortress",
-      serverConfiguration:
-        "src/main/java/com/minecolonies/api/configuration/ServerConfiguration.java",
-      chunkClaims:
-        "src/main/java/com/minecolonies/core/util/ChunkDataHelper.java",
-      buildingClaims:
-        "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuilding.java",
-      registeredBuildings:
-        "src/main/java/com/minecolonies/apiimp/initializer/ModBuildingsInitializer.java",
-      blueprintPlacement:
-        "src/main/java/com/minecolonies/core/placementhandlers/main/SurvivalHandler.java",
-      townHallClaims:
-        "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingTownHall.java",
-      guardTowerClaims:
-        "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingGuardTower.java",
-      guardPatrol:
-        "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuildingGuards.java",
-      guardProtection:
-        "src/main/java/com/minecolonies/core/colony/managers/RegisteredStructureManager.java",
-      colonyMapRanges:
-        "src/main/java/com/minecolonies/core/client/gui/map/WindowColonyMap.java",
-    },
-  },
-  rules: {
-    chunkSizeBlocks: 16,
-    defaults: {
-      initialColonyRadiusChunks: 4,
-      maximumColonyRadiusChunks: 20,
-      minimumColonyDistanceChunks: 8,
-    },
-    limits: {
-      initialColonyRadiusChunks: { min: 1, max: 15 },
-      maximumColonyRadiusChunks: { min: 1, max: 250 },
-      minimumColonyDistanceChunks: { min: 1, max: 200 },
-    },
-    buildingClaimRadiusByLevel: [1, 1, 1, 2, 2],
-    townHallClaimRadiusByLevel: [1, 1, 2, 3, 5],
-    guardTowerClaimRadiusByLevel: [2, 3, 3, 4, 5],
-    gateHouseClaimRadiusByLevel: [1, 1, 2],
-    barracksClaimRadiusByLevel: [2, 2, 2, 2, 2],
-    barracksTowerClaimRadiusByLevel: [0, 0, 0, 0, 0],
-    guardPatrolRadiusBlocksByLevel: [80, 110, 140, 170, 200],
-    claimingBuildingTypes,
-  },
-  stylePack: {
-    id: "fortress",
-    name: "Fortress",
-    source: "built-in",
-    categoryOrder,
-    variants: orderedVariants,
-  },
+  provenance,
+  rules,
+  stylePacks: stylePacks.map((stylePack) => ({
+    id: stylePack.id,
+    name: stylePack.name,
+    description: stylePack.description,
+    authors: stylePack.authors,
+    version: stylePack.version,
+    categoryOrder: stylePack.categoryOrder,
+    variantCount: stylePack.variants.length,
+    levelCount: stylePack.variants.reduce(
+      (sum, variant) => sum + variant.levels.length,
+      0,
+    ),
+  })),
 };
 
 mkdirSync(dirname(outputPath), { recursive: true });
+rmSync(styleOutputDirectory, { recursive: true, force: true });
+mkdirSync(styleOutputDirectory, { recursive: true });
+for (const stylePack of stylePacks) {
+  writeFileSync(
+    join(styleOutputDirectory, `${stylePack.id}.json`),
+    `${JSON.stringify({ schemaVersion: 1, provenance, stylePack }, null, 2)}\n`,
+  );
+}
 writeFileSync(outputPath, `${JSON.stringify(document, null, 2)}\n`);
+writeFileSync(
+  loaderOutputPath,
+  `${[
+    "// Generated by scripts/extract-minecolonies.mjs. Do not edit manually.",
+    "export const builtInStylePackLoaders = {",
+    ...stylePackIds.map(
+      (stylePackId) =>
+        `  ${stylePackId}: () => import(${JSON.stringify(`./styles/${stylePackId}.json`)}),`,
+    ),
+    "} as const;",
+    "",
+    "export type BuiltInStylePackId = keyof typeof builtInStylePackLoaders;",
+    "",
+  ].join("\n")}`,
+);
+const totalVariants = document.stylePacks.reduce(
+  (sum, stylePack) => sum + stylePack.variantCount,
+  0,
+);
+const totalLevels = document.stylePacks.reduce(
+  (sum, stylePack) => sum + stylePack.levelCount,
+  0,
+);
 console.log(
-  `Extracted ${document.stylePack.variants.length} Fortress variants (${document.stylePack.variants.reduce((sum, variant) => sum + variant.levels.length, 0)} levels) from ${commit.slice(0, 12)}.`,
+  `Extracted ${stylePacks.length} style packs with ${totalVariants} variants (${totalLevels} levels) from ${commit.slice(0, 12)}.`,
 );

@@ -60,6 +60,9 @@ export type BuildingVariant = {
 export type StylePack = {
   id: string;
   name: string;
+  description?: string;
+  authors?: string[];
+  version?: string;
   source: "built-in" | "modpack" | "custom" | "imported";
   categoryOrder?: BuildingCategory[];
   variants: BuildingVariant[];

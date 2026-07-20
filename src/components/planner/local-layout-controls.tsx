@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { loadBuiltInStylePacks } from "@/data";
 import {
   createEmptyCatalog,
   createLocalLayout,
@@ -65,78 +66,105 @@ export function LocalLayoutControls() {
   };
 
   useEffect(() => {
-    const stored = readLocalLayoutCatalog();
-    let nextCatalog = stored.catalog;
-    let storageError = stored.error;
+    let cancelled = false;
+    let unsubscribe = () => {};
 
-    if (nextCatalog.layouts.length === 0) {
-      const firstLayout = createLocalLayout(
-        "My Colony",
-        getPlannerSnapshot(usePlannerStore.getState()),
-      );
-      nextCatalog = {
-        ...nextCatalog,
-        activeLayoutId: firstLayout.id,
-        layouts: [firstLayout],
-      };
-      if (!writeLocalLayoutCatalog(nextCatalog)) {
-        storageError = "This browser could not save the layout.";
-      }
-    } else {
-      const activeLayout =
-        nextCatalog.layouts.find(
-          (layout) => layout.id === nextCatalog.activeLayoutId,
-        ) ?? nextCatalog.layouts[0];
-      nextCatalog = {
-        ...nextCatalog,
-        activeLayoutId: activeLayout.id,
-      };
-      usePlannerStore.getState().loadSnapshot(activeLayout.planner);
-    }
+    const initialize = async () => {
+      const stored = readLocalLayoutCatalog();
+      let nextCatalog = stored.catalog;
+      let storageError = stored.error;
 
-    activeLayoutIdRef.current = nextCatalog.activeLayoutId;
-    catalogRef.current = nextCatalog;
-    setCatalog(nextCatalog);
-    setError(storageError);
-    setReady(true);
-
-    const unsubscribe = usePlannerStore.subscribe((state) => {
-      const activeLayoutId = activeLayoutIdRef.current;
-
-      if (!activeLayoutId) {
-        return;
+      if (nextCatalog.layouts.length === 0) {
+        const firstLayout = createLocalLayout(
+          "My Colony",
+          getPlannerSnapshot(usePlannerStore.getState()),
+        );
+        nextCatalog = {
+          ...nextCatalog,
+          activeLayoutId: firstLayout.id,
+          layouts: [firstLayout],
+        };
+        if (!writeLocalLayoutCatalog(nextCatalog)) {
+          storageError = "This browser could not save the layout.";
+        }
+      } else {
+        const activeLayout =
+          nextCatalog.layouts.find(
+            (layout) => layout.id === nextCatalog.activeLayoutId,
+          ) ?? nextCatalog.layouts[0];
+        nextCatalog = {
+          ...nextCatalog,
+          activeLayoutId: activeLayout.id,
+        };
+        await loadBuiltInStylePacks([
+          activeLayout.planner.activeStylePackId,
+          ...activeLayout.planner.buildings.map(
+            (building) => building.stylePackId,
+          ),
+        ]);
+        if (cancelled) return;
+        usePlannerStore.getState().loadSnapshot(activeLayout.planner);
       }
 
-      const latest = catalogRef.current;
-      const now = new Date().toISOString();
-      const layouts = latest.layouts.map((layout) =>
-        layout.id === activeLayoutId
-          ? {
-              ...layout,
-              planner: getPlannerSnapshot(state),
-              updatedAt: now,
-            }
-          : layout,
-      );
-      const saved = { ...latest, activeLayoutId, layouts };
-      if (!writeLocalLayoutCatalog(saved)) {
-        setError("This browser could not save the layout.");
+      if (cancelled) return;
+      activeLayoutIdRef.current = nextCatalog.activeLayoutId;
+      catalogRef.current = nextCatalog;
+      setCatalog(nextCatalog);
+      setError(storageError);
+      setReady(true);
+
+      unsubscribe = usePlannerStore.subscribe((state) => {
+        const activeLayoutId = activeLayoutIdRef.current;
+
+        if (!activeLayoutId) return;
+        const latest = catalogRef.current;
+        const now = new Date().toISOString();
+        const layouts = latest.layouts.map((layout) =>
+          layout.id === activeLayoutId
+            ? {
+                ...layout,
+                planner: getPlannerSnapshot(state),
+                updatedAt: now,
+              }
+            : layout,
+        );
+        const saved = { ...latest, activeLayoutId, layouts };
+        if (!writeLocalLayoutCatalog(saved)) {
+          setError("This browser could not save the layout.");
+        }
+        catalogRef.current = saved;
+        setCatalog(saved);
+      });
+    };
+
+    void initialize().catch(() => {
+      if (!cancelled) {
+        setError("A MineColonies style pack could not be loaded.");
+        setReady(true);
       }
-      catalogRef.current = saved;
-      setCatalog(saved);
     });
-
-    return unsubscribe;
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, []);
 
   const activeLayout = catalog.layouts.find(
     (layout) => layout.id === catalog.activeLayoutId,
   );
 
-  const loadLayout = (layout: LocalLayout) => {
-    const nextCatalog = { ...catalog, activeLayoutId: layout.id };
-    commitCatalog(nextCatalog);
-    usePlannerStore.getState().loadSnapshot(layout.planner);
+  const loadLayout = async (layout: LocalLayout) => {
+    try {
+      await loadBuiltInStylePacks([
+        layout.planner.activeStylePackId,
+        ...layout.planner.buildings.map((building) => building.stylePackId),
+      ]);
+      const nextCatalog = { ...catalog, activeLayoutId: layout.id };
+      commitCatalog(nextCatalog);
+      usePlannerStore.getState().loadSnapshot(layout.planner);
+    } catch {
+      setError("That layout's MineColonies style pack could not be loaded.");
+    }
   };
 
   const openNameDialog = (mode: Exclude<NameDialogMode, null>) => {
@@ -179,7 +207,7 @@ export function LocalLayoutControls() {
     setNameDialogMode(null);
   };
 
-  const deleteActiveLayout = () => {
+  const deleteActiveLayout = async () => {
     if (!activeLayout) {
       return;
     }
@@ -193,6 +221,17 @@ export function LocalLayoutControls() {
     }
 
     const nextActive = layouts[0];
+    try {
+      await loadBuiltInStylePacks([
+        nextActive.planner.activeStylePackId,
+        ...nextActive.planner.buildings.map((building) => building.stylePackId),
+      ]);
+    } catch {
+      setError(
+        "The next layout's MineColonies style pack could not be loaded.",
+      );
+      return;
+    }
     commitCatalog({
       ...catalog,
       activeLayoutId: nextActive.id,
@@ -217,7 +256,7 @@ export function LocalLayoutControls() {
               (candidate) => candidate.id === id,
             );
             if (layout) {
-              loadLayout(layout);
+              void loadLayout(layout);
             }
           }}
         >
@@ -256,7 +295,7 @@ export function LocalLayoutControls() {
           variant="ghost"
           size="icon-sm"
           aria-label="Delete layout"
-          onClick={deleteActiveLayout}
+          onClick={() => void deleteActiveLayout()}
           disabled={!activeLayout}
         >
           <Trash2 aria-hidden="true" />

@@ -6,8 +6,9 @@ The repository also includes a reproducible build-time extractor for
 source-backed MineColonies rules and blueprint geometry. See
 [`docs/minecolonies-source.md`](docs/minecolonies-source.md).
 
-The Fortress library mirrors the in-game Build Tool's nine categories, nested
-subcategories, and blueprint ordering from the pinned Structurize version.
+All 23 bundled MineColonies style packs mirror the in-game Build Tool's nine
+categories, nested subcategories, and blueprint ordering from the pinned
+Structurize version. Catalogues load on demand to keep the first visit fast.
 
 ## Requirements
 
@@ -62,9 +63,9 @@ Named layouts and imported style catalogues are stored in browser `localStorage`
 
 ## Known MVP limitations
 
-- The built-in Fortress catalogue contains all 461 blueprints from the pinned
-  MineColonies 1.20.1 source revision. Other styles must currently be supplied
-  as planner catalogue JSON.
+- The built-in library contains all 9,445 blueprints from all 23 style packs in
+  the pinned MineColonies 1.20.1 source revision. Custom styles can still be
+  supplied as planner catalogue JSON.
 - MineColonies blueprint NBT extraction is a build-time maintainer workflow;
   the browser importer intentionally does not process mod JARs, archives,
   schematics, or NBT files.

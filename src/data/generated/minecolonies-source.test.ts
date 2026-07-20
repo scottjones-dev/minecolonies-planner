@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { adaptBuiltInStylePack } from "@/data/style-pack-adapter";
+import { isStylePack } from "@/lib/planner-transfer";
 import sourceData from "./minecolonies-1.20.1.json";
+import { builtInStylePackLoaders } from "./style-pack-loaders";
+import fortressSource from "./styles/fortress.json";
 
 describe("generated MineColonies source data", () => {
   it("is pinned to the bundled upstream revision", () => {
@@ -17,18 +21,27 @@ describe("generated MineColonies source data", () => {
     });
   });
 
-  it("contains every Fortress blueprint", () => {
-    expect(sourceData.stylePack.variants).toHaveLength(167);
+  it("contains every bundled style pack and blueprint", () => {
+    expect(sourceData.stylePacks).toHaveLength(23);
     expect(
-      sourceData.stylePack.variants.reduce(
-        (count, variant) => count + variant.levels.length,
+      sourceData.stylePacks.reduce(
+        (count, stylePack) => count + stylePack.variantCount,
         0,
       ),
-    ).toBe(461);
+    ).toBe(3423);
+    expect(
+      sourceData.stylePacks.reduce(
+        (count, stylePack) => count + stylePack.levelCount,
+        0,
+      ),
+    ).toBe(9445);
+    expect(Object.keys(builtInStylePackLoaders).sort()).toEqual(
+      sourceData.stylePacks.map((stylePack) => stylePack.id).sort(),
+    );
   });
 
-  it("matches Structurize's category and filename ordering", () => {
-    expect(sourceData.stylePack.categoryOrder).toEqual([
+  it("matches Structurize's category and filename ordering", async () => {
+    const expectedCategories = [
       "agriculture",
       "craftsmanship",
       "decorations",
@@ -38,12 +51,41 @@ describe("generated MineColonies source data", () => {
       "military",
       "mystic",
       "walls",
-    ]);
+    ];
+
+    for (const metadata of sourceData.stylePacks) {
+      expect(metadata.categoryOrder).toEqual(expectedCategories);
+      const sourceModule =
+        await builtInStylePackLoaders[
+          metadata.id as keyof typeof builtInStylePackLoaders
+        ]();
+      const stylePack = sourceModule.default.stylePack;
+      expect(stylePack.variants).toHaveLength(metadata.variantCount);
+      expect(
+        stylePack.variants.reduce(
+          (count, variant) => count + variant.levels.length,
+          0,
+        ),
+      ).toBe(metadata.levelCount);
+      expect(stylePack.variants.map((variant) => variant.gameOrder)).toEqual(
+        Array.from({ length: metadata.variantCount }, (_, index) => index),
+      );
+      expect(isStylePack(adaptBuiltInStylePack(stylePack))).toBe(true);
+      for (const variant of stylePack.variants) {
+        expect(variant.categoryPath.split("/")[0]).toBe(variant.category);
+        expect(new Set(variant.levels.map((level) => level.level)).size).toBe(
+          variant.levels.length,
+        );
+        for (const level of variant.levels) {
+          expect(level.bounds.maxX - level.bounds.minX + 1).toBe(level.size.x);
+          expect(level.bounds.maxY - level.bounds.minY + 1).toBe(level.size.y);
+          expect(level.bounds.maxZ - level.bounds.minZ + 1).toBe(level.size.z);
+        }
+      }
+    }
+
     expect(
-      sourceData.stylePack.variants.map((variant) => variant.gameOrder),
-    ).toEqual(Array.from({ length: 167 }, (_, index) => index));
-    expect(
-      sourceData.stylePack.variants
+      fortressSource.stylePack.variants
         .filter((variant) => variant.category === "walls")
         .slice(0, 4)
         .map((variant) => variant.levels[0].sourcePath),
@@ -53,14 +95,10 @@ describe("generated MineColonies source data", () => {
       "walls/corner/corner1.blueprint",
       "walls/gate/gatelarge.blueprint",
     ]);
-
-    for (const variant of sourceData.stylePack.variants) {
-      expect(variant.categoryPath.split("/")[0]).toBe(variant.category);
-    }
   });
 
   it("derives internally consistent bounds from NBT dimensions and anchors", () => {
-    for (const variant of sourceData.stylePack.variants) {
+    for (const variant of fortressSource.stylePack.variants) {
       expect(variant.levels.length).toBeGreaterThan(0);
       expect(new Set(variant.levels.map((level) => level.level)).size).toBe(
         variant.levels.length,
