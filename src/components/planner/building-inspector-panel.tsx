@@ -1,7 +1,8 @@
 "use client";
 
-import { Building2, RotateCw, Trash2 } from "lucide-react";
-import { useEffect } from "react";
+import { AlertTriangle, Building2, RotateCw, Trash2 } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,10 @@ import {
   getLevelFootprint,
   getReservedFootprint,
 } from "@/lib/building-geometry";
+import {
+  findBuildingCollisions,
+  getCollisionPartners,
+} from "@/lib/validation/collisions";
 import { usePlannerStore } from "@/stores/planner-store";
 import type { BuildingRotation, Direction } from "@/types/minecolonies";
 
@@ -41,13 +46,22 @@ function getRotatedDirection(direction: Direction, rotation: BuildingRotation) {
 }
 
 export function BuildingInspectorPanel() {
-  const selectedBuilding = usePlannerStore((state) =>
-    state.buildings.find(
-      (building) => building.id === state.selectedBuildingId,
-    ),
+  const buildings = usePlannerStore((state) => state.buildings);
+  const selectedBuildingId = usePlannerStore(
+    (state) => state.selectedBuildingId,
+  );
+  const selectedBuilding = buildings.find(
+    (building) => building.id === selectedBuildingId,
   );
   const updateBuilding = usePlannerStore((state) => state.updateBuilding);
   const removeBuilding = usePlannerStore((state) => state.removeBuilding);
+  const collisions = useMemo(
+    () => findBuildingCollisions(buildings),
+    [buildings],
+  );
+  const collisionPartners = selectedBuilding
+    ? getCollisionPartners(selectedBuilding.id, collisions)
+    : [];
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -142,6 +156,35 @@ export function BuildingInspectorPanel() {
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+        {collisionPartners.length > 0 ? (
+          <Alert variant="destructive">
+            <AlertTriangle aria-hidden="true" />
+            <AlertTitle>Reserved footprint collision</AlertTitle>
+            <AlertDescription>
+              <ul className="list-disc space-y-1 pl-4">
+                {collisionPartners.map((partnerId) => {
+                  const partner = buildings.find(
+                    (building) => building.id === partnerId,
+                  );
+                  const partnerStyle = partner
+                    ? getStylePackById(partner.stylePackId)
+                    : null;
+                  const partnerVariant = partnerStyle?.variants.find(
+                    (candidate) => candidate.id === partner?.variantId,
+                  );
+
+                  return (
+                    <li key={partnerId}>
+                      Overlaps{" "}
+                      {partnerVariant?.name ?? partner?.variantId ?? partnerId}
+                    </li>
+                  );
+                })}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
         <section className="space-y-3" aria-labelledby="building-details">
           <h3
             id="building-details"
