@@ -18,9 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { stylePacks } from "@/data";
+import { stylePacks as builtInStylePacks } from "@/data";
 import { cn } from "@/lib/utils";
 import { usePlannerStore } from "@/stores/planner-store";
+import { useStylePackStore } from "@/stores/style-pack-store";
 import {
   type BuildingCategory,
   type BuildingVariant,
@@ -129,6 +130,10 @@ export function BuildingLibraryPanel() {
   const setActiveStylePack = usePlannerStore(
     (state) => state.setActiveStylePack,
   );
+  const importedStylePacks = useStylePackStore(
+    (state) => state.importedStylePacks,
+  );
+  const stylePacks = [...builtInStylePacks, ...importedStylePacks];
   const activeStylePack =
     stylePacks.find((stylePack) => stylePack.id === activeStylePackId) ??
     stylePacks[0];

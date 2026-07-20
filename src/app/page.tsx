@@ -1,4 +1,4 @@
-import { Castle, Download, Upload } from "lucide-react";
+import { Castle } from "lucide-react";
 import { BuildingInspectorPanel } from "@/components/planner/building-inspector-panel";
 import { BuildingLibraryPanel } from "@/components/planner/building-library-panel";
 import { ColonyBoundarySettings } from "@/components/planner/colony-boundary-settings";
@@ -6,7 +6,7 @@ import { LocalLayoutControls } from "@/components/planner/local-layout-controls"
 import { PlannerDndContext } from "@/components/planner/planner-dnd-context";
 import { PlannerMapPanel } from "@/components/planner/planner-map-panel";
 import { PlannerStatusBar } from "@/components/planner/planner-status-bar";
-import { Button } from "@/components/ui/button";
+import { PlannerTransferControls } from "@/components/planner/planner-transfer-controls";
 
 export default function Home() {
   return (
@@ -28,12 +28,7 @@ export default function Home() {
 
         <nav className="flex items-center gap-1" aria-label="Planner actions">
           <LocalLayoutControls />
-          <Button variant="ghost" size="icon-sm" aria-label="Import layout">
-            <Upload aria-hidden="true" />
-          </Button>
-          <Button variant="ghost" size="icon-sm" aria-label="Export layout">
-            <Download aria-hidden="true" />
-          </Button>
+          <PlannerTransferControls />
           <ColonyBoundarySettings />
         </nav>
       </header>
