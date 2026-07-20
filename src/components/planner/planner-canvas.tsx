@@ -225,8 +225,20 @@ export function PlannerCanvas() {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full cursor-grab active:cursor-grabbing"
+      className="relative h-full w-full cursor-grab active:cursor-grabbing"
+      role="application"
+      aria-label="Colony map. Drag to pan, scroll to zoom, and select buildings to edit them."
     >
+      {buildings.length === 0 ? (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center p-6 text-center">
+          <div className="rounded-xl border border-dashed bg-background/90 px-5 py-4 shadow-sm">
+            <p className="text-sm font-medium">Start your colony plan</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Drag a building from the library onto this block grid.
+            </p>
+          </div>
+        </div>
+      ) : null}
       {size.width > 0 && size.height > 0 ? (
         <Stage
           width={size.width}

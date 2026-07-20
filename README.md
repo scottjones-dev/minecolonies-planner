@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MineColonies Planner
 
-## Getting Started
+A browser-based planning tool for laying out a Minecraft MineColonies settlement before committing blocks in-game. The MVP provides a block grid, upgrade-aware footprints, collision and colony-boundary checks, residence-to-work assignments, commute warnings, Guard Tower coverage, named local saves, and versioned JSON transfer.
 
-First, run the development server:
+## Requirements
+
+- Node.js 20 or newer
+- pnpm 11
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install --frozen-lockfile
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). A production verification run is:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm test
+pnpm build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## MVP usage
 
-## Learn More
+1. Choose a style and drag a building from the library onto the map.
+2. Select a placed building to rotate it, choose current/reserved upgrade levels, assign a workplace residence, or delete it.
+3. Drag the map to pan and use the mouse wheel or trackpad to zoom. Buildings snap to whole Minecraft blocks.
+4. Open planner settings in the header to configure colony radius, commute thresholds, Guard Tower radius, and overlays.
+5. Use the named-layout controls to create, rename, switch, or delete browser-local plans. Changes save automatically.
+6. Use the import button for a versioned planner-layout or style-catalogue JSON file. The export menu downloads the active layout or style.
 
-To learn more about Next.js, take a look at the following resources:
+Press `?` in the app for keyboard help. With a building selected, press `R` to rotate or `Delete`/`Backspace` to remove it.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Validation colors
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Red: invalid collision, boundary violation, commute, or missing required coverage.
+- Amber: warning or uncovered anchor.
+- Green: preferred commute or satisfied Guard Tower coverage.
+- Blue dashed circle: optional Guard Tower coverage overlay.
 
-## Deploy on Vercel
+## Data and privacy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Named layouts and imported style catalogues are stored in browser `localStorage`. No account, server, or external database is used. Exported JSON includes an explicit schema version and is validated before import. The importer does not execute or parse mod JARs, archives, schematics, or NBT data.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Known MVP limitations
+
+- The included Fortress catalogue is representative sample data, not a complete MineColonies style pack.
+- Building geometry must be supplied as JSON; automatic mod JAR, archive, schematic, and NBT extraction is out of scope.
+- The canvas is optimized for desktop planning. Small screens can view the map and header actions, while the full building library and inspector require a large viewport.
+- Plans are device/browser-local unless exported manually. Clearing site storage removes unexported layouts and imported styles.
+- There is no terrain, elevation, road/pathfinding, resource-cost, worker simulation, multiplayer, or cloud synchronization.
+- Imported catalogue IDs cannot replace the built-in Fortress fallback.

@@ -118,11 +118,22 @@ export function BuildingInspectorPanel() {
         event.preventDefault();
         removeBuilding(selectedBuilding.id);
       }
+
+      if (
+        !isEditing &&
+        selectedBuilding &&
+        event.key.toLocaleLowerCase() === "r"
+      ) {
+        event.preventDefault();
+        updateBuilding(selectedBuilding.id, {
+          rotation: getNextRotation(selectedBuilding.rotation),
+        });
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [removeBuilding, selectedBuilding]);
+  }, [removeBuilding, selectedBuilding, updateBuilding]);
 
   if (!selectedBuilding) {
     return (
