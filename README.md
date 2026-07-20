@@ -2,6 +2,10 @@
 
 A browser-based planning tool for laying out a Minecraft MineColonies settlement before committing blocks in-game. The MVP provides a block grid, upgrade-aware footprints, collision and colony-boundary checks, residence-to-work assignments, commute warnings, Guard Tower coverage, named local saves, and versioned JSON transfer.
 
+The repository also includes a reproducible build-time extractor for
+source-backed MineColonies rules and blueprint geometry. See
+[`docs/minecolonies-source.md`](docs/minecolonies-source.md).
+
 ## Requirements
 
 - Node.js 20 or newer
