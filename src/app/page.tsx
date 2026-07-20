@@ -2,6 +2,7 @@ import { Castle } from "lucide-react";
 import { BuildingInspectorPanel } from "@/components/planner/building-inspector-panel";
 import { BuildingLibraryPanel } from "@/components/planner/building-library-panel";
 import { ColonyBoundarySettings } from "@/components/planner/colony-boundary-settings";
+import { KeyboardShortcutsHelp } from "@/components/planner/keyboard-shortcuts-help";
 import { LocalLayoutControls } from "@/components/planner/local-layout-controls";
 import { PlannerDndContext } from "@/components/planner/planner-dnd-context";
 import { PlannerMapPanel } from "@/components/planner/planner-map-panel";
@@ -11,7 +12,7 @@ import { PlannerTransferControls } from "@/components/planner/planner-transfer-c
 export default function Home() {
   return (
     <main className="grid h-dvh min-h-0 grid-rows-[auto_1fr_auto] overflow-hidden bg-background text-foreground">
-      <header className="flex min-h-14 items-center justify-between gap-4 border-b bg-card px-4 py-2">
+      <header className="grid min-h-14 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b bg-card px-2 py-2 sm:gap-4 sm:px-4">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Castle className="size-5" aria-hidden="true" />
@@ -21,15 +22,19 @@ export default function Home() {
               MineColonies Planner
             </h1>
             <p className="hidden truncate text-xs text-muted-foreground sm:block">
-              Untitled colony · Fortress style
+              Local-first colony planning
             </p>
           </div>
         </div>
 
-        <nav className="flex items-center gap-1" aria-label="Planner actions">
+        <nav
+          className="flex max-w-[75vw] items-center gap-1 overflow-x-auto"
+          aria-label="Planner actions"
+        >
           <LocalLayoutControls />
           <PlannerTransferControls />
           <ColonyBoundarySettings />
+          <KeyboardShortcutsHelp />
         </nav>
       </header>
 
