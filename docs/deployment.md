@@ -30,7 +30,7 @@ Do not commit an API key or put it in a variable beginning with
 
 | Variable | Required | Visibility | Purpose |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Production | Public | Canonical site, sitemap, robots, and social metadata URL |
+| `NEXT_PUBLIC_SITE_URL` | Yes | Public | Canonical production site, sitemap, robots, and social metadata URL |
 | `RESEND_API_KEY` | Yes | Server only | Authorizes contact email delivery |
 | `CONTACT_TO_EMAIL` | Yes | Server only | Inbox receiving form submissions |
 | `CONTACT_FROM_EMAIL` | Yes | Server only | Display name and verified Resend sender |

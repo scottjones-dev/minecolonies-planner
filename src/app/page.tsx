@@ -177,7 +177,7 @@ export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#f5f5ef] text-[#17201d]">
       <a
-        href="#features"
+        href="#main-content"
         className="fixed left-4 top-4 z-50 -translate-y-24 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#17201d] shadow-lg transition focus:translate-y-0"
       >
         Skip to content
@@ -229,7 +229,10 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-16 px-5 pb-24 pt-16 sm:px-8 sm:pt-24 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-32 lg:pt-28">
+        <div
+          id="main-content"
+          className="relative z-10 mx-auto grid max-w-7xl scroll-mt-6 items-center gap-16 px-5 pb-24 pt-16 sm:px-8 sm:pt-24 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-32 lg:pt-28"
+        >
           <div className="max-w-2xl">
             <Badge className="mb-7 h-auto border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-emerald-200">
               <Sparkles aria-hidden="true" />
