@@ -11,6 +11,14 @@ type MapTransform = {
   panY: number;
 };
 
+export function worldBlockToCanvasCoordinate(block: number): number {
+  return (block + 0.5) * BLOCK_SIZE;
+}
+
+export function canvasCoordinateToWorldBlock(coordinate: number): number {
+  return Math.floor(coordinate / BLOCK_SIZE);
+}
+
 export function screenPointToWorldBlock(
   point: ScreenPoint,
   mapBounds: Pick<DOMRect, "left" | "top">,
@@ -20,7 +28,7 @@ export function screenPointToWorldBlock(
   const mapY = point.y - mapBounds.top;
 
   return {
-    x: Math.round((mapX - transform.panX) / transform.zoom / BLOCK_SIZE),
-    z: Math.round((mapY - transform.panY) / transform.zoom / BLOCK_SIZE),
+    x: canvasCoordinateToWorldBlock((mapX - transform.panX) / transform.zoom),
+    z: canvasCoordinateToWorldBlock((mapY - transform.panY) / transform.zoom),
   };
 }

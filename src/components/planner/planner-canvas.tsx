@@ -18,7 +18,11 @@ import {
   getLevelFootprint,
   getReservedFootprint,
 } from "@/lib/building-geometry";
-import { BLOCK_SIZE } from "@/lib/planner-coordinates";
+import {
+  BLOCK_SIZE,
+  canvasCoordinateToWorldBlock,
+  worldBlockToCanvasCoordinate,
+} from "@/lib/planner-coordinates";
 import {
   findBuildingCollisions,
   getCollidingBuildingIds,
@@ -288,8 +292,8 @@ export function PlannerCanvas() {
                   .map((guard) => (
                     <Circle
                       key={`guard-coverage-${guard.id}`}
-                      x={guard.x * BLOCK_SIZE}
-                      y={guard.z * BLOCK_SIZE}
+                      x={worldBlockToCanvasCoordinate(guard.x)}
+                      y={worldBlockToCanvasCoordinate(guard.z)}
                       radius={getGuardPatrolRadius(guard) * BLOCK_SIZE}
                       fill="#2563eb0d"
                       stroke="#2563eb"
@@ -324,10 +328,10 @@ export function PlannerCanvas() {
                     <Line
                       key={`commute-${workplace.id}`}
                       points={[
-                        workplace.x * BLOCK_SIZE,
-                        workplace.z * BLOCK_SIZE,
-                        residence.x * BLOCK_SIZE,
-                        residence.z * BLOCK_SIZE,
+                        worldBlockToCanvasCoordinate(workplace.x),
+                        worldBlockToCanvasCoordinate(workplace.z),
+                        worldBlockToCanvasCoordinate(residence.x),
+                        worldBlockToCanvasCoordinate(residence.z),
                       ]}
                       stroke={color}
                       strokeWidth={3 / zoom}
@@ -384,8 +388,8 @@ export function PlannerCanvas() {
               return (
                 <Group
                   key={building.id}
-                  x={building.x * BLOCK_SIZE}
-                  y={building.z * BLOCK_SIZE}
+                  x={worldBlockToCanvasCoordinate(building.x)}
+                  y={worldBlockToCanvasCoordinate(building.z)}
                   draggable
                   onClick={(event) => {
                     event.cancelBubble = true;
@@ -402,12 +406,12 @@ export function PlannerCanvas() {
                   }}
                   onDragMove={(event) => {
                     event.cancelBubble = true;
+                    const x = canvasCoordinateToWorldBlock(event.target.x());
+                    const z = canvasCoordinateToWorldBlock(event.target.y());
                     event.target.position({
-                      x: Math.round(event.target.x() / BLOCK_SIZE) * BLOCK_SIZE,
-                      y: Math.round(event.target.y() / BLOCK_SIZE) * BLOCK_SIZE,
+                      x: worldBlockToCanvasCoordinate(x),
+                      y: worldBlockToCanvasCoordinate(z),
                     });
-                    const x = Math.round(event.target.x() / BLOCK_SIZE);
-                    const z = Math.round(event.target.y() / BLOCK_SIZE);
                     const currentBuilding = usePlannerStore
                       .getState()
                       .buildings.find(
@@ -423,8 +427,8 @@ export function PlannerCanvas() {
                   }}
                   onDragEnd={(event) => {
                     event.cancelBubble = true;
-                    const x = Math.round(event.target.x() / BLOCK_SIZE);
-                    const z = Math.round(event.target.y() / BLOCK_SIZE);
+                    const x = canvasCoordinateToWorldBlock(event.target.x());
+                    const z = canvasCoordinateToWorldBlock(event.target.y());
                     updateBuilding(building.id, { x, z });
                     setMovingBuildingId(null);
                   }}

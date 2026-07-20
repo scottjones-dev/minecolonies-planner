@@ -41,6 +41,10 @@ pnpm build
 
 Press `?` in the app for keyboard help. With a building selected, press `R` to rotate or `Delete`/`Backspace` to remove it.
 
+Integer X/Z coordinates are rendered at the center of their block square.
+Regular grid lines mark block edges, and heavier lines remain exact 16×16
+chunk boundaries.
+
 ## Validation colors
 
 - Red: invalid collision, boundary violation, commute, or missing required coverage.
