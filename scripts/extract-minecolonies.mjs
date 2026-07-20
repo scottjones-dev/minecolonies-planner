@@ -20,6 +20,14 @@ const outputPath = join(
   plannerRoot,
   "src/data/generated/minecolonies-1.20.1.json",
 );
+const modBuildingsPath = join(
+  sourceRoot,
+  "src/main/java/com/minecolonies/api/colony/buildings/ModBuildings.java",
+);
+const modBuildingsInitializerPath = join(
+  sourceRoot,
+  "src/main/java/com/minecolonies/apiimp/initializer/ModBuildingsInitializer.java",
+);
 
 if (!existsSync(join(sourceRoot, ".git")) || !existsSync(blueprintRoot)) {
   throw new Error(
@@ -227,6 +235,27 @@ function normalizeBuildingType(baseName) {
   );
 }
 
+function readClaimingBuildingTypes() {
+  const constants = new Map(
+    [
+      ...readFileSync(modBuildingsPath, "utf8").matchAll(
+        /public static final String\s+([A-Z_]+_ID)\s*=\s*"([^"]+)"/g,
+      ),
+    ].map((match) => [match[1], normalizeBuildingType(match[2])]),
+  );
+  const registeredConstants = [
+    ...readFileSync(modBuildingsInitializerPath, "utf8").matchAll(
+      /DEFERRED_REGISTER\.register\(ModBuildings\.([A-Z_]+_ID)/g,
+    ),
+  ].map((match) => match[1]);
+
+  return [...new Set(registeredConstants.map((name) => constants.get(name)))]
+    .filter(Boolean)
+    .sort();
+}
+
+const claimingBuildingTypes = readClaimingBuildingTypes();
+
 const stableVariantIds = {
   "fundamentals/residence": "fortress-residence-1",
   "fundamentals/townhall": "fortress-town-hall-1",
@@ -363,12 +392,20 @@ const document = {
         "src/main/java/com/minecolonies/core/util/ChunkDataHelper.java",
       buildingClaims:
         "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuilding.java",
+      registeredBuildings:
+        "src/main/java/com/minecolonies/apiimp/initializer/ModBuildingsInitializer.java",
+      blueprintPlacement:
+        "src/main/java/com/minecolonies/core/placementhandlers/main/SurvivalHandler.java",
       townHallClaims:
         "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingTownHall.java",
       guardTowerClaims:
         "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingGuardTower.java",
       guardPatrol:
         "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuildingGuards.java",
+      guardProtection:
+        "src/main/java/com/minecolonies/core/colony/managers/RegisteredStructureManager.java",
+      colonyMapRanges:
+        "src/main/java/com/minecolonies/core/client/gui/map/WindowColonyMap.java",
     },
   },
   rules: {
@@ -378,10 +415,19 @@ const document = {
       maximumColonyRadiusChunks: 20,
       minimumColonyDistanceChunks: 8,
     },
+    limits: {
+      initialColonyRadiusChunks: { min: 1, max: 15 },
+      maximumColonyRadiusChunks: { min: 1, max: 250 },
+      minimumColonyDistanceChunks: { min: 1, max: 200 },
+    },
     buildingClaimRadiusByLevel: [1, 1, 1, 2, 2],
     townHallClaimRadiusByLevel: [1, 1, 2, 3, 5],
     guardTowerClaimRadiusByLevel: [2, 3, 3, 4, 5],
+    gateHouseClaimRadiusByLevel: [1, 1, 2],
+    barracksClaimRadiusByLevel: [2, 2, 2, 2, 2],
+    barracksTowerClaimRadiusByLevel: [0, 0, 0, 0, 0],
     guardPatrolRadiusBlocksByLevel: [80, 110, 140, 170, 200],
+    claimingBuildingTypes,
   },
   stylePack: {
     id: "fortress",

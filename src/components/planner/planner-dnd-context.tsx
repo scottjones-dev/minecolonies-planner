@@ -8,8 +8,13 @@ import {
 } from "@dnd-kit/core";
 import { getEventCoordinates } from "@dnd-kit/utilities";
 import { type ReactNode, useState } from "react";
+import { toast } from "sonner";
 import { BuildingCardContent } from "@/components/planner/building-library-panel";
 import { screenPointToWorldBlock } from "@/lib/planner-coordinates";
+import {
+  getNewBuildingPlacementError,
+  getPlacementErrorMessage,
+} from "@/lib/validation/colony-boundary";
 import { usePlannerStore } from "@/stores/planner-store";
 import type { BuildingVariant } from "@/types/minecolonies";
 
@@ -80,7 +85,7 @@ export function PlannerDndContext({ children }: { children: ReactNode }) {
     const position = screenPointToWorldBlock(dropPoint, event.over.rect, map);
     const levels = dragData.variant.levels.map((level) => level.level);
 
-    addBuilding({
+    const building = {
       stylePackId: dragData.stylePackId,
       variantId: dragData.variant.id,
       x: position.x,
@@ -90,7 +95,20 @@ export function PlannerDndContext({ children }: { children: ReactNode }) {
       currentLevel: Math.min(...levels),
       reserveThroughLevel: Math.max(...levels),
       assignedResidenceId: null,
-    });
+    } as const;
+    const state = usePlannerStore.getState();
+    const placementError = getNewBuildingPlacementError(
+      state.buildings,
+      { ...building, id: "placement-preview" },
+      state.rules.colonyRadiusChunks,
+    );
+
+    if (placementError) {
+      toast.error(getPlacementErrorMessage(placementError));
+      return;
+    }
+
+    addBuilding(building);
   };
 
   return (

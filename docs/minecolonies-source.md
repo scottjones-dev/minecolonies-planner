@@ -33,8 +33,11 @@ blueprints directly and derives each footprint from `size_x`, `size_y`,
   display order;
 - exact dimensions, anchors, relative bounds, level, and source path;
 - colony configuration defaults;
-- generic, Town Hall, and Guard Tower claim radii by building level;
-- Guard Tower patrol radii by building level.
+- the exact registered colony-building types that can expand claims;
+- generic, Town Hall, Guard Tower, Gate House, Barracks, and Barracks Tower
+  claim radii by building level;
+- Guard Tower patrol radii by building level, kept distinct from the square
+  guard range shown on MineColonies' colony map.
 
 The generated JSON is committed so normal app builds do not require the large
 MineColonies checkout. Re-run the extractor intentionally when updating the

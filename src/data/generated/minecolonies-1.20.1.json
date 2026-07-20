@@ -17,9 +17,13 @@
       "serverConfiguration": "src/main/java/com/minecolonies/api/configuration/ServerConfiguration.java",
       "chunkClaims": "src/main/java/com/minecolonies/core/util/ChunkDataHelper.java",
       "buildingClaims": "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuilding.java",
+      "registeredBuildings": "src/main/java/com/minecolonies/apiimp/initializer/ModBuildingsInitializer.java",
+      "blueprintPlacement": "src/main/java/com/minecolonies/core/placementhandlers/main/SurvivalHandler.java",
       "townHallClaims": "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingTownHall.java",
       "guardTowerClaims": "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingGuardTower.java",
-      "guardPatrol": "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuildingGuards.java"
+      "guardPatrol": "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuildingGuards.java",
+      "guardProtection": "src/main/java/com/minecolonies/core/colony/managers/RegisteredStructureManager.java",
+      "colonyMapRanges": "src/main/java/com/minecolonies/core/client/gui/map/WindowColonyMap.java"
     }
   },
   "rules": {
@@ -28,6 +32,20 @@
       "initialColonyRadiusChunks": 4,
       "maximumColonyRadiusChunks": 20,
       "minimumColonyDistanceChunks": 8
+    },
+    "limits": {
+      "initialColonyRadiusChunks": {
+        "min": 1,
+        "max": 15
+      },
+      "maximumColonyRadiusChunks": {
+        "min": 1,
+        "max": 250
+      },
+      "minimumColonyDistanceChunks": {
+        "min": 1,
+        "max": 200
+      }
     },
     "buildingClaimRadiusByLevel": [
       1,
@@ -50,12 +68,87 @@
       4,
       5
     ],
+    "gateHouseClaimRadiusByLevel": [
+      1,
+      1,
+      2
+    ],
+    "barracksClaimRadiusByLevel": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "barracksTowerClaimRadiusByLevel": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
     "guardPatrolRadiusBlocksByLevel": [
       80,
       110,
       140,
       170,
       200
+    ],
+    "claimingBuildingTypes": [
+      "alchemist",
+      "archery",
+      "baker",
+      "barracks",
+      "barrackstower",
+      "beekeeper",
+      "blacksmith",
+      "builder",
+      "chickenherder",
+      "combatacademy",
+      "composter",
+      "concretemixer",
+      "cook",
+      "cowboy",
+      "crusher",
+      "deliveryman",
+      "dyer",
+      "enchanter",
+      "farmer",
+      "fisherman",
+      "fletcher",
+      "florist",
+      "gatehouse",
+      "glassblower",
+      "graveyard",
+      "guard_tower",
+      "hospital",
+      "kitchen",
+      "library",
+      "lumberjack",
+      "mechanic",
+      "mediumquarry",
+      "miner",
+      "mysticalsite",
+      "netherworker",
+      "plantation",
+      "postbox",
+      "rabbithutch",
+      "residence",
+      "sawmill",
+      "school",
+      "shepherd",
+      "sifter",
+      "simplequarry",
+      "smeltery",
+      "stable",
+      "stash",
+      "stonemason",
+      "stonesmeltery",
+      "swineherder",
+      "tavern",
+      "town_hall",
+      "university",
+      "warehouse"
     ]
   },
   "stylePack": {

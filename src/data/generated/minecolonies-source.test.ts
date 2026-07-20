@@ -85,10 +85,21 @@ describe("generated MineColonies source data", () => {
         maximumColonyRadiusChunks: 20,
         minimumColonyDistanceChunks: 8,
       },
+      limits: {
+        initialColonyRadiusChunks: { min: 1, max: 15 },
+        maximumColonyRadiusChunks: { min: 1, max: 250 },
+        minimumColonyDistanceChunks: { min: 1, max: 200 },
+      },
       buildingClaimRadiusByLevel: [1, 1, 1, 2, 2],
       townHallClaimRadiusByLevel: [1, 1, 2, 3, 5],
       guardTowerClaimRadiusByLevel: [2, 3, 3, 4, 5],
+      gateHouseClaimRadiusByLevel: [1, 1, 2],
+      barracksClaimRadiusByLevel: [2, 2, 2, 2, 2],
+      barracksTowerClaimRadiusByLevel: [0, 0, 0, 0, 0],
       guardPatrolRadiusBlocksByLevel: [80, 110, 140, 170, 200],
     });
+    expect(sourceData.rules.claimingBuildingTypes).toContain("residence");
+    expect(sourceData.rules.claimingBuildingTypes).toContain("guard_tower");
+    expect(sourceData.rules.claimingBuildingTypes).not.toContain("wall");
   });
 });

@@ -1,5 +1,8 @@
 import { create } from "zustand";
-import { initialColonyRadiusChunks } from "@/data/minecolonies-rules";
+import {
+  initialColonyRadiusChunks,
+  maximumInitialColonyRadiusChunks,
+} from "@/data/minecolonies-rules";
 import type { PlacedBuilding } from "@/types/minecolonies";
 
 export type PlannerMapState = {
@@ -62,7 +65,7 @@ const getInitialState = (): PlannerState => ({
   },
   rules: {
     colonyRadiusChunks: initialColonyRadiusChunks,
-    colonyBoundaryMode: "warning",
+    colonyBoundaryMode: "invalid",
     preferredCommuteDistance: 64,
     warningCommuteDistance: 128,
     showCommuteConnections: true,
@@ -138,7 +141,10 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       rules: {
         ...state.rules,
         colonyRadiusChunks: Number.isFinite(radiusChunks)
-          ? Math.min(64, Math.max(1, Math.round(radiusChunks)))
+          ? Math.min(
+              maximumInitialColonyRadiusChunks,
+              Math.max(1, Math.round(radiusChunks)),
+            )
           : state.rules.colonyRadiusChunks,
       },
     }));
@@ -202,8 +208,13 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       activeStylePackId: snapshot.activeStylePackId,
       map: snapshot.map,
       rules: {
-        colonyRadiusChunks: snapshot.rules.colonyRadiusChunks,
-        colonyBoundaryMode: snapshot.rules.colonyBoundaryMode,
+        colonyRadiusChunks: Math.min(
+          maximumInitialColonyRadiusChunks,
+          snapshot.rules.colonyRadiusChunks,
+        ),
+        // MineColonies rejects out-of-claim blueprints. Preserve the field for
+        // version-1 snapshot compatibility, but migrate legacy warning layouts.
+        colonyBoundaryMode: "invalid",
         preferredCommuteDistance: snapshot.rules.preferredCommuteDistance,
         warningCommuteDistance: snapshot.rules.warningCommuteDistance,
         showCommuteConnections: snapshot.rules.showCommuteConnections,

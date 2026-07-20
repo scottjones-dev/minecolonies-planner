@@ -7,7 +7,11 @@ export const {
   buildingClaimRadiusByLevel,
   townHallClaimRadiusByLevel,
   guardTowerClaimRadiusByLevel,
+  gateHouseClaimRadiusByLevel,
+  barracksClaimRadiusByLevel,
+  barracksTowerClaimRadiusByLevel,
   guardPatrolRadiusBlocksByLevel,
+  claimingBuildingTypes,
 } = mineColoniesRules;
 
 export const {
@@ -15,6 +19,9 @@ export const {
   maximumColonyRadiusChunks,
   minimumColonyDistanceChunks,
 } = mineColoniesRules.defaults;
+
+export const maximumInitialColonyRadiusChunks =
+  mineColoniesRules.limits.initialColonyRadiusChunks.max;
 
 export function getRuleValueForLevel(
   values: readonly number[],

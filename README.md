@@ -34,8 +34,9 @@ pnpm build
 2. Select a placed building to rotate it, choose current/reserved upgrade levels, assign a workplace residence, or delete it.
 3. Drag the map to pan and use the mouse wheel or trackpad to zoom. Buildings snap to whole Minecraft blocks.
 4. Open planner settings in the header to configure the server's initial
-   claim radius, commute thresholds, and overlays. Building claims and Guard
-   Tower patrol radii follow the pinned MineColonies rules by level.
+   claim radius, commute thresholds, and overlays. Place the Town Hall first;
+   later blueprints must fit completely inside land claimed earlier in the
+   plan, matching MineColonies placement order.
 5. Use the named-layout controls to create, rename, switch, or delete browser-local plans. Changes save automatically.
 6. Use the import button for a versioned planner-layout or style-catalogue JSON file. The export menu downloads the active layout or style.
 
@@ -51,7 +52,9 @@ chunk boundaries.
 - Amber: warning or uncovered anchor.
 - Green: preferred commute.
 - Chunk-aligned amber/red tiles: MineColonies square claim areas.
-- Blue dashed circle: level-based Guard Tower patrol overlay.
+- Blue dashed square: the same level-based Guard Tower/Barracks range shown on
+  MineColonies' colony map. Patrol-target distance is listed separately in the
+  building inspector.
 
 ## Data and privacy
 

@@ -24,12 +24,20 @@ import {
   findBuildingCollisions,
   getCollisionPartners,
 } from "@/lib/validation/collisions";
-import { findColonyBoundaryViolations } from "@/lib/validation/colony-boundary";
+import {
+  findColonyBoundaryViolations,
+  getBuildingClaimRadius,
+  isClaimingBuilding,
+} from "@/lib/validation/colony-boundary";
 import {
   findCommuteResults,
   getPlacedBuildingRole,
   getPlacedBuildingVariant,
 } from "@/lib/validation/commute";
+import {
+  getGuardMapRange,
+  getGuardPatrolRadius,
+} from "@/lib/validation/guard-coverage";
 import { usePlannerStore } from "@/stores/planner-store";
 import type { BuildingRotation, Direction } from "@/types/minecolonies";
 
@@ -76,8 +84,8 @@ export function BuildingInspectorPanel() {
     ? getCollisionPartners(selectedBuilding.id, collisions)
     : [];
   const boundaryViolationIds = useMemo(
-    () => findColonyBoundaryViolations(buildings),
-    [buildings],
+    () => findColonyBoundaryViolations(buildings, colonyRadiusChunks),
+    [buildings, colonyRadiusChunks],
   );
   const outsideBoundary = selectedBuilding
     ? boundaryViolationIds.includes(selectedBuilding.id)
@@ -174,6 +182,9 @@ export function BuildingInspectorPanel() {
   const entranceDirection = level?.entrance
     ? getRotatedDirection(level.entrance.direction, selectedBuilding.rotation)
     : null;
+  const claimRadius = getBuildingClaimRadius(selectedBuilding);
+  const guardMapRange = getGuardMapRange(selectedBuilding);
+  const guardPatrolRadius = getGuardPatrolRadius(selectedBuilding);
   const residences = buildings.filter(
     (building) => getPlacedBuildingRole(building) === "residence",
   );
@@ -289,11 +300,11 @@ export function BuildingInspectorPanel() {
               outside colony boundary
             </AlertTitle>
             <AlertDescription>
-              The reserved footprint reaches beyond MineColonies&apos; maximum
-              claim envelope of {maximumColonyRadiusChunks} chunks from the
-              first Town Hall. The initial claim is a{" "}
+              The current-level blueprint is not fully inside chunks claimed
+              earlier in placement order. The initial claim is a{" "}
               {colonyRadiusChunks * 2 + 1}×{colonyRadiusChunks * 2 + 1} chunk
-              square.
+              square, and dynamic claims cannot exceed{" "}
+              {maximumColonyRadiusChunks} chunks from Town Hall.
             </AlertDescription>
           </Alert>
         ) : null}
@@ -471,6 +482,43 @@ export function BuildingInspectorPanel() {
             </dd>
           </div>
         </dl>
+
+        <Separator />
+
+        <section className="space-y-3" aria-labelledby="game-ranges">
+          <h3
+            id="game-ranges"
+            className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+          >
+            MineColonies ranges
+          </h3>
+          <dl className="space-y-2 text-sm">
+            <div className="flex items-start justify-between gap-4">
+              <dt className="text-muted-foreground">Claim expansion</dt>
+              <dd className="text-right font-medium">
+                {isClaimingBuilding(selectedBuilding)
+                  ? `${claimRadius} chunk radius (${claimRadius * 2 + 1}×${claimRadius * 2 + 1})`
+                  : "None"}
+              </dd>
+            </div>
+            {guardMapRange > 0 ? (
+              <div className="flex items-start justify-between gap-4">
+                <dt className="text-muted-foreground">Game-map guard square</dt>
+                <dd className="text-right font-medium">
+                  {guardMapRange} blocks each direction
+                </dd>
+              </div>
+            ) : null}
+            {guardPatrolRadius > 0 ? (
+              <div className="flex items-start justify-between gap-4">
+                <dt className="text-muted-foreground">Patrol-target limit</dt>
+                <dd className="text-right font-medium">
+                  {guardPatrolRadius} blocks
+                </dd>
+              </div>
+            ) : null}
+          </dl>
+        </section>
         <p className="text-xs text-muted-foreground">
           Rotation:{" "}
           <span className="font-mono font-medium text-foreground">
