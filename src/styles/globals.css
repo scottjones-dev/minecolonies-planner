@@ -126,5 +126,30 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+}
+
+.landing-map {
+  background-color: #17231f;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.055) 1px, transparent 1px),
+    linear-gradient(rgb(110 231 183 / 0.09) 2px, transparent 2px),
+    linear-gradient(90deg, rgb(110 231 183 / 0.09) 2px, transparent 2px);
+  background-size:
+    16px 16px,
+    16px 16px,
+    64px 64px,
+    64px 64px;
+}
+
+.landing-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
