@@ -48,7 +48,7 @@ describe("validateContactMessage", () => {
     ],
     [
       { name: "Scott", email: "scott@example.com", message: "Too short" },
-      `Message must be ${CONTACT_LIMITS.messageMin}–${CONTACT_LIMITS.messageMax.toLocaleString()} characters.`,
+      `Message must be ${CONTACT_LIMITS.messageMin}–${CONTACT_LIMITS.messageMax.toLocaleString("en-GB")} characters.`,
     ],
   ])("rejects invalid input %#", (payload, message) => {
     expect(validateContactMessage(payload)).toEqual({ ok: false, message });

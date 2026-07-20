@@ -61,7 +61,7 @@ export function validateContactMessage(
   ) {
     return {
       ok: false,
-      message: `Message must be ${CONTACT_LIMITS.messageMin}–${CONTACT_LIMITS.messageMax.toLocaleString()} characters.`,
+      message: `Message must be ${CONTACT_LIMITS.messageMin}–${CONTACT_LIMITS.messageMax.toLocaleString("en-GB")} characters.`,
     };
   }
 

@@ -5,7 +5,10 @@ export const runtime = "nodejs";
 
 const WINDOW_MS = 10 * 60 * 1_000;
 const MAX_REQUESTS = 5;
+const MAX_TRACKED_CLIENTS = 10_000;
+const CLEANUP_INTERVAL = 100;
 const requestLog = new Map<string, number[]>();
+let requestsSinceCleanup = 0;
 
 function clientKey(request: Request): string {
   return (
@@ -17,6 +20,27 @@ function clientKey(request: Request): string {
 
 function isRateLimited(key: string): boolean {
   const now = Date.now();
+  requestsSinceCleanup += 1;
+
+  if (
+    requestsSinceCleanup >= CLEANUP_INTERVAL ||
+    requestLog.size >= MAX_TRACKED_CLIENTS
+  ) {
+    const cutoff = now - WINDOW_MS;
+    for (const [client, timestamps] of requestLog) {
+      const recent = timestamps.filter((timestamp) => timestamp > cutoff);
+      if (recent.length === 0) requestLog.delete(client);
+      else requestLog.set(client, recent);
+    }
+    requestsSinceCleanup = 0;
+  }
+
+  while (requestLog.size >= MAX_TRACKED_CLIENTS && !requestLog.has(key)) {
+    const oldestClient = requestLog.keys().next().value;
+    if (oldestClient === undefined) break;
+    requestLog.delete(oldestClient);
+  }
+
   const recent = (requestLog.get(key) ?? []).filter(
     (timestamp) => timestamp > now - WINDOW_MS,
   );

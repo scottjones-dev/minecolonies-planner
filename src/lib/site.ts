@@ -17,9 +17,13 @@ export function getSiteUrl(): URL {
   if (configuredUrl) {
     try {
       return new URL(configuredUrl);
-    } catch {
-      // A safe local URL keeps metadata generation working while configuration
-      // errors remain visible in the deployment checklist.
+    } catch (cause) {
+      const message =
+        "NEXT_PUBLIC_SITE_URL must be an absolute URL, for example https://planner.example.com";
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(message, { cause });
+      }
+      console.warn(message);
     }
   }
 

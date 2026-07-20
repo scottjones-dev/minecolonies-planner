@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function ErrorPage({
   error,
+  // Next.js 16.2 uses unstable_retry to re-fetch a failed route segment.
   unstable_retry,
 }: {
   error: Error & { digest?: string };

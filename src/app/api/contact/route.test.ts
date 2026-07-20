@@ -80,4 +80,21 @@ describe("POST /api/contact", () => {
 
     expect(response.status).toBe(200);
   });
+
+  it("throttles the sixth submission from one client", async () => {
+    const payload = {
+      name: "Spam Bot",
+      email: "spam@example.com",
+      message: "This automated message is long enough to look valid.",
+      website: "https://spam.example",
+    };
+
+    for (let index = 0; index < 5; index += 1) {
+      const response = await POST(request(payload, { ip: "test-throttle" }));
+      expect(response.status).toBe(200);
+    }
+
+    const response = await POST(request(payload, { ip: "test-throttle" }));
+    expect(response.status).toBe(429);
+  });
 });
