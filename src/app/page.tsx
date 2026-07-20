@@ -1,11 +1,5 @@
-import {
-  Building2,
-  Castle,
-  Download,
-  Save,
-  Settings2,
-  Upload,
-} from "lucide-react";
+import { Castle, Download, Save, Settings2, Upload } from "lucide-react";
+import { BuildingInspectorPanel } from "@/components/planner/building-inspector-panel";
 import { BuildingLibraryPanel } from "@/components/planner/building-library-panel";
 import { PlannerDndContext } from "@/components/planner/planner-dnd-context";
 import { PlannerMapPanel } from "@/components/planner/planner-map-panel";
@@ -55,29 +49,8 @@ export default function Home() {
 
           <PlannerMapPanel />
 
-          <aside className="hidden min-h-0 flex-col border-l bg-card lg:flex">
-            <div className="border-b px-4 py-3">
-              <h2 className="text-sm font-semibold">Building inspector</h2>
-              <p className="mt-1 text-xs text-muted-foreground">
-                View and edit the selected building.
-              </p>
-            </div>
-
-            <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto p-6">
-              <div className="text-center">
-                <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-lg bg-muted">
-                  <Building2
-                    className="size-5 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                </div>
-                <p className="text-sm font-medium">Nothing selected</p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  Select a placed building to inspect its level, rotation,
-                  footprint, and validation state.
-                </p>
-              </div>
-            </div>
+          <aside className="hidden min-h-0 border-l bg-card lg:block">
+            <BuildingInspectorPanel />
           </aside>
         </div>
       </PlannerDndContext>
