@@ -31,7 +31,7 @@ export default function ErrorPage({
           again, or return home.
         </p>
         <div className="mt-8 flex justify-center gap-3">
-          <Button size="lg" onClick={() => unstable_retry()}>
+          <Button size="lg" onClick={unstable_retry}>
             Try again
           </Button>
           <Link
