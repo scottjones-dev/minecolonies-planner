@@ -87,6 +87,8 @@ function isPlannerRules(value: unknown): value is PlannerRules {
     isRecord(value) &&
     isInteger(value.colonyRadiusChunks) &&
     value.colonyRadiusChunks >= 1 &&
+    // Version-1 layouts previously allowed 64; the store clamps legacy values
+    // to MineColonies' actual server-config maximum when loading.
     value.colonyRadiusChunks <= 64 &&
     (value.colonyBoundaryMode === "warning" ||
       value.colonyBoundaryMode === "invalid") &&

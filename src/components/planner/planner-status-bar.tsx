@@ -9,16 +9,18 @@ import { usePlannerStore } from "@/stores/planner-store";
 export function PlannerStatusBar() {
   const buildings = usePlannerStore((state) => state.buildings);
   const zoom = usePlannerStore((state) => state.map.zoom);
-  const { preferredCommuteDistance, warningCommuteDistance } = usePlannerStore(
-    (state) => state.rules,
-  );
+  const {
+    colonyRadiusChunks,
+    preferredCommuteDistance,
+    warningCommuteDistance,
+  } = usePlannerStore((state) => state.rules);
   const collisionCount = useMemo(
     () => findBuildingCollisions(buildings).length,
     [buildings],
   );
   const boundaryViolationCount = useMemo(
-    () => findColonyBoundaryViolations(buildings).length,
-    [buildings],
+    () => findColonyBoundaryViolations(buildings, colonyRadiusChunks).length,
+    [buildings, colonyRadiusChunks],
   );
   const commuteWarningCount = useMemo(
     () =>

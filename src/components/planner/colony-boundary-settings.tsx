@@ -12,26 +12,20 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import {
   guardPatrolRadiusBlocksByLevel,
+  guardTowerClaimRadiusByLevel,
   initialColonyRadiusChunks,
   maximumColonyRadiusChunks,
+  maximumInitialColonyRadiusChunks,
 } from "@/data/minecolonies-rules";
 import { usePlannerStore } from "@/stores/planner-store";
 
 export function ColonyBoundarySettings() {
   const {
     colonyRadiusChunks,
-    colonyBoundaryMode,
     preferredCommuteDistance,
     warningCommuteDistance,
     showCommuteConnections,
@@ -39,9 +33,6 @@ export function ColonyBoundarySettings() {
   } = usePlannerStore((state) => state.rules);
   const setColonyRadiusChunks = usePlannerStore(
     (state) => state.setColonyRadiusChunks,
-  );
-  const setColonyBoundaryMode = usePlannerStore(
-    (state) => state.setColonyBoundaryMode,
   );
   const setPreferredCommuteDistance = usePlannerStore(
     (state) => state.setPreferredCommuteDistance,
@@ -81,7 +72,7 @@ export function ColonyBoundarySettings() {
               id="colony-radius"
               type="number"
               min={1}
-              max={64}
+              max={maximumInitialColonyRadiusChunks}
               value={colonyRadiusChunks}
               onChange={(event) =>
                 setColonyRadiusChunks(Number(event.target.value))
@@ -92,25 +83,6 @@ export function ColonyBoundarySettings() {
             </span>
           </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="boundary-mode">Outside-boundary result</Label>
-          <Select
-            value={colonyBoundaryMode}
-            onValueChange={(value) => {
-              if (value === "warning" || value === "invalid") {
-                setColonyBoundaryMode(value);
-              }
-            }}
-          >
-            <SelectTrigger id="boundary-mode" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="warning">Warning</SelectItem>
-              <SelectItem value="invalid">Invalid</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
         <Button
           variant="outline"
           size="sm"
@@ -119,8 +91,9 @@ export function ColonyBoundarySettings() {
           Reset to source default ({initialColonyRadiusChunks})
         </Button>
         <p className="text-xs text-muted-foreground">
-          Buildings add square, level-based chunk claims up to the source
-          default maximum of {maximumColonyRadiusChunks} chunks from Town Hall.
+          Like the game, the complete current-level blueprint must fit inside
+          land claimed before it is placed. Valid colony buildings then expand
+          the claim, up to {maximumColonyRadiusChunks} chunks from Town Hall.
         </p>
         <Separator />
         <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -166,11 +139,14 @@ export function ColonyBoundarySettings() {
         </div>
         <Separator />
         <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Guard patrol
+          Guard map protection
         </h3>
         <p className="text-xs text-muted-foreground">
-          Patrol radius follows building level:{" "}
-          {guardPatrolRadiusBlocksByLevel.join(", ")} blocks for levels 1–5.
+          The game map draws Guard Tower protection as square half-widths of{" "}
+          {guardTowerClaimRadiusByLevel.map((radius) => radius * 16).join(", ")}{" "}
+          blocks for levels 1–5. The larger patrol limits ({" "}
+          {guardPatrolRadiusBlocksByLevel.join(", ")} blocks) govern patrol
+          targets and are not the map coverage overlay.
         </p>
         <div className="flex items-center justify-between gap-3">
           <Label htmlFor="guard-overlays" className="leading-5">

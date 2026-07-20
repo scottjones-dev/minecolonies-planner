@@ -12,6 +12,7 @@ import {
   Stage,
   Text,
 } from "react-konva";
+import { toast } from "sonner";
 import { getStylePackById } from "@/data";
 import {
   getEntranceMarker,
@@ -29,11 +30,13 @@ import {
 } from "@/lib/validation/collisions";
 import {
   findColonyBoundaryViolations,
+  findColonyPlacementViolations,
   getClaimedChunks,
+  getPlacementErrorMessage,
 } from "@/lib/validation/colony-boundary";
 import { findCommuteResults } from "@/lib/validation/commute";
 import {
-  getGuardPatrolRadius,
+  getGuardMapRange,
   isGuardBuilding,
 } from "@/lib/validation/guard-coverage";
 import { usePlannerStore } from "@/stores/planner-store";
@@ -101,6 +104,7 @@ function getGridLines(
 
 export function PlannerCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const moveOriginRef = useRef<{ x: number; z: number } | null>(null);
   const [size, setSize] = useState<Size>({ width: 0, height: 0 });
   const [movingBuildingId, setMovingBuildingId] = useState<string | null>(null);
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
@@ -155,8 +159,8 @@ export function PlannerCanvas() {
     [buildings, colonyRadiusChunks],
   );
   const boundaryViolationIds = useMemo(
-    () => new Set(findColonyBoundaryViolations(buildings)),
-    [buildings],
+    () => new Set(findColonyBoundaryViolations(buildings, colonyRadiusChunks)),
+    [buildings, colonyRadiusChunks],
   );
   const commuteResults = useMemo(
     () =>
@@ -287,20 +291,28 @@ export function PlannerCanvas() {
               />
             ))}
             {showGuardCoverage
-              ? buildings
-                  .filter(isGuardBuilding)
-                  .map((guard) => (
-                    <Circle
+              ? buildings.filter(isGuardBuilding).map((guard) => {
+                  const range = getGuardMapRange(guard);
+                  return range > 0 ? (
+                    <Rect
                       key={`guard-coverage-${guard.id}`}
-                      x={worldBlockToCanvasCoordinate(guard.x)}
-                      y={worldBlockToCanvasCoordinate(guard.z)}
-                      radius={getGuardPatrolRadius(guard) * BLOCK_SIZE}
+                      x={
+                        worldBlockToCanvasCoordinate(guard.x) -
+                        range * BLOCK_SIZE
+                      }
+                      y={
+                        worldBlockToCanvasCoordinate(guard.z) -
+                        range * BLOCK_SIZE
+                      }
+                      width={range * 2 * BLOCK_SIZE}
+                      height={range * 2 * BLOCK_SIZE}
                       fill="#2563eb0d"
                       stroke="#2563eb"
                       strokeWidth={2 / zoom}
                       dash={[10 / zoom, 6 / zoom]}
                     />
-                  ))
+                  ) : null;
+                })
               : null}
             {showCommuteConnections
               ? commuteResults.map((result) => {
@@ -401,6 +413,10 @@ export function PlannerCanvas() {
                   }}
                   onDragStart={(event) => {
                     event.cancelBubble = true;
+                    moveOriginRef.current = {
+                      x: building.x,
+                      z: building.z,
+                    };
                     setMovingBuildingId(building.id);
                     selectBuilding(building.id);
                   }}
@@ -412,24 +428,46 @@ export function PlannerCanvas() {
                       x: worldBlockToCanvasCoordinate(x),
                       y: worldBlockToCanvasCoordinate(z),
                     });
-                    const currentBuilding = usePlannerStore
-                      .getState()
-                      .buildings.find(
-                        (candidate) => candidate.id === building.id,
-                      );
-
-                    if (
-                      currentBuilding &&
-                      (currentBuilding.x !== x || currentBuilding.z !== z)
-                    ) {
-                      updateBuilding(building.id, { x, z });
-                    }
                   }}
                   onDragEnd={(event) => {
                     event.cancelBubble = true;
                     const x = canvasCoordinateToWorldBlock(event.target.x());
                     const z = canvasCoordinateToWorldBlock(event.target.y());
-                    updateBuilding(building.id, { x, z });
+                    const currentViolations = new Set(
+                      findColonyPlacementViolations(
+                        buildings,
+                        colonyRadiusChunks,
+                      ).map((violation) => violation.buildingId),
+                    );
+                    const candidateBuildings = buildings.map((candidate) =>
+                      candidate.id === building.id
+                        ? { ...candidate, x, z }
+                        : candidate,
+                    );
+                    const newViolation = findColonyPlacementViolations(
+                      candidateBuildings,
+                      colonyRadiusChunks,
+                    ).find(
+                      (violation) =>
+                        violation.buildingId === building.id ||
+                        !currentViolations.has(violation.buildingId),
+                    );
+
+                    if (newViolation) {
+                      const origin = moveOriginRef.current;
+                      if (origin) {
+                        event.target.position({
+                          x: worldBlockToCanvasCoordinate(origin.x),
+                          y: worldBlockToCanvasCoordinate(origin.z),
+                        });
+                      }
+                      toast.error(
+                        getPlacementErrorMessage(newViolation.reason),
+                      );
+                    } else {
+                      updateBuilding(building.id, { x, z });
+                    }
+                    moveOriginRef.current = null;
                     setMovingBuildingId(null);
                   }}
                 >
