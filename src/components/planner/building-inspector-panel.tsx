@@ -2,7 +2,17 @@
 
 import { Building2, RotateCw, Trash2 } from "lucide-react";
 import { useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { fortressStylePack } from "@/data";
 import { usePlannerStore } from "@/stores/planner-store";
 import {
@@ -16,6 +26,13 @@ const directions: Direction[] = ["north", "east", "south", "west"];
 
 function getNextRotation(rotation: BuildingRotation): BuildingRotation {
   return ((rotation + 90) % 360) as BuildingRotation;
+}
+
+function formatBuildingType(buildingType: string) {
+  return buildingType
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 function getRotatedDirection(direction: Direction, rotation: BuildingRotation) {
@@ -82,13 +99,20 @@ export function BuildingInspectorPanel() {
     );
   }
 
-  const variant = fortressStylePack.variants.find(
+  const stylePack =
+    selectedBuilding.stylePackId === fortressStylePack.id
+      ? fortressStylePack
+      : undefined;
+  const variant = stylePack?.variants.find(
     (candidate) => candidate.id === selectedBuilding.variantId,
   );
   const level =
     variant?.levels.find(
       (candidate) => candidate.level === selectedBuilding.currentLevel,
     ) ?? variant?.levels[0];
+  const availableLevels = [...(variant?.levels ?? [])].sort(
+    (first, second) => first.level - second.level,
+  );
   const unrotatedWidth = level ? getBoundsWidth(level.bounds) : 1;
   const unrotatedDepth = level ? getBoundsDepth(level.bounds) : 1;
   const swapsDimensions =
@@ -105,12 +129,147 @@ export function BuildingInspectorPanel() {
         <h2 className="truncate text-sm font-semibold">
           {variant?.name ?? "Placed building"}
         </h2>
-        <p className="mt-1 text-xs text-muted-foreground">
-          X {selectedBuilding.x} · Z {selectedBuilding.z}
-        </p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          <Badge variant="secondary">
+            {stylePack?.name ?? selectedBuilding.stylePackId}
+          </Badge>
+          <Badge variant="outline">
+            {variant
+              ? formatBuildingType(variant.buildingType)
+              : selectedBuilding.variantId}
+          </Badge>
+        </div>
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+        <section className="space-y-3" aria-labelledby="building-details">
+          <h3
+            id="building-details"
+            className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+          >
+            Building
+          </h3>
+          <dl className="space-y-2 text-sm">
+            <div className="flex items-start justify-between gap-4">
+              <dt className="text-muted-foreground">Style</dt>
+              <dd className="text-right font-medium">
+                {stylePack?.name ?? selectedBuilding.stylePackId}
+              </dd>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <dt className="text-muted-foreground">Type</dt>
+              <dd className="text-right font-medium">
+                {variant ? formatBuildingType(variant.buildingType) : "Unknown"}
+              </dd>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <dt className="text-muted-foreground">Variant</dt>
+              <dd className="max-w-40 text-right font-medium">
+                {variant?.name ?? selectedBuilding.variantId}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <Separator />
+
+        <section className="space-y-3" aria-labelledby="building-levels">
+          <h3
+            id="building-levels"
+            className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+          >
+            Upgrade levels
+          </h3>
+          <div className="space-y-2">
+            <Label htmlFor="current-level">Current level</Label>
+            <Select
+              value={String(selectedBuilding.currentLevel)}
+              onValueChange={(value) => {
+                const currentLevel = Number(value);
+                updateBuilding(selectedBuilding.id, {
+                  currentLevel,
+                  reserveThroughLevel: Math.max(
+                    currentLevel,
+                    selectedBuilding.reserveThroughLevel,
+                  ),
+                });
+              }}
+            >
+              <SelectTrigger id="current-level" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableLevels.map((candidate) => (
+                  <SelectItem
+                    key={candidate.level}
+                    value={String(candidate.level)}
+                  >
+                    Level {candidate.level}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="reserve-level">Reserve through level</Label>
+            <Select
+              value={String(selectedBuilding.reserveThroughLevel)}
+              onValueChange={(value) =>
+                updateBuilding(selectedBuilding.id, {
+                  reserveThroughLevel: Math.max(
+                    selectedBuilding.currentLevel,
+                    Number(value),
+                  ),
+                })
+              }
+            >
+              <SelectTrigger id="reserve-level" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableLevels
+                  .filter(
+                    (candidate) =>
+                      candidate.level >= selectedBuilding.currentLevel,
+                  )
+                  .map((candidate) => (
+                    <SelectItem
+                      key={candidate.level}
+                      value={String(candidate.level)}
+                    >
+                      Level {candidate.level}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </section>
+
+        <Separator />
+
+        <section className="space-y-3" aria-labelledby="building-position">
+          <h3
+            id="building-position"
+            className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+          >
+            Position
+          </h3>
+          <dl className="grid grid-cols-2 gap-3 text-sm">
+            <div className="rounded-lg border p-3">
+              <dt className="text-xs text-muted-foreground">World X</dt>
+              <dd className="mt-1 font-mono font-medium">
+                {selectedBuilding.x}
+              </dd>
+            </div>
+            <div className="rounded-lg border p-3">
+              <dt className="text-xs text-muted-foreground">World Z</dt>
+              <dd className="mt-1 font-mono font-medium">
+                {selectedBuilding.z}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-lg border p-3">
             <dt className="text-xs text-muted-foreground">Footprint</dt>
