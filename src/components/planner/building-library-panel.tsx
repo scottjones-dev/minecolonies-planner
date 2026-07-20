@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fortressStylePack } from "@/data";
+import { stylePacks } from "@/data";
 import { cn } from "@/lib/utils";
 import { usePlannerStore } from "@/stores/planner-store";
 import {
@@ -27,8 +27,6 @@ import {
   getBoundsDepth,
   getBoundsWidth,
 } from "@/types/minecolonies";
-
-const stylePacks = [fortressStylePack];
 
 const categoryLabels: Record<BuildingCategory, string> = {
   housing: "Housing",

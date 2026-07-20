@@ -13,14 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { fortressStylePack } from "@/data";
-import { usePlannerStore } from "@/stores/planner-store";
+import { getStylePackById } from "@/data";
 import {
-  type BuildingRotation,
-  type Direction,
-  getBoundsDepth,
-  getBoundsWidth,
-} from "@/types/minecolonies";
+  getLevelFootprint,
+  getReservedFootprint,
+} from "@/lib/building-geometry";
+import { usePlannerStore } from "@/stores/planner-store";
+import type { BuildingRotation, Direction } from "@/types/minecolonies";
 
 const directions: Direction[] = ["north", "east", "south", "west"];
 
@@ -99,10 +98,7 @@ export function BuildingInspectorPanel() {
     );
   }
 
-  const stylePack =
-    selectedBuilding.stylePackId === fortressStylePack.id
-      ? fortressStylePack
-      : undefined;
+  const stylePack = getStylePackById(selectedBuilding.stylePackId);
   const variant = stylePack?.variants.find(
     (candidate) => candidate.id === selectedBuilding.variantId,
   );
@@ -113,12 +109,16 @@ export function BuildingInspectorPanel() {
   const availableLevels = [...(variant?.levels ?? [])].sort(
     (first, second) => first.level - second.level,
   );
-  const unrotatedWidth = level ? getBoundsWidth(level.bounds) : 1;
-  const unrotatedDepth = level ? getBoundsDepth(level.bounds) : 1;
-  const swapsDimensions =
-    selectedBuilding.rotation === 90 || selectedBuilding.rotation === 270;
-  const width = swapsDimensions ? unrotatedDepth : unrotatedWidth;
-  const depth = swapsDimensions ? unrotatedWidth : unrotatedDepth;
+  const currentFootprint = level
+    ? getLevelFootprint(level, selectedBuilding.rotation)
+    : null;
+  const reservedFootprint = variant
+    ? getReservedFootprint(
+        variant.levels,
+        selectedBuilding.reserveThroughLevel,
+        selectedBuilding.rotation,
+      )
+    : null;
   const entranceDirection = level?.entrance
     ? getRotatedDirection(level.entrance.direction, selectedBuilding.rotation)
     : null;
@@ -272,18 +272,26 @@ export function BuildingInspectorPanel() {
 
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-lg border p-3">
-            <dt className="text-xs text-muted-foreground">Footprint</dt>
+            <dt className="text-xs text-muted-foreground">Current footprint</dt>
             <dd className="mt-1 font-mono font-medium">
-              {width}×{depth}
+              {currentFootprint?.width ?? 1}×{currentFootprint?.depth ?? 1}
             </dd>
           </div>
           <div className="rounded-lg border p-3">
-            <dt className="text-xs text-muted-foreground">Rotation</dt>
+            <dt className="text-xs text-muted-foreground">
+              Reserved footprint
+            </dt>
             <dd className="mt-1 font-mono font-medium">
-              {selectedBuilding.rotation}°
+              {reservedFootprint?.width ?? 1}×{reservedFootprint?.depth ?? 1}
             </dd>
           </div>
         </dl>
+        <p className="text-xs text-muted-foreground">
+          Rotation:{" "}
+          <span className="font-mono font-medium text-foreground">
+            {selectedBuilding.rotation}°
+          </span>
+        </p>
         {entranceDirection ? (
           <p className="text-xs text-muted-foreground">
             Entrance faces{" "}
