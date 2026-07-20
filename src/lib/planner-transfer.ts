@@ -10,6 +10,7 @@ import type {
   StylePack,
   Vector3,
 } from "@/types/minecolonies";
+import { mineColoniesBuildingCategories } from "@/types/minecolonies";
 
 export const TRANSFER_SCHEMA_VERSION = 1;
 export const IMPORTED_STYLE_PACKS_STORAGE_KEY =
@@ -34,16 +35,17 @@ export type PlannerTransferDocument =
   | LayoutTransferDocument
   | StylePackTransferDocument;
 
-const categories: BuildingCategory[] = [
-  "housing",
-  "food",
-  "production",
-  "storage",
-  "military",
-  "education",
-  "services",
-  "decoration",
-];
+const categories: readonly BuildingCategory[] = mineColoniesBuildingCategories;
+const legacyCategoryMap: Record<string, BuildingCategory> = {
+  housing: "fundamentals",
+  food: "agriculture",
+  production: "craftsmanship",
+  storage: "craftsmanship",
+  military: "military",
+  education: "education",
+  services: "fundamentals",
+  decoration: "decorations",
+};
 const roles: BuildingRole[] = ["residence", "workplace", "other"];
 const directions: Direction[] = ["north", "east", "south", "west"];
 
@@ -103,6 +105,57 @@ function isBuildingLevel(value: unknown): value is BuildingLevelDefinition {
   );
 }
 
+function normalizeCategory(value: unknown): BuildingCategory | null {
+  if (categories.includes(value as BuildingCategory)) {
+    return value as BuildingCategory;
+  }
+
+  return typeof value === "string" ? (legacyCategoryMap[value] ?? null) : null;
+}
+
+function normalizeStylePack(value: unknown): unknown {
+  if (!isRecord(value) || !Array.isArray(value.variants)) {
+    return value;
+  }
+
+  const variants = value.variants.map((variant, index) => {
+    if (!isRecord(variant)) return variant;
+    const category = normalizeCategory(variant.category);
+    if (!category) return variant;
+
+    return {
+      ...variant,
+      category,
+      categoryPath:
+        typeof variant.categoryPath === "string" &&
+        variant.categoryPath.length > 0
+          ? variant.categoryPath
+          : category,
+      gameOrder: isInteger(variant.gameOrder) ? variant.gameOrder : index,
+    };
+  });
+  const presentCategories = new Set(
+    variants.flatMap((variant) =>
+      isRecord(variant) && normalizeCategory(variant.category)
+        ? [normalizeCategory(variant.category) as BuildingCategory]
+        : [],
+    ),
+  );
+  const requestedCategoryOrder = Array.isArray(value.categoryOrder)
+    ? value.categoryOrder
+        .map(normalizeCategory)
+        .filter((category): category is BuildingCategory => category !== null)
+    : [];
+  const categoryOrder = [
+    ...new Set([
+      ...requestedCategoryOrder,
+      ...categories.filter((category) => presentCategories.has(category)),
+    ]),
+  ];
+
+  return { ...value, categoryOrder, variants };
+}
+
 export function isStylePack(value: unknown): value is StylePack {
   if (
     !isRecord(value) ||
@@ -113,6 +166,14 @@ export function isStylePack(value: unknown): value is StylePack {
     !["built-in", "modpack", "custom", "imported"].includes(
       value.source as string,
     ) ||
+    (value.categoryOrder !== undefined &&
+      (!Array.isArray(value.categoryOrder) ||
+        !value.categoryOrder.every(
+          (category) =>
+            typeof category === "string" &&
+            categories.includes(category as BuildingCategory),
+        ) ||
+        new Set(value.categoryOrder).size !== value.categoryOrder.length)) ||
     !Array.isArray(value.variants) ||
     value.variants.length === 0
   ) {
@@ -132,6 +193,11 @@ export function isStylePack(value: unknown): value is StylePack {
       typeof variant.buildingType !== "string" ||
       variant.buildingType.length === 0 ||
       !categories.includes(variant.category as BuildingCategory) ||
+      (variant.categoryPath !== undefined &&
+        (typeof variant.categoryPath !== "string" ||
+          variant.categoryPath.length === 0)) ||
+      (variant.gameOrder !== undefined &&
+        (!isInteger(variant.gameOrder) || variant.gameOrder < 0)) ||
       !roles.includes(variant.role as BuildingRole) ||
       (variant.isGuard !== undefined && typeof variant.isGuard !== "boolean") ||
       !Array.isArray(variant.levels) ||
@@ -178,13 +244,14 @@ export function parsePlannerTransferDocument(
   }
 
   if (value.kind === "minecolonies-style-catalog") {
-    if (typeof value.exportedAt !== "string" || !isStylePack(value.stylePack)) {
+    const stylePack = normalizeStylePack(value.stylePack);
+    if (typeof value.exportedAt !== "string" || !isStylePack(stylePack)) {
       throw new Error(
         "The style catalogue does not match the expected schema.",
       );
     }
 
-    return value as StylePackTransferDocument;
+    return { ...value, stylePack } as StylePackTransferDocument;
   }
 
   throw new Error(
@@ -230,12 +297,12 @@ export function readImportedStylePacks(): StylePack[] {
       !isRecord(value) ||
       value.schemaVersion !== TRANSFER_SCHEMA_VERSION ||
       !Array.isArray(value.stylePacks) ||
-      !value.stylePacks.every(isStylePack)
+      !value.stylePacks.map(normalizeStylePack).every(isStylePack)
     ) {
       return [];
     }
 
-    return value.stylePacks;
+    return value.stylePacks.map(normalizeStylePack) as StylePack[];
   } catch {
     return [];
   }

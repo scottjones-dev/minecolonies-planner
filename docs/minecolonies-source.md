@@ -9,6 +9,12 @@ The generated data is pinned to MineColonies commit
 and the relevant upstream file paths are embedded in
 `src/data/generated/minecolonies-1.20.1.json`.
 
+Build-tool ordering is matched to MineColonies' exact Structurize dependency,
+`v1.20.1-1.0.806-snapshot` at commit
+`8f6cad27f311eec2d8aee8b7c7bd58aa52edcd84`. Structurize sorts categories by
+their subpath and blueprints by filename; the generated `categoryOrder`,
+`categoryPath`, and `gameOrder` fields preserve that traversal.
+
 ## Regenerating
 
 Place the MineColonies checkout at `minecolonies/`, or provide its location in
@@ -23,6 +29,8 @@ blueprints directly and derives each footprint from `size_x`, `size_y`,
 `size_z`, and Structurize's `primary_offset`. It currently captures:
 
 - all 461 Fortress blueprints, grouped into 167 variants;
+- the nine in-game Fortress categories, nested subcategories, and build-tool
+  display order;
 - exact dimensions, anchors, relative bounds, level, and source path;
 - colony configuration defaults;
 - generic, Town Hall, and Guard Tower claim radii by building level;

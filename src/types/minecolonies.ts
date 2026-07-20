@@ -1,14 +1,18 @@
 export type BuildingRotation = 0 | 90 | 180 | 270;
 
-export type BuildingCategory =
-  | "housing"
-  | "food"
-  | "production"
-  | "storage"
-  | "military"
-  | "education"
-  | "services"
-  | "decoration";
+export const mineColoniesBuildingCategories = [
+  "agriculture",
+  "craftsmanship",
+  "decorations",
+  "education",
+  "fundamentals",
+  "infrastructure",
+  "military",
+  "mystic",
+  "walls",
+] as const;
+
+export type BuildingCategory = (typeof mineColoniesBuildingCategories)[number];
 
 export type Direction = "north" | "east" | "south" | "west";
 export type BuildingRole = "residence" | "workplace" | "other";
@@ -46,6 +50,8 @@ export type BuildingVariant = {
   name: string;
   buildingType: string;
   category: BuildingCategory;
+  categoryPath?: string;
+  gameOrder?: number;
   role: BuildingRole;
   isGuard?: boolean;
   levels: BuildingLevelDefinition[];
@@ -55,6 +61,7 @@ export type StylePack = {
   id: string;
   name: string;
   source: "built-in" | "modpack" | "custom" | "imported";
+  categoryOrder?: BuildingCategory[];
   variants: BuildingVariant[];
 };
 

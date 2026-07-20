@@ -6,6 +6,9 @@ The repository also includes a reproducible build-time extractor for
 source-backed MineColonies rules and blueprint geometry. See
 [`docs/minecolonies-source.md`](docs/minecolonies-source.md).
 
+The Fortress library mirrors the in-game Build Tool's nine categories, nested
+subcategories, and blueprint ordering from the pinned Structurize version.
+
 ## Requirements
 
 - Node.js 20 or newer
