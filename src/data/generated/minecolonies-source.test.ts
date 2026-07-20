@@ -33,15 +33,9 @@ describe("generated MineColonies source data", () => {
         expect(level.bounds.maxX - level.bounds.minX + 1).toBe(level.size.x);
         expect(level.bounds.maxY - level.bounds.minY + 1).toBe(level.size.y);
         expect(level.bounds.maxZ - level.bounds.minZ + 1).toBe(level.size.z);
-        expect(level.bounds.minX).toBe(
-          level.anchor.x === 0 ? 0 : -level.anchor.x,
-        );
-        expect(level.bounds.minY).toBe(
-          level.anchor.y === 0 ? 0 : -level.anchor.y,
-        );
-        expect(level.bounds.minZ).toBe(
-          level.anchor.z === 0 ? 0 : -level.anchor.z,
-        );
+        expect(level.bounds.minX).toBe(0);
+        expect(level.bounds.minY).toBe(0);
+        expect(level.bounds.minZ).toBe(0);
       }
     }
   });

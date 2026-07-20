@@ -44,8 +44,8 @@ describe("collision and boundary validation", () => {
   it("finds collisions from rotated reserved building bounds", () => {
     const buildings = [
       placed("a", "fortress-residence-1", 0, 0),
-      placed("b", "fortress-bakery-1", 4, 0),
-      placed("c", "fortress-bakery-1", 100, 100),
+      placed("b", "fortress-craftsmanship-luxury-baker", 4, 0),
+      placed("c", "fortress-craftsmanship-luxury-baker", 100, 100),
     ];
 
     expect(findBuildingCollisions(buildings)).toEqual([
@@ -99,7 +99,13 @@ describe("commute and guard distance validation", () => {
 
   it("supports either and both guard coverage modes", () => {
     const residence = placed("home", "fortress-residence-1", 0, 0);
-    const workplace = placed("work", "fortress-bakery-1", 100, 0, residence.id);
+    const workplace = placed(
+      "work",
+      "fortress-craftsmanship-luxury-baker",
+      100,
+      0,
+      residence.id,
+    );
     const guard = placed("guard", "fortress-guard-tower-1", 0, 10);
     const buildings = [residence, workplace, guard];
 

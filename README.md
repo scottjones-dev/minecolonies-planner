@@ -49,8 +49,12 @@ Named layouts and imported style catalogues are stored in browser `localStorage`
 
 ## Known MVP limitations
 
-- The included Fortress catalogue is representative sample data, not a complete MineColonies style pack.
-- Building geometry must be supplied as JSON; automatic mod JAR, archive, schematic, and NBT extraction is out of scope.
+- The built-in Fortress catalogue contains all 461 blueprints from the pinned
+  MineColonies 1.20.1 source revision. Other styles must currently be supplied
+  as planner catalogue JSON.
+- MineColonies blueprint NBT extraction is a build-time maintainer workflow;
+  the browser importer intentionally does not process mod JARs, archives,
+  schematics, or NBT files.
 - The canvas is optimized for desktop planning. Small screens can view the map and header actions, while the full building library and inspector require a large viewport.
 - Plans are device/browser-local unless exported manually. Clearing site storage removes unexported layouts and imported styles.
 - There is no terrain, elevation, road/pathfinding, resource-cost, worker simulation, multiplayer, or cloud synchronization.
