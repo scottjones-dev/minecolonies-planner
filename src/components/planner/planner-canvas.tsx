@@ -2,10 +2,11 @@
 
 import type Konva from "konva";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Layer, Line, Stage, Text } from "react-konva";
+import { Circle, Group, Layer, Line, Stage, Text } from "react-konva";
+import { fortressStylePack } from "@/data";
+import { BLOCK_SIZE } from "@/lib/planner-coordinates";
 import { usePlannerStore } from "@/stores/planner-store";
 
-const BLOCK_SIZE = 24;
 const CHUNK_SIZE = 16;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
@@ -71,6 +72,10 @@ export function PlannerCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<Size>({ width: 0, height: 0 });
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
+  const buildings = usePlannerStore((state) => state.buildings);
+  const selectedBuildingId = usePlannerStore(
+    (state) => state.selectedBuildingId,
+  );
   const setMapZoom = usePlannerStore((state) => state.setMapZoom);
   const setMapPan = usePlannerStore((state) => state.setMapPan);
 
@@ -181,6 +186,35 @@ export function PlannerCanvas() {
               fontSize={12 / zoom}
               listening={false}
             />
+            {buildings.map((building) => {
+              const variant = fortressStylePack.variants.find(
+                (candidate) => candidate.id === building.variantId,
+              );
+              const selected = building.id === selectedBuildingId;
+
+              return (
+                <Group
+                  key={building.id}
+                  x={building.x * BLOCK_SIZE}
+                  y={building.z * BLOCK_SIZE}
+                >
+                  <Circle
+                    radius={selected ? 7 / zoom : 6 / zoom}
+                    fill={selected ? "#0f766e" : "#334155"}
+                    stroke="#ffffff"
+                    strokeWidth={2 / zoom}
+                  />
+                  <Text
+                    x={10 / zoom}
+                    y={-7 / zoom}
+                    text={variant?.name ?? building.variantId}
+                    fill="#0f172a"
+                    fontSize={12 / zoom}
+                    padding={2 / zoom}
+                  />
+                </Group>
+              );
+            })}
           </Layer>
         </Stage>
       ) : null}
