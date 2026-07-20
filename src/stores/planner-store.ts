@@ -1,25 +1,32 @@
 import { create } from "zustand";
 import type { PlacedBuilding } from "@/types/minecolonies";
 
-type PlannerState = {
+export type PlannerMapState = {
+  zoom: number;
+  panX: number;
+  panY: number;
+};
+
+export type PlannerRules = {
+  colonyRadiusChunks: number;
+  colonyBoundaryMode: "warning" | "invalid";
+  preferredCommuteDistance: number;
+  warningCommuteDistance: number;
+  showCommuteConnections: boolean;
+  guardCoverageRadius: number;
+  guardCoverageMode: "either" | "both";
+  showGuardCoverage: boolean;
+};
+
+export type PlannerSnapshot = {
   buildings: PlacedBuilding[];
-  selectedBuildingId: string | null;
   activeStylePackId: string;
-  map: {
-    zoom: number;
-    panX: number;
-    panY: number;
-  };
-  rules: {
-    colonyRadiusChunks: number;
-    colonyBoundaryMode: "warning" | "invalid";
-    preferredCommuteDistance: number;
-    warningCommuteDistance: number;
-    showCommuteConnections: boolean;
-    guardCoverageRadius: number;
-    guardCoverageMode: "either" | "both";
-    showGuardCoverage: boolean;
-  };
+  map: PlannerMapState;
+  rules: PlannerRules;
+};
+
+type PlannerState = PlannerSnapshot & {
+  selectedBuildingId: string | null;
 };
 
 type PlannerActions = {
@@ -41,6 +48,7 @@ type PlannerActions = {
   setGuardCoverageRadius: (radius: number) => void;
   setGuardCoverageMode: (mode: "either" | "both") => void;
   setShowGuardCoverage: (show: boolean) => void;
+  loadSnapshot: (snapshot: PlannerSnapshot) => void;
   resetPlanner: () => void;
 };
 
@@ -211,7 +219,25 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       },
     }));
   },
+  loadSnapshot: (snapshot) => {
+    set({
+      buildings: snapshot.buildings,
+      activeStylePackId: snapshot.activeStylePackId,
+      map: snapshot.map,
+      rules: snapshot.rules,
+      selectedBuildingId: null,
+    });
+  },
   resetPlanner: () => {
     set(getInitialState());
   },
 }));
+
+export function getPlannerSnapshot(state: PlannerState): PlannerSnapshot {
+  return {
+    buildings: state.buildings,
+    activeStylePackId: state.activeStylePackId,
+    map: state.map,
+    rules: state.rules,
+  };
+}
