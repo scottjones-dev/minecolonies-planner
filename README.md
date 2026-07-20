@@ -1,6 +1,14 @@
 # MineColonies Planner
 
-A browser-based planning tool for laying out a Minecraft MineColonies settlement before committing blocks in-game. The MVP provides a block grid, upgrade-aware footprints, collision and colony-boundary checks, residence-to-work assignments, commute warnings, Guard Tower coverage, named local saves, and versioned JSON transfer.
+[MineColonies Planner](https://github.com/scottjones-dev/minecolonies-planner)
+is a publishable Next.js website and browser-based workspace for laying out a
+Minecraft MineColonies settlement before committing blocks in-game. The public
+landing page introduces the project; `/planner` opens the local-first planning
+tool.
+
+It provides a block grid, upgrade-aware footprints, collision and square
+colony-boundary checks, residence-to-work assignments, commute warnings,
+level-aware guard coverage, named local saves, and versioned JSON transfer.
 
 The repository also includes a reproducible build-time extractor for
 source-backed MineColonies rules and blueprint geometry. See
@@ -22,12 +30,31 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). A production verification run is:
+Open [http://localhost:3000](http://localhost:3000) for the website or
+[http://localhost:3000/planner](http://localhost:3000/planner) for the planner.
+The contact form remains safely unavailable until Resend is configured.
+
+For local email delivery, copy `.env.example` to `.env.local` and replace every
+placeholder. `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, and `CONTACT_FROM_EMAIL` stay
+on the server. `NEXT_PUBLIC_SITE_URL` and the optional
+`NEXT_PUBLIC_CONTACT_EMAIL` are public build-time settings.
+
+A production verification run is:
 
 ```bash
 pnpm test
+pnpm lint
 pnpm build
 ```
+
+See [`docs/deployment.md`](docs/deployment.md) for the Resend domain setup,
+Vercel environment table, deployment procedure, and production smoke test.
+
+## Project links
+
+- Source and issues: [GitHub repository](https://github.com/scottjones-dev/minecolonies-planner)
+- Creator: [Scott William Jones on GitHub](https://github.com/scottjones-dev)
+- Scott's work: [Alice Systems](https://alicesystems.co.uk)
 
 ## MVP usage
 
@@ -61,7 +88,7 @@ chunk boundaries.
 
 Named layouts and imported style catalogues are stored in browser `localStorage`. No account, server, or external database is used. Exported JSON includes an explicit schema version and is validated before import. The importer does not execute or parse mod JARs, archives, schematics, or NBT data.
 
-## Known MVP limitations
+## Current limitations
 
 - The built-in library contains all 9,445 blueprints from all 23 style packs in
   the pinned MineColonies 1.20.1 source revision. Custom styles can still be
@@ -72,4 +99,12 @@ Named layouts and imported style catalogues are stored in browser `localStorage`
 - The canvas is optimized for desktop planning. Small screens can view the map and header actions, while the full building library and inspector require a large viewport.
 - Plans are device/browser-local unless exported manually. Clearing site storage removes unexported layouts and imported styles.
 - There is no terrain, elevation, road/pathfinding, resource-cost, worker simulation, multiplayer, or cloud synchronization.
-- Imported catalogue IDs cannot replace the built-in Fortress fallback.
+- Imported catalogue IDs cannot replace any built-in style pack.
+
+## Attribution
+
+This is an unofficial fan-built tool and is not affiliated with Mojang or the
+MineColonies team. Generated blueprint metadata is derived from the pinned
+MineColonies and Structurize sources identified in
+[`docs/minecolonies-source.md`](docs/minecolonies-source.md) and retains its
+GPL-3.0 source attribution.
