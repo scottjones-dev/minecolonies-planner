@@ -1,22 +1,16 @@
 import {
-  Box,
   Building2,
   Castle,
   Download,
   Save,
   Settings2,
-  Shield,
   Upload,
 } from "lucide-react";
+import { BuildingLibraryPanel } from "@/components/planner/building-library-panel";
+import { PlannerDndContext } from "@/components/planner/planner-dnd-context";
 import { PlannerMapPanel } from "@/components/planner/planner-map-panel";
 import { PlannerStatusBar } from "@/components/planner/planner-status-bar";
 import { Button } from "@/components/ui/button";
-
-const librarySections = [
-  { name: "Housing", count: 0, icon: Building2 },
-  { name: "Production", count: 0, icon: Box },
-  { name: "Military", count: 0, icon: Shield },
-];
 
 export default function Home() {
   return (
@@ -53,65 +47,40 @@ export default function Home() {
         </nav>
       </header>
 
-      <div className="grid min-h-0 grid-cols-1 overflow-hidden lg:grid-cols-[18rem_minmax(0,1fr)_20rem]">
-        <aside className="hidden min-h-0 flex-col border-r bg-card lg:flex">
-          <div className="border-b px-4 py-3">
-            <h2 className="text-sm font-semibold">Building library</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Buildings from the selected MineColonies style pack will appear
-              here.
-            </p>
-          </div>
+      <PlannerDndContext>
+        <div className="grid min-h-0 grid-cols-1 overflow-hidden lg:grid-cols-[18rem_minmax(0,1fr)_20rem]">
+          <aside className="hidden min-h-0 border-r bg-card lg:block">
+            <BuildingLibraryPanel />
+          </aside>
 
-          <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
-            {librarySections.map(({ name, count, icon: Icon }) => (
-              <section key={name} className="rounded-lg border bg-background">
-                <div className="flex items-center gap-2 px-3 py-2.5">
-                  <Icon
-                    className="size-4 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  <h3 className="flex-1 text-sm font-medium">{name}</h3>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                    {count}
-                  </span>
-                </div>
-              </section>
-            ))}
-          </div>
+          <PlannerMapPanel />
 
-          <div className="border-t p-3 text-xs text-muted-foreground">
-            Building data will be added in ALI-17.
-          </div>
-        </aside>
-
-        <PlannerMapPanel />
-
-        <aside className="hidden min-h-0 flex-col border-l bg-card lg:flex">
-          <div className="border-b px-4 py-3">
-            <h2 className="text-sm font-semibold">Building inspector</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              View and edit the selected building.
-            </p>
-          </div>
-
-          <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto p-6">
-            <div className="text-center">
-              <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-lg bg-muted">
-                <Building2
-                  className="size-5 text-muted-foreground"
-                  aria-hidden="true"
-                />
-              </div>
-              <p className="text-sm font-medium">Nothing selected</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                Select a placed building to inspect its level, rotation,
-                footprint, and validation state.
+          <aside className="hidden min-h-0 flex-col border-l bg-card lg:flex">
+            <div className="border-b px-4 py-3">
+              <h2 className="text-sm font-semibold">Building inspector</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                View and edit the selected building.
               </p>
             </div>
-          </div>
-        </aside>
-      </div>
+
+            <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto p-6">
+              <div className="text-center">
+                <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-lg bg-muted">
+                  <Building2
+                    className="size-5 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                </div>
+                <p className="text-sm font-medium">Nothing selected</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  Select a placed building to inspect its level, rotation,
+                  footprint, and validation state.
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </PlannerDndContext>
 
       <PlannerStatusBar />
     </main>
