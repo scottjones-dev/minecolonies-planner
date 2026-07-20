@@ -186,12 +186,12 @@ function readBlueprintMetadata(path) {
     size: { x: sizeX, y: sizeY, z: sizeZ },
     anchor,
     bounds: {
-      minX: -anchor.x,
-      maxX: sizeX - anchor.x - 1,
-      minY: -anchor.y,
-      maxY: sizeY - anchor.y - 1,
-      minZ: -anchor.z,
-      maxZ: sizeZ - anchor.z - 1,
+      minX: 0,
+      maxX: sizeX - 1,
+      minY: 0,
+      maxY: sizeY - 1,
+      minZ: 0,
+      maxZ: sizeZ - 1,
     },
   };
 }
@@ -229,13 +229,26 @@ function categoryFor(directory, baseName) {
 }
 
 function normalizeBuildingType(baseName) {
-  return baseName
+  const normalized = baseName
     .replace(/^alt/, "")
     .replace(/alt$/, "")
     .replaceAll(/([a-z])([A-Z])/g, "$1_$2")
     .replaceAll(/[^a-zA-Z0-9]+/g, "_")
     .toLowerCase();
+
+  return (
+    {
+      guardtower: "guard_tower",
+      townhall: "town_hall",
+    }[normalized] ?? normalized
+  );
 }
+
+const stableVariantIds = {
+  "fundamentals/residence": "fortress-residence-1",
+  "fundamentals/townhall": "fortress-town-hall-1",
+  "military/guardtower": "fortress-guard-tower-1",
+};
 
 const groups = new Map();
 for (const path of walkBlueprints(blueprintRoot).sort()) {
@@ -251,7 +264,9 @@ for (const path of walkBlueprints(blueprintRoot).sort()) {
   );
   const key = `${directoryPath}/${baseName}`;
   const group = groups.get(key) ?? {
-    id: `fortress-${key.replaceAll(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`,
+    id:
+      stableVariantIds[key] ??
+      `fortress-${key.replaceAll(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`,
     name: `Fortress ${titleCase(baseName)}`,
     buildingType: normalizeBuildingType(baseName),
     category,
