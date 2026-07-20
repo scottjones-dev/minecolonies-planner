@@ -27,6 +27,7 @@ import {
   findColonyBoundaryViolations,
   getColonyBoundary,
 } from "@/lib/validation/colony-boundary";
+import { findCommuteResults } from "@/lib/validation/commute";
 import { usePlannerStore } from "@/stores/planner-store";
 
 const CHUNK_SIZE = 16;
@@ -95,9 +96,13 @@ export function PlannerCanvas() {
   const [size, setSize] = useState<Size>({ width: 0, height: 0 });
   const [movingBuildingId, setMovingBuildingId] = useState<string | null>(null);
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
-  const { colonyRadiusChunks, colonyBoundaryMode } = usePlannerStore(
-    (state) => state.rules,
-  );
+  const {
+    colonyRadiusChunks,
+    colonyBoundaryMode,
+    preferredCommuteDistance,
+    warningCommuteDistance,
+    showCommuteConnections,
+  } = usePlannerStore((state) => state.rules);
   const buildings = usePlannerStore((state) => state.buildings);
   const selectedBuildingId = usePlannerStore(
     (state) => state.selectedBuildingId,
@@ -143,6 +148,14 @@ export function PlannerCanvas() {
   const boundaryViolationIds = useMemo(
     () => new Set(findColonyBoundaryViolations(buildings, colonyRadiusChunks)),
     [buildings, colonyRadiusChunks],
+  );
+  const commuteResults = useMemo(
+    () =>
+      findCommuteResults(buildings, {
+        preferredDistance: preferredCommuteDistance,
+        warningDistance: warningCommuteDistance,
+      }),
+    [buildings, preferredCommuteDistance, warningCommuteDistance],
   );
 
   const handleWheel = (event: Konva.KonvaEventObject<WheelEvent>) => {
@@ -251,6 +264,49 @@ export function PlannerCanvas() {
                 dash={[12 / zoom, 8 / zoom]}
               />
             ) : null}
+            {showCommuteConnections
+              ? commuteResults.map((result) => {
+                  const workplace = buildings.find(
+                    (building) => building.id === result.workplaceId,
+                  );
+                  const residence = result.residenceId
+                    ? buildings.find(
+                        (building) => building.id === result.residenceId,
+                      )
+                    : null;
+
+                  if (!workplace || !residence) {
+                    return null;
+                  }
+
+                  const color =
+                    result.state === "preferred"
+                      ? "#059669"
+                      : result.state === "warning"
+                        ? "#d97706"
+                        : "#dc2626";
+
+                  return (
+                    <Line
+                      key={`commute-${workplace.id}`}
+                      points={[
+                        workplace.x * BLOCK_SIZE,
+                        workplace.z * BLOCK_SIZE,
+                        residence.x * BLOCK_SIZE,
+                        residence.z * BLOCK_SIZE,
+                      ]}
+                      stroke={color}
+                      strokeWidth={3 / zoom}
+                      dash={
+                        result.state === "preferred"
+                          ? undefined
+                          : [8 / zoom, 6 / zoom]
+                      }
+                      opacity={0.8}
+                    />
+                  );
+                })
+              : null}
           </Layer>
           <Layer>
             {buildings.map((building) => {
