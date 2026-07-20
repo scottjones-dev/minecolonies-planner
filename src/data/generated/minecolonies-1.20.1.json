@@ -7,11 +7,12 @@
     "license": "GPL-3.0",
     "sources": {
       "blueprints": "src/main/resources/blueprints/minecolonies/fortress",
-      "serverConfiguration": "src/main/java/com/minecolonies/core/configuration/ServerConfiguration.java",
-      "chunkClaims": "src/main/java/com/minecolonies/core/colony/claims/ChunkDataHelper.java",
+      "serverConfiguration": "src/main/java/com/minecolonies/api/configuration/ServerConfiguration.java",
+      "chunkClaims": "src/main/java/com/minecolonies/core/util/ChunkDataHelper.java",
       "buildingClaims": "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuilding.java",
-      "townHallClaims": "src/main/java/com/minecolonies/core/colony/buildings/BuildingTownHall.java",
-      "guardTowerClaims": "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingGuardTower.java"
+      "townHallClaims": "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingTownHall.java",
+      "guardTowerClaims": "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingGuardTower.java",
+      "guardPatrol": "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuildingGuards.java"
     }
   },
   "rules": {
@@ -13233,7 +13234,6 @@
         "buildingType": "moatgatehouse",
         "category": "decoration",
         "role": "other",
-        "isGuard": true,
         "levels": [
           {
             "level": 1,

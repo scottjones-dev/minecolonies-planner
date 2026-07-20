@@ -3,9 +3,17 @@ import {
   boundsOverlap,
   findBuildingCollisions,
 } from "@/lib/validation/collisions";
-import { boundsWithinColonyBoundary } from "@/lib/validation/colony-boundary";
+import {
+  boundsWithinColonyBoundary,
+  findColonyBoundaryViolations,
+  getClaimedChunks,
+  getColonyBoundary,
+} from "@/lib/validation/colony-boundary";
 import { getAnchorDistance, getCommuteState } from "@/lib/validation/commute";
-import { findGuardCoverageResults } from "@/lib/validation/guard-coverage";
+import {
+  getGuardPatrolRadius,
+  isAnchorWithinGuardPatrol,
+} from "@/lib/validation/guard-coverage";
 import type { PlacedBuilding } from "@/types/minecolonies";
 
 function placed(
@@ -53,33 +61,54 @@ describe("collision and boundary validation", () => {
     ]);
   });
 
-  it("requires the footprint inside the square colony boundary", () => {
+  it("uses MineColonies' circular maximum envelope for dynamic claims", () => {
     const boundary = {
       townHallId: "town-hall",
-      centerX: 0,
-      centerZ: 0,
-      radiusChunks: 1,
-      radiusBlocks: 16,
+      centerChunkX: 0,
+      centerChunkZ: 0,
+      maximumRadiusChunks: 20,
     };
 
     expect(
       boundsWithinColonyBoundary(
-        { minX: -5, maxX: 5, minZ: -5, maxZ: 5 },
+        { minX: 14 * 16, maxX: 14 * 16 + 1, minZ: 14 * 16, maxZ: 14 * 16 + 1 },
         boundary,
       ),
     ).toBe(true);
     expect(
       boundsWithinColonyBoundary(
-        { minX: 14, maxX: 18, minZ: -1, maxZ: 1 },
+        { minX: 15 * 16, maxX: 15 * 16 + 1, minZ: 15 * 16, maxZ: 15 * 16 + 1 },
         boundary,
       ),
     ).toBe(false);
-    expect(
-      boundsWithinColonyBoundary(
-        { minX: 14, maxX: 16, minZ: 14, maxZ: 16 },
-        boundary,
-      ),
-    ).toBe(true);
+  });
+
+  it("creates a square initial claim and square level-based building claims", () => {
+    const townHall = placed("town", "fortress-town-hall-1", 0, 0);
+    const baker = placed(
+      "baker",
+      "fortress-craftsmanship-luxury-baker",
+      10 * 16,
+      0,
+    );
+    const initialClaims = getClaimedChunks([townHall], 4);
+    const expandedClaims = getClaimedChunks([townHall, baker], 4);
+
+    expect(initialClaims).toHaveLength(81);
+    expect(initialClaims).toContainEqual({ x: -4, z: -4 });
+    expect(initialClaims).toContainEqual({ x: 4, z: 4 });
+    expect(expandedClaims).toContainEqual({ x: 9, z: -1 });
+    expect(expandedClaims).toContainEqual({ x: 11, z: 1 });
+  });
+
+  it("flags footprints outside the source maximum claim radius", () => {
+    const buildings = [
+      placed("town", "fortress-town-hall-1", 0, 0),
+      placed("far", "fortress-craftsmanship-luxury-baker", 21 * 16, 0),
+    ];
+
+    expect(getColonyBoundary(buildings)?.maximumRadiusChunks).toBe(20);
+    expect(findColonyBoundaryViolations(buildings)).toContain("far");
   });
 });
 
@@ -97,30 +126,16 @@ describe("commute and guard distance validation", () => {
     ).toBe("invalid");
   });
 
-  it("supports either and both guard coverage modes", () => {
-    const residence = placed("home", "fortress-residence-1", 0, 0);
-    const workplace = placed(
-      "work",
-      "fortress-craftsmanship-luxury-baker",
-      100,
-      0,
-      residence.id,
-    );
-    const guard = placed("guard", "fortress-guard-tower-1", 0, 10);
-    const buildings = [residence, workplace, guard];
+  it("uses each Guard Tower level's MineColonies patrol radius", () => {
+    const guard = placed("guard", "fortress-guard-tower-1", 0, 0);
+    const target = placed("target", "fortress-residence-1", 79, 0);
 
-    const either = findGuardCoverageResults(buildings, 20, "either").find(
-      (result) => result.buildingId === workplace.id,
-    );
-    const both = findGuardCoverageResults(buildings, 20, "both").find(
-      (result) => result.buildingId === workplace.id,
-    );
+    expect(getGuardPatrolRadius(guard)).toBe(80);
+    expect(isAnchorWithinGuardPatrol(target, [guard])).toBe(true);
 
-    expect(either).toMatchObject({
-      covered: false,
-      assignedResidenceCovered: true,
-      ruleValid: true,
-    });
-    expect(both?.ruleValid).toBe(false);
+    guard.currentLevel = 5;
+    target.x = 199;
+    expect(getGuardPatrolRadius(guard)).toBe(200);
+    expect(isAnchorWithinGuardPatrol(target, [guard])).toBe(true);
   });
 });

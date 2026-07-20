@@ -262,6 +262,7 @@ for (const path of walkBlueprints(blueprintRoot).sort()) {
     directoryPath.split("/")[0],
     baseName.toLowerCase(),
   );
+  const topLevelDirectory = directoryPath.split("/")[0];
   const key = `${directoryPath}/${baseName}`;
   const group = groups.get(key) ?? {
     id:
@@ -275,7 +276,8 @@ for (const path of walkBlueprints(blueprintRoot).sort()) {
       : category === "decoration"
         ? "other"
         : "workplace",
-    ...(/(guardtower|barrackstower|gatehouse)/i.test(baseName)
+    ...(topLevelDirectory === "military" &&
+    /(guardtower|barrackstower|gatehouse)/i.test(baseName)
       ? { isGuard: true }
       : {}),
     levels: [],
@@ -329,15 +331,17 @@ const document = {
     sources: {
       blueprints: "src/main/resources/blueprints/minecolonies/fortress",
       serverConfiguration:
-        "src/main/java/com/minecolonies/core/configuration/ServerConfiguration.java",
+        "src/main/java/com/minecolonies/api/configuration/ServerConfiguration.java",
       chunkClaims:
-        "src/main/java/com/minecolonies/core/colony/claims/ChunkDataHelper.java",
+        "src/main/java/com/minecolonies/core/util/ChunkDataHelper.java",
       buildingClaims:
         "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuilding.java",
       townHallClaims:
-        "src/main/java/com/minecolonies/core/colony/buildings/BuildingTownHall.java",
+        "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingTownHall.java",
       guardTowerClaims:
         "src/main/java/com/minecolonies/core/colony/buildings/workerbuildings/BuildingGuardTower.java",
+      guardPatrol:
+        "src/main/java/com/minecolonies/core/colony/buildings/AbstractBuildingGuards.java",
     },
   },
   rules: {

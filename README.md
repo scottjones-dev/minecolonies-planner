@@ -30,7 +30,9 @@ pnpm build
 1. Choose a style and drag a building from the library onto the map.
 2. Select a placed building to rotate it, choose current/reserved upgrade levels, assign a workplace residence, or delete it.
 3. Drag the map to pan and use the mouse wheel or trackpad to zoom. Buildings snap to whole Minecraft blocks.
-4. Open planner settings in the header to configure colony radius, commute thresholds, Guard Tower radius, and overlays.
+4. Open planner settings in the header to configure the server's initial
+   claim radius, commute thresholds, and overlays. Building claims and Guard
+   Tower patrol radii follow the pinned MineColonies rules by level.
 5. Use the named-layout controls to create, rename, switch, or delete browser-local plans. Changes save automatically.
 6. Use the import button for a versioned planner-layout or style-catalogue JSON file. The export menu downloads the active layout or style.
 
@@ -40,8 +42,9 @@ Press `?` in the app for keyboard help. With a building selected, press `R` to r
 
 - Red: invalid collision, boundary violation, commute, or missing required coverage.
 - Amber: warning or uncovered anchor.
-- Green: preferred commute or satisfied Guard Tower coverage.
-- Blue dashed circle: optional Guard Tower coverage overlay.
+- Green: preferred commute.
+- Chunk-aligned amber/red tiles: MineColonies square claim areas.
+- Blue dashed circle: level-based Guard Tower patrol overlay.
 
 ## Data and privacy
 

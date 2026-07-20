@@ -21,6 +21,11 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import {
+  guardPatrolRadiusBlocksByLevel,
+  initialColonyRadiusChunks,
+  maximumColonyRadiusChunks,
+} from "@/data/minecolonies-rules";
 import { usePlannerStore } from "@/stores/planner-store";
 
 export function ColonyBoundarySettings() {
@@ -30,8 +35,6 @@ export function ColonyBoundarySettings() {
     preferredCommuteDistance,
     warningCommuteDistance,
     showCommuteConnections,
-    guardCoverageRadius,
-    guardCoverageMode,
     showGuardCoverage,
   } = usePlannerStore((state) => state.rules);
   const setColonyRadiusChunks = usePlannerStore(
@@ -48,12 +51,6 @@ export function ColonyBoundarySettings() {
   );
   const setShowCommuteConnections = usePlannerStore(
     (state) => state.setShowCommuteConnections,
-  );
-  const setGuardCoverageRadius = usePlannerStore(
-    (state) => state.setGuardCoverageRadius,
-  );
-  const setGuardCoverageMode = usePlannerStore(
-    (state) => state.setGuardCoverageMode,
   );
   const setShowGuardCoverage = usePlannerStore(
     (state) => state.setShowGuardCoverage,
@@ -78,7 +75,7 @@ export function ColonyBoundarySettings() {
           Colony boundary
         </h3>
         <div className="space-y-2">
-          <Label htmlFor="colony-radius">Square radius in chunks</Label>
+          <Label htmlFor="colony-radius">Initial square radius in chunks</Label>
           <div className="flex items-center gap-2">
             <Input
               id="colony-radius"
@@ -117,10 +114,14 @@ export function ColonyBoundarySettings() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setColonyRadiusChunks(8)}
+          onClick={() => setColonyRadiusChunks(initialColonyRadiusChunks)}
         >
-          Reset to 8 chunks
+          Reset to source default ({initialColonyRadiusChunks})
         </Button>
+        <p className="text-xs text-muted-foreground">
+          Buildings add square, level-based chunk claims up to the source
+          default maximum of {maximumColonyRadiusChunks} chunks from Town Hall.
+        </p>
         <Separator />
         <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Commute distance
@@ -165,40 +166,12 @@ export function ColonyBoundarySettings() {
         </div>
         <Separator />
         <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Guard coverage
+          Guard patrol
         </h3>
-        <div className="space-y-2">
-          <Label htmlFor="guard-radius">Coverage radius in blocks</Label>
-          <Input
-            id="guard-radius"
-            type="number"
-            min={1}
-            max={512}
-            value={guardCoverageRadius}
-            onChange={(event) =>
-              setGuardCoverageRadius(Number(event.target.value))
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="guard-mode">Assignment coverage rule</Label>
-          <Select
-            value={guardCoverageMode}
-            onValueChange={(value) => {
-              if (value === "either" || value === "both") {
-                setGuardCoverageMode(value);
-              }
-            }}
-          >
-            <SelectTrigger id="guard-mode" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="either">Residence or workplace</SelectItem>
-              <SelectItem value="both">Both locations</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <p className="text-xs text-muted-foreground">
+          Patrol radius follows building level:{" "}
+          {guardPatrolRadiusBlocksByLevel.join(", ")} blocks for levels 1–5.
+        </p>
         <div className="flex items-center justify-between gap-3">
           <Label htmlFor="guard-overlays" className="leading-5">
             Show guard overlays
