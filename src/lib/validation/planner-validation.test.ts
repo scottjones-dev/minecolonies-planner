@@ -3,7 +3,7 @@ import {
   boundsOverlap,
   findBuildingCollisions,
 } from "@/lib/validation/collisions";
-import { boundsWithinCircularBoundary } from "@/lib/validation/colony-boundary";
+import { boundsWithinColonyBoundary } from "@/lib/validation/colony-boundary";
 import { getAnchorDistance, getCommuteState } from "@/lib/validation/commute";
 import { findGuardCoverageResults } from "@/lib/validation/guard-coverage";
 import type { PlacedBuilding } from "@/types/minecolonies";
@@ -53,7 +53,7 @@ describe("collision and boundary validation", () => {
     ]);
   });
 
-  it("requires every footprint corner inside the circular colony boundary", () => {
+  it("requires the footprint inside the square colony boundary", () => {
     const boundary = {
       townHallId: "town-hall",
       centerX: 0,
@@ -63,17 +63,23 @@ describe("collision and boundary validation", () => {
     };
 
     expect(
-      boundsWithinCircularBoundary(
+      boundsWithinColonyBoundary(
         { minX: -5, maxX: 5, minZ: -5, maxZ: 5 },
         boundary,
       ),
     ).toBe(true);
     expect(
-      boundsWithinCircularBoundary(
+      boundsWithinColonyBoundary(
         { minX: 14, maxX: 18, minZ: -1, maxZ: 1 },
         boundary,
       ),
     ).toBe(false);
+    expect(
+      boundsWithinColonyBoundary(
+        { minX: 14, maxX: 16, minZ: 14, maxZ: 16 },
+        boundary,
+      ),
+    ).toBe(true);
   });
 });
 
