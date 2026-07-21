@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getRasterMapWorldRect,
+  isWorldProfile,
   validateRasterMapSource,
 } from "@/lib/world-map";
 import type { RasterMapSource } from "@/types/world-map";
@@ -33,5 +34,28 @@ describe("generic raster map sources", () => {
     expect(validateRasterMapSource({ ...source, pixelsPerBlock: 0 })).toContain(
       "Pixels per block",
     );
+  });
+
+  it("accepts a calibrated web tile source in a world profile", () => {
+    expect(
+      isWorldProfile({
+        seed: "123",
+        minecraftVersion: "1.21.1",
+        dimension: "overworld",
+        generator: "default",
+        mapSource: {
+          kind: "web-tiles",
+          name: "Server map",
+          urlTemplate: "https://map.example/{zoom}/{x}/{z}.png",
+          tilePixelSize: 512,
+          blocksPerTile: 512,
+          originX: 0,
+          originZ: 0,
+          zoom: 0,
+          zDirection: "down",
+          opacity: 0.8,
+        },
+      }),
+    ).toBe(true);
   });
 });

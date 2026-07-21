@@ -41,3 +41,24 @@ also uses a 512-pixel tile and a 16-pixel chunk grid. Very broad maps are
 downscaled to a maximum 4096-pixel edge while retaining the correct
 pixels-per-block calibration. Empty/unexplored tiles remain transparent so the
 seed-biome fallback can show through.
+
+## Live web tiles
+
+The **Web tiles** tab can read a public, north-up raster tile endpoint without
+first creating an image. Configure its fixed provider zoom, tile pixel size,
+blocks per tile, the Minecraft X/Z coordinate of tile `0,0`, and whether tile
+rows increase toward positive or negative Z. The URL template requires `{x}`
+and `{z}` (or `{y}`); it also supports `{zoom}`, `{groupX}`, `{groupZ}`, and
+`{zoomPrefix}` for grouped tile layouts.
+
+The endpoint must allow cross-origin image requests from the planner. Do not
+place credentials, API keys, or private tokens in a layout: common secret query
+parameters are rejected, and exported layouts contain the full template.
+
+This is deliberately a coordinate-calibrated raster adapter, not a provider
+name switch. Dynmap calculates tile paths and world projection from each
+server's runtime map configuration, as shown in its
+[web map source](https://github.com/webbukkit/dynmap/blob/v3.7/DynmapCore/src/main/resources/extracted/web/js/hdmap.js),
+so a compatible flat map still needs its actual template and calibration.
+[BlueMap](https://github.com/BlueMap-Minecraft/BlueMap) serves a 3D model scene
+rather than a generic X/Z raster grid; use a north-up image export for it.

@@ -15,6 +15,7 @@ import {
 } from "react-konva";
 import { toast } from "sonner";
 import { BuildingMapPreview } from "@/components/planner/building-map-preview";
+import { WebTileLayer } from "@/components/planner/web-tile-layer";
 import { getStylePackById } from "@/data";
 import {
   getEntranceMarker,
@@ -119,6 +120,7 @@ export function PlannerCanvas() {
   const [rasterImage, setRasterImage] = useState<HTMLImageElement | null>(null);
   const [seedImage, setSeedImage] = useState<HTMLImageElement | null>(null);
   const [seedTerrain, setSeedTerrain] = useState<SeedTerrainImage | null>(null);
+  const [webTileErrorCount, setWebTileErrorCount] = useState(0);
   const rasterMap = useWorldMapStore((state) => state.map);
   const world = usePlannerStore((state) => state.world);
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
@@ -178,6 +180,20 @@ export function PlannerCanvas() {
   const rasterWorldRect = rasterMap
     ? getRasterMapWorldRect(rasterMap.source)
     : null;
+  const webTileSource =
+    world.mapSource?.kind === "web-tiles" ? world.mapSource : null;
+  useEffect(() => {
+    if (!webTileSource) setWebTileErrorCount(0);
+  }, [webTileSource]);
+  const webTileBounds = useMemo(
+    () => ({
+      left: -panX / zoom / BLOCK_SIZE,
+      top: -panY / zoom / BLOCK_SIZE,
+      right: (size.width - panX) / zoom / BLOCK_SIZE,
+      bottom: (size.height - panY) / zoom / BLOCK_SIZE,
+    }),
+    [panX, panY, size.height, size.width, zoom],
+  );
 
   const seedOrigin = useMemo(() => {
     const centerX = (size.width / 2 - panX) / zoom / BLOCK_SIZE;
@@ -308,6 +324,13 @@ export function PlannerCanvas() {
           </div>
         </div>
       ) : null}
+      {webTileErrorCount > 0 ? (
+        <div className="pointer-events-none absolute right-3 top-3 z-20 max-w-xs rounded-lg border border-amber-500/40 bg-background/90 px-3 py-2 text-xs shadow-sm">
+          {webTileErrorCount} remote map tile
+          {webTileErrorCount === 1 ? "" : "s"} could not load. Check the URL and
+          the server&apos;s CORS settings.
+        </div>
+      ) : null}
       {size.width > 0 && size.height > 0 ? (
         <Stage
           width={size.width}
@@ -341,6 +364,13 @@ export function PlannerCanvas() {
                 opacity={0.48}
                 imageSmoothingEnabled={false}
                 listening={false}
+              />
+            ) : null}
+            {webTileSource ? (
+              <WebTileLayer
+                source={webTileSource}
+                bounds={webTileBounds}
+                onErrorCountChange={setWebTileErrorCount}
               />
             ) : null}
             {rasterImage && rasterMap && rasterWorldRect ? (

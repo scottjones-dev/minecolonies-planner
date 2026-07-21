@@ -1,6 +1,8 @@
+import { validateWebTileMapSource } from "@/lib/web-map-tiles";
 import {
   type RasterMapSource,
   supportedMinecraftVersions,
+  type WebTileMapSource,
   type WorldProfile,
   worldMapSourcePresets,
 } from "@/types/world-map";
@@ -84,11 +86,20 @@ export function isWorldProfile(value: unknown): value is WorldProfile {
     ["default", "large-biomes", "amplified", "modded"].includes(
       profile.generator as string,
     ) &&
-    (mapSource === null ||
-      (typeof mapSource === "object" &&
-        mapSource !== null &&
-        !Array.isArray(mapSource) &&
-        (mapSource as RasterMapSource).kind === "raster" &&
-        validateRasterMapSource(mapSource as RasterMapSource) === null))
+    (mapSource === null || isValidWorldMapSource(mapSource))
   );
+}
+
+function isValidWorldMapSource(value: unknown): boolean {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+  const kind = (value as { kind?: unknown }).kind;
+  if (kind === "raster") {
+    return validateRasterMapSource(value as RasterMapSource) === null;
+  }
+  if (kind === "web-tiles") {
+    return validateWebTileMapSource(value as WebTileMapSource) === null;
+  }
+  return false;
 }
