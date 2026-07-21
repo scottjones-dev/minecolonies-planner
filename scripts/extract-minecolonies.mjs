@@ -309,7 +309,9 @@ function readBlueprintMetadata(path) {
     metadata.palette.length === 0 ||
     metadata.blocks.length === 0
   ) {
-    throw new Error(`Missing dimensions or primary_offset in ${path}`);
+    throw new Error(
+      `Missing dimensions, primary_offset, palette, or blocks in ${path}`,
+    );
   }
 
   const size = { x: sizeX, y: sizeY, z: sizeZ };
