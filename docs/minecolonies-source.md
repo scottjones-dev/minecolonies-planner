@@ -48,8 +48,11 @@ captures:
 The generated JSON is committed so normal app builds do not require the large
 MineColonies checkout. Each style has its own generated module so the published
 site can download it only when selected instead of shipping every catalogue on
-the first visit. Re-run the extractor intentionally when updating the pinned
-upstream source, then review the generated diff and update its parity tests.
+the first visit. The browser turns the compact material/height cells into a
+deterministic pixel-textured overhead image with height and edge shading, both
+in the inspector and directly on the planning map. Re-run the extractor
+intentionally when updating the pinned upstream source, then review the
+generated diff and update its parity tests.
 
 MineColonies is GPL-3.0 licensed. The generated document retains upstream
 project, revision, source-path, and license provenance. Avoid copying Java

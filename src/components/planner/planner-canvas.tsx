@@ -6,6 +6,7 @@ import {
   Arrow,
   Circle,
   Group,
+  Image as KonvaImage,
   Layer,
   Line,
   Rect,
@@ -13,6 +14,7 @@ import {
   Text,
 } from "react-konva";
 import { toast } from "sonner";
+import { BuildingMapPreview } from "@/components/planner/building-map-preview";
 import { getStylePackById } from "@/data";
 import {
   getEntranceMarker,
@@ -39,7 +41,9 @@ import {
   getGuardMapRange,
   isGuardBuilding,
 } from "@/lib/validation/guard-coverage";
+import { getXaeroMapWorldRect } from "@/lib/xaero-map";
 import { usePlannerStore } from "@/stores/planner-store";
+import { useXaeroMapStore } from "@/stores/xaero-map-store";
 
 const CHUNK_SIZE = 16;
 const MIN_ZOOM = 0.25;
@@ -107,6 +111,8 @@ export function PlannerCanvas() {
   const moveOriginRef = useRef<{ x: number; z: number } | null>(null);
   const [size, setSize] = useState<Size>({ width: 0, height: 0 });
   const [movingBuildingId, setMovingBuildingId] = useState<string | null>(null);
+  const [xaeroImage, setXaeroImage] = useState<HTMLImageElement | null>(null);
+  const xaeroMap = useXaeroMapStore((state) => state.map);
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
   const {
     colonyRadiusChunks,
@@ -145,6 +151,25 @@ export function PlannerCanvas() {
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!xaeroMap) {
+      setXaeroImage(null);
+      return;
+    }
+
+    const image = new window.Image();
+    image.onload = () => setXaeroImage(image);
+    image.src = xaeroMap.imageUrl;
+
+    return () => {
+      image.onload = null;
+    };
+  }, [xaeroMap]);
+
+  const xaeroWorldRect = xaeroMap
+    ? getXaeroMapWorldRect(xaeroMap.calibration)
+    : null;
 
   const gridLines = useMemo(
     () => getGridLines(size, zoom, panX, panY),
@@ -243,6 +268,18 @@ export function PlannerCanvas() {
           onWheel={handleWheel}
         >
           <Layer listening={false}>
+            {xaeroImage && xaeroMap && xaeroWorldRect ? (
+              <KonvaImage
+                image={xaeroImage}
+                x={xaeroWorldRect.x * BLOCK_SIZE}
+                y={xaeroWorldRect.z * BLOCK_SIZE}
+                width={xaeroWorldRect.width * BLOCK_SIZE}
+                height={xaeroWorldRect.depth * BLOCK_SIZE}
+                opacity={xaeroMap.calibration.opacity}
+                imageSmoothingEnabled={false}
+                listening={false}
+              />
+            ) : null}
             {gridLines.map((line) => (
               <Line
                 key={line.key}
@@ -485,6 +522,17 @@ export function PlannerCanvas() {
                       dash={[8 / zoom, 6 / zoom]}
                     />
                   ) : null}
+                  {level && currentFootprint ? (
+                    <BuildingMapPreview
+                      level={level}
+                      rotation={building.rotation}
+                      x={currentFootprint.minX}
+                      z={currentFootprint.minZ}
+                      width={currentFootprint.width}
+                      depth={currentFootprint.depth}
+                      blockSize={BLOCK_SIZE}
+                    />
+                  ) : null}
                   {currentFootprint ? (
                     <Rect
                       x={currentFootprint.minX * BLOCK_SIZE}
@@ -497,8 +545,8 @@ export function PlannerCanvas() {
                           : warning
                             ? "#d9770644"
                             : selected
-                              ? "#0f766e55"
-                              : "#33415533"
+                              ? "#0f766e22"
+                              : "#3341550d"
                       }
                       stroke={accentColor}
                       strokeWidth={

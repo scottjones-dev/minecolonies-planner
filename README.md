@@ -9,7 +9,8 @@ tool.
 It provides a block grid, upgrade-aware footprints, collision and square
 colony-boundary checks, residence-to-work assignments, commute warnings,
 level-aware guard coverage, source-derived top-down building previews, named
-local saves, and versioned JSON transfer.
+local saves, calibrated Xaero world-map backgrounds, and versioned JSON
+transfer.
 
 The repository also includes a reproducible build-time extractor for
 source-backed MineColonies rules and blueprint geometry. See
@@ -66,12 +67,15 @@ Vercel environment table, deployment procedure, and production smoke test.
    levels, inspect that level's top-down block image and front direction, assign
    a workplace residence, or delete it.
 3. Drag the map to pan and use the mouse wheel or trackpad to zoom. Buildings snap to whole Minecraft blocks.
-4. Open planner settings in the header to configure the server's initial
+4. Use the map-pin button to import a PNG exported by Xaero's World Map. Enter
+   the Minecraft X/Z coordinate represented by its top-left pixel and its
+   export scale; the terrain will remain aligned beneath the planner grid.
+5. Open planner settings in the header to configure the server's initial
    claim radius, commute thresholds, and overlays. Place the Town Hall first;
    later blueprints must fit completely inside land claimed earlier in the
    plan, matching MineColonies placement order.
-5. Use the named-layout controls to create, rename, switch, or delete browser-local plans. Changes save automatically.
-6. Use the import button for a versioned planner-layout or style-catalogue JSON file. The export menu downloads the active layout or style.
+6. Use the named-layout controls to create, rename, switch, or delete browser-local plans. Changes save automatically.
+7. Use the import button for a versioned planner-layout or style-catalogue JSON file. The export menu downloads the active layout or style.
 
 Press `?` in the app for keyboard help. With a building selected, press `R` to rotate or `Delete`/`Backspace` to remove it.
 
@@ -91,7 +95,12 @@ chunk boundaries.
 
 ## Data and privacy
 
-Named layouts and imported style catalogues are stored in browser `localStorage`. No account, server, or external database is used. Exported JSON includes an explicit schema version and is validated before import. The importer does not execute or parse mod JARs, archives, schematics, or NBT data.
+Named layouts and imported style catalogues are stored in browser
+`localStorage`. An imported Xaero PNG is stored separately in browser
+IndexedDB so a large image does not exhaust layout storage. No account, server,
+or external database is used. Exported JSON includes an explicit schema version
+and is validated before import. The importer does not execute or parse mod JARs,
+archives, schematics, or NBT data.
 
 ## Current limitations
 
@@ -101,6 +110,12 @@ Named layouts and imported style catalogues are stored in browser `localStorage`
 - MineColonies blueprint NBT extraction is a build-time maintainer workflow;
   the browser importer intentionally does not process mod JARs, archives,
   schematics, or NBT files.
+- Blueprint images use source-derived material classes, procedural pixel
+  texture, height lighting, and roof-edge shading. Exact Minecraft or modpack
+  textures require the corresponding user-owned resource-pack assets, which
+  are not redistributed by this site.
+- Xaero backgrounds accept north-up PNG exports up to 100 MB. Calibration is
+  saved in the browser but is not embedded in planner JSON exports.
 - The canvas is optimized for desktop planning. Small screens can view the map and header actions, while the full building library and inspector require a large viewport.
 - Plans are device/browser-local unless exported manually. Clearing site storage removes unexported layouts and imported styles.
 - There is no terrain, elevation, road/pathfinding, resource-cost, worker simulation, multiplayer, or cloud synchronization.
