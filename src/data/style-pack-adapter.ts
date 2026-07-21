@@ -1,4 +1,8 @@
-import type { BuildingVariant, StylePack } from "@/types/minecolonies";
+import type {
+  BuildingVariant,
+  Direction,
+  StylePack,
+} from "@/types/minecolonies";
 
 type GeneratedStylePack = {
   id: string;
@@ -28,9 +32,18 @@ type GeneratedStylePack = {
       };
       anchor: { x: number; y: number; z: number };
       hutBlock?: { x: number; y: number; z: number };
+      entrance?: {
+        position: { x: number; y: number; z: number };
+        direction: string;
+      };
+      topDown?: { width: number; depth: number; pixels: string };
     }>;
   }>;
 };
+
+function isDirection(value: string): value is Direction {
+  return ["north", "east", "south", "west"].includes(value);
+}
 
 export function adaptBuiltInStylePack(
   sourceStylePack: GeneratedStylePack,
@@ -45,12 +58,24 @@ export function adaptBuiltInStylePack(
       gameOrder: variant.gameOrder,
       role: variant.role as BuildingVariant["role"],
       ...(variant.isGuard === true ? { isGuard: true } : {}),
-      levels: variant.levels.map((level) => ({
-        level: level.level,
-        bounds: level.bounds,
-        anchor: level.anchor,
-        hutBlock: level.hutBlock,
-      })),
+      levels: variant.levels.map((level) => {
+        const entrance =
+          level.entrance && isDirection(level.entrance.direction)
+            ? {
+                position: level.entrance.position,
+                direction: level.entrance.direction,
+              }
+            : undefined;
+
+        return {
+          level: level.level,
+          bounds: level.bounds,
+          anchor: level.anchor,
+          hutBlock: level.hutBlock,
+          entrance,
+          topDown: level.topDown,
+        };
+      }),
     }),
   );
 

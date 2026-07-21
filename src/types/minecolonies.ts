@@ -37,12 +37,20 @@ export type BuildingEntrance = {
   direction: Direction;
 };
 
+export type BuildingTopDownPreview = {
+  width: number;
+  depth: number;
+  /** Base64 bytes: high nibble = material colour, low nibble = height shade. */
+  pixels: string;
+};
+
 export type BuildingLevelDefinition = {
   level: number;
   bounds: RelativeBounds;
   anchor: Vector3;
   hutBlock?: Vector3;
   entrance?: BuildingEntrance;
+  topDown?: BuildingTopDownPreview;
 };
 
 export type BuildingVariant = {

@@ -10,7 +10,10 @@ import { getEventCoordinates } from "@dnd-kit/utilities";
 import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
 import { BuildingCardContent } from "@/components/planner/building-library-panel";
-import { screenPointToWorldBlock } from "@/lib/planner-coordinates";
+import {
+  centerBuildingOnWorldPosition,
+  screenPointToWorldPosition,
+} from "@/lib/planner-coordinates";
 import {
   getNewBuildingPlacementError,
   getPlacementErrorMessage,
@@ -82,8 +85,18 @@ export function PlannerDndContext({ children }: { children: ReactNode }) {
     }
 
     const map = usePlannerStore.getState().map;
-    const position = screenPointToWorldBlock(dropPoint, event.over.rect, map);
     const levels = dragData.variant.levels.map((level) => level.level);
+    const currentLevel = Math.min(...levels);
+    const level = dragData.variant.levels.find(
+      (candidate) => candidate.level === currentLevel,
+    );
+    if (!level) return;
+    const worldDropPoint = screenPointToWorldPosition(
+      dropPoint,
+      event.over.rect,
+      map,
+    );
+    const position = centerBuildingOnWorldPosition(worldDropPoint, level, 0);
 
     const building = {
       stylePackId: dragData.stylePackId,
@@ -92,7 +105,7 @@ export function PlannerDndContext({ children }: { children: ReactNode }) {
       y: 0,
       z: position.z,
       rotation: 0,
-      currentLevel: Math.min(...levels),
+      currentLevel,
       reserveThroughLevel: Math.max(...levels),
       assignedResidenceId: null,
     } as const;

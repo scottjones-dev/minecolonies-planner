@@ -73,6 +73,11 @@ class NbtReader {
     return value;
   }
 
+  intArray() {
+    const length = this.int();
+    return Array.from({ length }, () => this.int());
+  }
+
   string() {
     const length = this.unsignedShort();
     const value = this.buffer.toString(
@@ -138,6 +143,111 @@ class NbtReader {
       else this.skip(type);
     }
   }
+
+  stringCompound() {
+    const value = {};
+    while (true) {
+      const type = this.unsignedByte();
+      if (type === 0) return value;
+      const name = this.string();
+      if (type === 8) value[name] = this.string();
+      else this.skip(type);
+    }
+  }
+
+  palette() {
+    const elementType = this.unsignedByte();
+    const length = this.int();
+    if (elementType !== 10) {
+      throw new Error(
+        `Expected a compound palette, received type ${elementType}`,
+      );
+    }
+
+    const palette = [];
+    for (let index = 0; index < length; index++) {
+      const state = { name: "minecraft:air", properties: {} };
+      while (true) {
+        const type = this.unsignedByte();
+        if (type === 0) break;
+        const name = this.string();
+        if (name === "Name" && type === 8) state.name = this.string();
+        else if (name === "Properties" && type === 10) {
+          state.properties = this.stringCompound();
+        } else this.skip(type);
+      }
+      palette.push(state);
+    }
+    return palette;
+  }
+}
+
+const transparentPreviewBlocks = new Set([
+  "minecraft:air",
+  "minecraft:barrier",
+  "minecraft:cave_air",
+  "minecraft:structure_void",
+  "minecraft:void_air",
+  "structurize:blockfluidsubstitution",
+  "structurize:blocksolidsubstitution",
+  "structurize:blocksubstitution",
+  "structurize:tag_substitution",
+]);
+
+const previewColorMatchers = [
+  [/(water|ice)/, 6],
+  [/(leaves|vine|grass|fern|moss|azalea|cactus|sapling|flower|crop)/, 3],
+  [/(log|wood|planks|bamboo|bookshelf|barrel|chest|composter)/, 2],
+  [/(sand|sandstone|end_stone|bone|birch|hay)/, 5],
+  [/(dirt|mud|gravel|soul_|podzol|farmland|clay)/, 4],
+  [/(glass|pane)/, 7],
+  [/(red|crimson|nether_brick|magma|lava|fire)/, 8],
+  [/(orange|copper|acacia|pumpkin)/, 9],
+  [/(yellow|gold|honey|glowstone)/, 10],
+  [/(green|lime|emerald|warped)/, 11],
+  [/(blue|cyan|prismarine|lapis)/, 12],
+  [/(purple|magenta|pink|amethyst|purpur|cherry)/, 13],
+  [/(white|snow|quartz|calcite|wool)/, 14],
+  [/(black|gray|grey|deepslate|obsidian|coal|iron|chain|anvil)/, 15],
+  [/(stone|cobble|brick|andesite|diorite|granite|concrete|terracotta)/, 1],
+];
+
+function getPreviewMaterial(blockName) {
+  if (transparentPreviewBlocks.has(blockName)) return 0;
+  const name = blockName.split(":").at(-1) ?? blockName;
+  return previewColorMatchers.find(([pattern]) => pattern.test(name))?.[1] ?? 1;
+}
+
+function getPaletteIndex(blocks, linearIndex) {
+  const packed = blocks[Math.floor(linearIndex / 2)] ?? 0;
+  return linearIndex % 2 === 0 ? (packed >>> 16) & 0xffff : packed & 0xffff;
+}
+
+function createTopDownPreview(size, palette, blocks) {
+  const pixels = Buffer.alloc(size.x * size.z);
+
+  for (let z = 0; z < size.z; z++) {
+    for (let x = 0; x < size.x; x++) {
+      for (let y = size.y - 1; y >= 0; y--) {
+        const linearIndex = (y * size.z + z) * size.x + x;
+        const paletteIndex = getPaletteIndex(blocks, linearIndex);
+        const material = getPreviewMaterial(
+          palette[paletteIndex]?.name ?? "minecraft:air",
+        );
+        if (material === 0) continue;
+
+        const height = size.y <= 1 ? 15 : Math.round((y / (size.y - 1)) * 15);
+        pixels[z * size.x + x] = (material << 4) | height;
+        break;
+      }
+    }
+  }
+
+  return {
+    width: size.x,
+    depth: size.z,
+    pixels: pixels.toString("base64"),
+  };
 }
 
 function readBlueprintMetadata(path) {
@@ -147,7 +257,7 @@ function readBlueprintMetadata(path) {
     throw new Error(`${path} does not contain an NBT compound root`);
   reader.string();
 
-  const metadata = {};
+  const metadata = { palette: [], blocks: [] };
   const scanMetadataCompound = () => {
     while (true) {
       const type = reader.unsignedByte();
@@ -169,6 +279,10 @@ function readBlueprintMetadata(path) {
     const name = reader.string();
     if (["size_x", "size_y", "size_z"].includes(name)) {
       metadata[name] = reader.number(type);
+    } else if (name === "palette" && type === 9) {
+      metadata.palette = reader.palette();
+    } else if (name === "blocks" && type === 11) {
+      metadata.blocks = reader.intArray();
     } else if (name === "primary_offset" && type === 10) {
       metadata.primary_offset = reader.integerCompound();
     } else if (name === "optional_data" && type === 10) {
@@ -191,13 +305,25 @@ function readBlueprintMetadata(path) {
     !anchor ||
     !Number.isInteger(anchor.x) ||
     !Number.isInteger(anchor.y) ||
-    !Number.isInteger(anchor.z)
+    !Number.isInteger(anchor.z) ||
+    metadata.palette.length === 0 ||
+    metadata.blocks.length === 0
   ) {
     throw new Error(`Missing dimensions or primary_offset in ${path}`);
   }
 
+  const size = { x: sizeX, y: sizeY, z: sizeZ };
+  const anchorLinearIndex = (anchor.y * sizeZ + anchor.z) * sizeX + anchor.x;
+  const anchorState =
+    metadata.palette[getPaletteIndex(metadata.blocks, anchorLinearIndex)];
+  const entranceDirection = ["north", "east", "south", "west"].includes(
+    anchorState?.properties.facing,
+  )
+    ? anchorState.properties.facing
+    : null;
+
   return {
-    size: { x: sizeX, y: sizeY, z: sizeZ },
+    size,
     anchor,
     bounds: {
       minX: 0,
@@ -207,6 +333,10 @@ function readBlueprintMetadata(path) {
       minZ: 0,
       maxZ: sizeZ - 1,
     },
+    topDown: createTopDownPreview(size, metadata.palette, metadata.blocks),
+    ...(entranceDirection
+      ? { entrance: { position: anchor, direction: entranceDirection } }
+      : {}),
   };
 }
 
@@ -330,6 +460,8 @@ function extractStylePack(packId) {
       bounds: metadata.bounds,
       anchor: metadata.anchor,
       hutBlock: metadata.anchor,
+      topDown: metadata.topDown,
+      ...(metadata.entrance ? { entrance: metadata.entrance } : {}),
       sourcePath,
       size: metadata.size,
     });

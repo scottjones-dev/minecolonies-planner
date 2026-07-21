@@ -5,6 +5,7 @@ import type {
   BuildingEntrance,
   BuildingLevelDefinition,
   BuildingRole,
+  BuildingTopDownPreview,
   Direction,
   RelativeBounds,
   StylePack,
@@ -93,6 +94,26 @@ function isEntrance(value: unknown): value is BuildingEntrance {
   );
 }
 
+function isTopDownPreview(value: unknown): value is BuildingTopDownPreview {
+  if (
+    !isRecord(value) ||
+    !isInteger(value.width) ||
+    value.width < 1 ||
+    !isInteger(value.depth) ||
+    value.depth < 1 ||
+    typeof value.pixels !== "string"
+  ) {
+    return false;
+  }
+
+  const byteLength = value.width * value.depth;
+  return (
+    byteLength <= 1_000_000 &&
+    value.pixels.length === 4 * Math.ceil(byteLength / 3) &&
+    /^[A-Za-z0-9+/]*={0,2}$/.test(value.pixels)
+  );
+}
+
 function isBuildingLevel(value: unknown): value is BuildingLevelDefinition {
   return (
     isRecord(value) &&
@@ -101,7 +122,8 @@ function isBuildingLevel(value: unknown): value is BuildingLevelDefinition {
     isBounds(value.bounds) &&
     isVector3(value.anchor) &&
     (value.hutBlock === undefined || isVector3(value.hutBlock)) &&
-    (value.entrance === undefined || isEntrance(value.entrance))
+    (value.entrance === undefined || isEntrance(value.entrance)) &&
+    (value.topDown === undefined || isTopDownPreview(value.topDown))
   );
 }
 

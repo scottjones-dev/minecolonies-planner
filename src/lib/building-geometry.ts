@@ -119,3 +119,12 @@ export function getEntranceMarker(
 
   return { position, direction };
 }
+
+export function getRotatedDirection(
+  direction: Direction,
+  rotation: BuildingRotation,
+): Direction {
+  const directions: Direction[] = ["north", "east", "south", "west"];
+  const directionIndex = directions.indexOf(direction);
+  return directions[(directionIndex + rotation / 90) % directions.length];
+}

@@ -4,6 +4,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { GripVertical, Loader2, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { BuildingTopDownPreview } from "@/components/planner/building-top-down-preview";
 import {
   Accordion,
   AccordionContent,
@@ -67,6 +68,12 @@ function getMaximumLevel(variant: BuildingVariant) {
   });
 }
 
+function getMinimumLevel(variant: BuildingVariant) {
+  return variant.levels.reduce((minimum, level) =>
+    level.level < minimum.level ? level : minimum,
+  );
+}
+
 function formatCategoryPath(
   categoryPath: string,
   category: BuildingCategory,
@@ -91,6 +98,7 @@ export function BuildingCardContent({
   overlay?: boolean;
 }) {
   const maximumLevel = getMaximumLevel(variant);
+  const previewLevel = getMinimumLevel(variant);
   const width = getBoundsWidth(maximumLevel.bounds);
   const depth = getBoundsDepth(maximumLevel.bounds);
 
@@ -101,8 +109,17 @@ export function BuildingCardContent({
         overlay && "w-64 rotate-2 border-primary/40 shadow-xl",
       )}
     >
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        <GripVertical className="size-4" aria-hidden="true" />
+      <div className="relative size-14 shrink-0">
+        <BuildingTopDownPreview
+          level={previewLevel}
+          rotation={0}
+          name={variant.name}
+          compact
+          className="size-full"
+        />
+        <span className="absolute bottom-1 left-1 flex size-5 items-center justify-center rounded-md bg-background/90 text-primary shadow-sm">
+          <GripVertical className="size-3" aria-hidden="true" />
+        </span>
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">

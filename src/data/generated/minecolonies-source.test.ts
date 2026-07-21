@@ -80,6 +80,11 @@ describe("generated MineColonies source data", () => {
           expect(level.bounds.maxX - level.bounds.minX + 1).toBe(level.size.x);
           expect(level.bounds.maxY - level.bounds.minY + 1).toBe(level.size.y);
           expect(level.bounds.maxZ - level.bounds.minZ + 1).toBe(level.size.z);
+          expect(level.topDown.width).toBe(level.size.x);
+          expect(level.topDown.depth).toBe(level.size.z);
+          expect(Buffer.from(level.topDown.pixels, "base64")).toHaveLength(
+            level.size.x * level.size.z,
+          );
         }
       }
     }
@@ -112,6 +117,21 @@ describe("generated MineColonies source data", () => {
         expect(level.bounds.minY).toBe(0);
         expect(level.bounds.minZ).toBe(0);
       }
+    }
+  });
+
+  it("derives hut-facing directions from the blueprint palette", () => {
+    const levels = fortressSource.stylePack.variants.flatMap(
+      (variant) => variant.levels,
+    );
+    const directedLevels = levels.filter((level) => level.entrance);
+
+    expect(directedLevels.length).toBeGreaterThan(0);
+    for (const level of directedLevels) {
+      expect(level.entrance?.position).toEqual(level.anchor);
+      expect(["north", "east", "south", "west"]).toContain(
+        level.entrance?.direction,
+      );
     }
   });
 

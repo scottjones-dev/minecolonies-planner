@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Building2, RotateCw, Trash2 } from "lucide-react";
 import { useEffect, useMemo } from "react";
+import { BuildingTopDownPreview } from "@/components/planner/building-top-down-preview";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import { maximumColonyRadiusChunks } from "@/data/minecolonies-rules";
 import {
   getLevelFootprint,
   getReservedFootprint,
+  getRotatedDirection,
 } from "@/lib/building-geometry";
 import {
   findBuildingCollisions,
@@ -39,9 +41,7 @@ import {
   getGuardPatrolRadius,
 } from "@/lib/validation/guard-coverage";
 import { usePlannerStore } from "@/stores/planner-store";
-import type { BuildingRotation, Direction } from "@/types/minecolonies";
-
-const directions: Direction[] = ["north", "east", "south", "west"];
+import type { BuildingRotation } from "@/types/minecolonies";
 
 function getNextRotation(rotation: BuildingRotation): BuildingRotation {
   return ((rotation + 90) % 360) as BuildingRotation;
@@ -52,12 +52,6 @@ function formatBuildingType(buildingType: string) {
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
-}
-
-function getRotatedDirection(direction: Direction, rotation: BuildingRotation) {
-  const directionIndex = directions.indexOf(direction);
-  const rotationSteps = rotation / 90;
-  return directions[(directionIndex + rotationSteps) % directions.length];
 }
 
 export function BuildingInspectorPanel() {
@@ -210,6 +204,34 @@ export function BuildingInspectorPanel() {
       </div>
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+        {level ? (
+          <section className="space-y-2" aria-labelledby="top-down-preview">
+            <div className="flex items-center justify-between gap-3">
+              <h3
+                id="top-down-preview"
+                className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              >
+                Top-down · Level {level.level}
+              </h3>
+              <Badge variant="outline" className="font-mono text-[10px]">
+                {selectedBuilding.rotation}°
+              </Badge>
+            </div>
+            <BuildingTopDownPreview
+              level={level}
+              rotation={selectedBuilding.rotation}
+              name={variant?.name ?? selectedBuilding.variantId}
+              className="h-52 w-full"
+            />
+            <p className="text-[11px] leading-4 text-muted-foreground">
+              Generated from the blueprint&apos;s highest visible blocks. North
+              stays at the top; the amber marker shows the hut block and front.
+            </p>
+          </section>
+        ) : null}
+
+        <Separator />
+
         {variant?.role === "workplace" ? (
           <section className="space-y-3" aria-labelledby="residence-assignment">
             <h3
