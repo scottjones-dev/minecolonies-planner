@@ -4,6 +4,7 @@ import {
   isStylePack,
   parsePlannerTransferDocument,
 } from "@/lib/planner-transfer";
+import { defaultWorldProfile } from "@/types/world-map";
 
 describe("style catalogue category compatibility", () => {
   it("accepts the source-backed MineColonies category schema", () => {
@@ -43,5 +44,34 @@ describe("style catalogue category compatibility", () => {
       categoryPath: "fundamentals",
       gameOrder: 0,
     });
+  });
+});
+
+describe("layout world-profile compatibility", () => {
+  it("upgrades version-1 layouts with a default world profile", () => {
+    const document = parsePlannerTransferDocument({
+      kind: "minecolonies-planner-layout",
+      schemaVersion: 1,
+      name: "Legacy colony",
+      exportedAt: "2026-07-20T00:00:00.000Z",
+      planner: {
+        buildings: [],
+        activeStylePackId: "fortress",
+        map: { zoom: 1, panX: 0, panY: 0 },
+        rules: {
+          colonyRadiusChunks: 20,
+          colonyBoundaryMode: "invalid",
+          preferredCommuteDistance: 64,
+          warningCommuteDistance: 128,
+          showCommuteConnections: true,
+          showGuardCoverage: true,
+        },
+      },
+    });
+
+    expect(document.kind).toBe("minecolonies-planner-layout");
+    if (document.kind !== "minecolonies-planner-layout") return;
+    expect(document.schemaVersion).toBe(2);
+    expect(document.planner.world).toEqual(defaultWorldProfile);
   });
 });

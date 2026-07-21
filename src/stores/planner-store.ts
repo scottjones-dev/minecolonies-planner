@@ -4,6 +4,7 @@ import {
   maximumInitialColonyRadiusChunks,
 } from "@/data/minecolonies-rules";
 import type { PlacedBuilding } from "@/types/minecolonies";
+import { defaultWorldProfile, type WorldProfile } from "@/types/world-map";
 
 export type PlannerMapState = {
   zoom: number;
@@ -25,6 +26,7 @@ export type PlannerSnapshot = {
   activeStylePackId: string;
   map: PlannerMapState;
   rules: PlannerRules;
+  world: WorldProfile;
 };
 
 type PlannerState = PlannerSnapshot & {
@@ -48,6 +50,7 @@ type PlannerActions = {
   setWarningCommuteDistance: (distance: number) => void;
   setShowCommuteConnections: (show: boolean) => void;
   setShowGuardCoverage: (show: boolean) => void;
+  setWorldProfile: (profile: WorldProfile) => void;
   loadSnapshot: (snapshot: PlannerSnapshot) => void;
   resetPlanner: () => void;
 };
@@ -71,6 +74,7 @@ const getInitialState = (): PlannerState => ({
     showCommuteConnections: true,
     showGuardCoverage: true,
   },
+  world: { ...defaultWorldProfile },
 });
 
 export const usePlannerStore = create<PlannerStore>((set) => ({
@@ -202,6 +206,9 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
       },
     }));
   },
+  setWorldProfile: (world) => {
+    set({ world });
+  },
   loadSnapshot: (snapshot) => {
     set({
       buildings: snapshot.buildings,
@@ -220,6 +227,7 @@ export const usePlannerStore = create<PlannerStore>((set) => ({
         showCommuteConnections: snapshot.rules.showCommuteConnections,
         showGuardCoverage: snapshot.rules.showGuardCoverage,
       },
+      world: snapshot.world,
       selectedBuildingId: null,
     });
   },
@@ -234,5 +242,6 @@ export function getPlannerSnapshot(state: PlannerState): PlannerSnapshot {
     activeStylePackId: state.activeStylePackId,
     map: state.map,
     rules: state.rules,
+    world: state.world,
   };
 }

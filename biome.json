@@ -15,7 +15,8 @@
       "!build",
       "!src/components/ui",
       "!src/data/generated/*.json",
-      "!src/data/generated/styles"
+      "!src/data/generated/styles",
+      "!public/cubiomes"
     ]
   },
   "formatter": {
