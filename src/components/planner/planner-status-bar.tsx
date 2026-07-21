@@ -44,7 +44,10 @@ export function PlannerStatusBar() {
       <div className="flex items-center gap-4">
         {world.mapSource ? (
           <span className="hidden md:inline">
-            Map: {worldMapSourceLabels[world.mapSource.preset]}
+            Map:{" "}
+            {world.mapSource.kind === "raster"
+              ? worldMapSourceLabels[world.mapSource.preset]
+              : world.mapSource.name}
           </span>
         ) : world.seed ? (
           <span className="hidden md:inline">Map: seed biomes</span>

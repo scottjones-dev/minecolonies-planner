@@ -40,7 +40,20 @@ export type RasterMapSource = {
   opacity: number;
 };
 
-export type WorldMapSource = RasterMapSource;
+export type WebTileMapSource = {
+  kind: "web-tiles";
+  name: string;
+  urlTemplate: string;
+  tilePixelSize: number;
+  blocksPerTile: number;
+  originX: number;
+  originZ: number;
+  zoom: number;
+  zDirection: "down" | "up";
+  opacity: number;
+};
+
+export type WorldMapSource = RasterMapSource | WebTileMapSource;
 
 export type WorldProfile = {
   seed: string;

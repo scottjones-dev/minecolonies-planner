@@ -18,8 +18,13 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { importJourneyMapArchive } from "@/lib/journeymap-import";
+import {
+  resolveWebTileUrl,
+  validateWebTileMapSource,
+} from "@/lib/web-map-tiles";
 import {
   getRasterMapWorldRect,
   isSupportedRasterFile,
@@ -33,11 +38,25 @@ import { useWorldMapStore } from "@/stores/world-map-store";
 import {
   type RasterMapSource,
   supportedMinecraftVersions,
+  type WebTileMapSource,
   type WorldMapSourcePreset,
   type WorldProfile,
   worldMapSourceLabels,
   worldMapSourcePresets,
 } from "@/types/world-map";
+
+const defaultWebTileSource: WebTileMapSource = {
+  kind: "web-tiles",
+  name: "Remote world map",
+  urlTemplate: "",
+  tilePixelSize: 512,
+  blocksPerTile: 512,
+  originX: 0,
+  originZ: 0,
+  zoom: 0,
+  zDirection: "down",
+  opacity: 0.78,
+};
 
 function sourceForFile(
   file: File,
@@ -74,10 +93,26 @@ export function WorldMapControls() {
   const [saving, setSaving] = useState(false);
   const [pendingBlob, setPendingBlob] = useState<Blob | null>(null);
   const [profile, setProfile] = useState<WorldProfile>(world);
-  const [source, setSource] = useState<RasterMapSource | null>(world.mapSource);
+  const [source, setSource] = useState<RasterMapSource | null>(
+    world.mapSource?.kind === "raster" ? world.mapSource : null,
+  );
+  const [webSource, setWebSource] = useState<WebTileMapSource>(
+    world.mapSource?.kind === "web-tiles"
+      ? world.mapSource
+      : defaultWebTileSource,
+  );
+  const [sourceMode, setSourceMode] = useState<"none" | "raster" | "web">(
+    world.mapSource?.kind === "raster"
+      ? "raster"
+      : world.mapSource?.kind === "web-tiles"
+        ? "web"
+        : "none",
+  );
 
   useEffect(() => {
-    void hydrate(world.mapSource).catch(() => {
+    const rasterSource =
+      world.mapSource?.kind === "raster" ? world.mapSource : null;
+    void hydrate(rasterSource).catch(() => {
       toast.error("The saved world-map image could not be opened.");
     });
   }, [hydrate, world.mapSource]);
@@ -106,7 +141,19 @@ export function WorldMapControls() {
   const openEditor = () => {
     setPendingBlob(null);
     setProfile(world);
-    setSource(world.mapSource);
+    setSource(world.mapSource?.kind === "raster" ? world.mapSource : null);
+    setWebSource(
+      world.mapSource?.kind === "web-tiles"
+        ? world.mapSource
+        : defaultWebTileSource,
+    );
+    setSourceMode(
+      world.mapSource?.kind === "raster"
+        ? "raster"
+        : world.mapSource?.kind === "web-tiles"
+          ? "web"
+          : "none",
+    );
     setOpen(true);
   };
 
@@ -130,6 +177,7 @@ export function WorldMapControls() {
       bitmap.close();
       setPendingBlob(file);
       setSource(nextSource);
+      setSourceMode("raster");
       setOpen(true);
     } catch {
       toast.error("That image cannot be decoded by this browser.");
@@ -153,6 +201,7 @@ export function WorldMapControls() {
         pixelsPerBlock: result.pixelsPerBlock,
         opacity: source?.opacity ?? 0.78,
       });
+      setSourceMode("raster");
       toast.success(
         `Composed ${result.tileCount.toLocaleString()} JourneyMap tiles from ${result.sourceDirectory}.`,
       );
@@ -179,8 +228,15 @@ export function WorldMapControls() {
       toast.error("The world seed must be 128 characters or fewer.");
       return;
     }
-    if (source) {
+    if (sourceMode === "raster" && source) {
       const error = validateRasterMapSource(source);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+    }
+    if (sourceMode === "web") {
+      const error = validateWebTileMapSource(webSource);
       if (error) {
         toast.error(error);
         return;
@@ -188,14 +244,26 @@ export function WorldMapControls() {
     }
     setSaving(true);
     try {
-      if (source && pendingBlob) await saveMap(pendingBlob, source);
-      const nextProfile = { ...profile, mapSource: source };
+      if (sourceMode === "raster" && source && pendingBlob) {
+        await saveMap(pendingBlob, source);
+      }
+      const mapSource =
+        sourceMode === "raster"
+          ? source
+          : sourceMode === "web"
+            ? webSource
+            : null;
+      const nextProfile = { ...profile, mapSource };
       setWorldProfile(nextProfile);
-      if (source && !pendingBlob) await hydrate(source);
+      if (sourceMode === "raster" && source && !pendingBlob) {
+        await hydrate(source);
+      } else if (sourceMode !== "raster") {
+        clearMap();
+      }
       setOpen(false);
       toast.success(
-        source
-          ? "World profile and explored map image saved."
+        mapSource
+          ? "World profile and explored map source saved."
           : "World profile saved.",
       );
     } catch {
@@ -205,19 +273,22 @@ export function WorldMapControls() {
     }
   };
 
-  const removeBackground = async () => {
-    if (!source) return;
+  const removeMapSource = async () => {
+    if (sourceMode === "none") return;
     setSaving(true);
     try {
-      await deleteMapAsset(source.assetId);
+      if (sourceMode === "raster" && source) {
+        await deleteMapAsset(source.assetId);
+      }
       clearMap();
       setSource(null);
+      setSourceMode("none");
       setPendingBlob(null);
       const nextProfile = { ...profile, mapSource: null };
       setProfile(nextProfile);
       setWorldProfile(nextProfile);
       toast.success(
-        "Explored map image removed; seed fallback remains available.",
+        "Explored map source removed; seed fallback remains available.",
       );
     } catch {
       toast.error("The saved map image could not be removed.");
@@ -259,9 +330,11 @@ export function WorldMapControls() {
             ? "Map image is missing on this browser; reattach it"
             : map
               ? map.source.fileName
-              : world.seed
-                ? `Seed ${world.seed}`
-                : "Add world seed or map image"
+              : world.mapSource?.kind === "web-tiles"
+                ? world.mapSource.name
+                : world.seed
+                  ? `Seed ${world.seed}`
+                  : "Add world seed or map image"
         }
         onClick={openEditor}
       >
@@ -280,9 +353,10 @@ export function WorldMapControls() {
             </DialogHeader>
 
             <Tabs defaultValue="world">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="world">World profile</TabsTrigger>
                 <TabsTrigger value="image">Map image</TabsTrigger>
+                <TabsTrigger value="web">Web tiles</TabsTrigger>
               </TabsList>
               <TabsContent value="world" className="space-y-4 pt-2">
                 <div className="space-y-2">
@@ -533,17 +607,205 @@ export function WorldMapControls() {
                   </>
                 ) : null}
               </TabsContent>
+
+              <TabsContent value="web" className="space-y-4 pt-2">
+                <div className="flex items-center justify-between gap-4 rounded-xl border p-3">
+                  <div>
+                    <Label htmlFor="use-web-tiles">Use remote web tiles</Label>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      The server must permit browser CORS requests.
+                    </p>
+                  </div>
+                  <Switch
+                    id="use-web-tiles"
+                    checked={sourceMode === "web"}
+                    onCheckedChange={(checked) =>
+                      setSourceMode(checked ? "web" : "none")
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="web-map-name">Map name</Label>
+                  <Input
+                    id="web-map-name"
+                    value={webSource.name}
+                    maxLength={80}
+                    onChange={(event) =>
+                      setWebSource({ ...webSource, name: event.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="web-map-url">Tile URL template</Label>
+                  <Input
+                    id="web-map-url"
+                    value={webSource.urlTemplate}
+                    placeholder="https://map.example/tiles/{zoom}/{x}/{z}.png"
+                    onChange={(event) =>
+                      setWebSource({
+                        ...webSource,
+                        urlTemplate: event.target.value,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Required: {"{x}"} and {"{z}"} (or {"{y}"}). Also supports
+                    {" {zoom}, {groupX}, {groupZ}, and {zoomPrefix}"}. Do not
+                    put private keys or tokens in a layout.
+                  </p>
+                  {webSource.urlTemplate ? (
+                    <p className="break-all rounded-lg bg-muted px-3 py-2 font-mono text-[11px] text-muted-foreground">
+                      Tile 0,0: {resolveWebTileUrl(webSource, 0, 0)}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="web-tile-pixels">Tile pixels</Label>
+                    <Input
+                      id="web-tile-pixels"
+                      type="number"
+                      min={16}
+                      max={2048}
+                      step={1}
+                      value={webSource.tilePixelSize}
+                      onChange={(event) =>
+                        setWebSource({
+                          ...webSource,
+                          tilePixelSize: Number(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="web-tile-blocks">Blocks per tile</Label>
+                    <Input
+                      id="web-tile-blocks"
+                      type="number"
+                      min={1}
+                      max={65536}
+                      value={webSource.blocksPerTile}
+                      onChange={(event) =>
+                        setWebSource({
+                          ...webSource,
+                          blocksPerTile: Number(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="web-origin-x">Tile 0 X origin</Label>
+                    <Input
+                      id="web-origin-x"
+                      type="number"
+                      step={1}
+                      value={webSource.originX}
+                      onChange={(event) =>
+                        setWebSource({
+                          ...webSource,
+                          originX: Number(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="web-origin-z">Tile 0 Z origin</Label>
+                    <Input
+                      id="web-origin-z"
+                      type="number"
+                      step={1}
+                      value={webSource.originZ}
+                      onChange={(event) =>
+                        setWebSource({
+                          ...webSource,
+                          originZ: Number(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="web-zoom">Provider zoom</Label>
+                    <Input
+                      id="web-zoom"
+                      type="number"
+                      min={0}
+                      max={30}
+                      step={1}
+                      value={webSource.zoom}
+                      onChange={(event) =>
+                        setWebSource({
+                          ...webSource,
+                          zoom: Number(event.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="web-z-direction">Tile row direction</Label>
+                    <NativeSelect
+                      id="web-z-direction"
+                      className="w-full"
+                      value={webSource.zDirection}
+                      onChange={(event) =>
+                        setWebSource({
+                          ...webSource,
+                          zDirection: event.target
+                            .value as WebTileMapSource["zDirection"],
+                        })
+                      }
+                    >
+                      <NativeSelectOption value="down">
+                        Rows increase with +Z
+                      </NativeSelectOption>
+                      <NativeSelectOption value="up">
+                        Rows increase with -Z
+                      </NativeSelectOption>
+                    </NativeSelect>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <Label htmlFor="web-opacity">Tile opacity</Label>
+                    <span className="text-xs tabular-nums text-muted-foreground">
+                      {Math.round(webSource.opacity * 100)}%
+                    </span>
+                  </div>
+                  <input
+                    id="web-opacity"
+                    type="range"
+                    min={5}
+                    max={100}
+                    value={Math.round(webSource.opacity * 100)}
+                    className="w-full accent-primary"
+                    onChange={(event) =>
+                      setWebSource({
+                        ...webSource,
+                        opacity: Number(event.target.value) / 100,
+                      })
+                    }
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  This adapter expects square, north-up tiles aligned directly
+                  to Minecraft X/Z. Isometric and 3D map projections need a flat
+                  export image instead.
+                </p>
+              </TabsContent>
             </Tabs>
 
             <DialogFooter>
-              {source ? (
+              {sourceMode !== "none" ? (
                 <Button
                   type="button"
                   variant="destructive"
-                  onClick={() => void removeBackground()}
+                  onClick={() => void removeMapSource()}
                   disabled={saving}
                 >
-                  <Trash2 aria-hidden="true" /> Remove image
+                  <Trash2 aria-hidden="true" /> Remove map source
                 </Button>
               ) : null}
               <Button type="submit" disabled={saving}>

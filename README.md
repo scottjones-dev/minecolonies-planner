@@ -72,7 +72,9 @@ Vercel environment table, deployment procedure, and production smoke test.
    JourneyMap, VoxelMap, MapWriter, or another map tool and calibrate its
    top-left Minecraft X/Z coordinate and pixels-per-block scale.
    JourneyMap users can instead import its world-export ZIP directly; the
-   planner composes and positions the current dimension's explored tiles.
+   planner composes and positions the current dimension's explored tiles. A
+   public, north-up web tile endpoint can also be calibrated in the Web tiles
+   tab for other map systems.
 5. Open planner settings in the header to configure the server's initial
    claim radius, commute thresholds, and overlays. Place the Town Hall first;
    later blueprints must fit completely inside land claimed earlier in the
@@ -101,9 +103,10 @@ chunk boundaries.
 Named layouts and imported style catalogues are stored in browser
 `localStorage`. An imported map image is stored separately in browser
 IndexedDB so a large image does not exhaust layout storage. No account, server,
-or external database is used. Exported JSON includes an explicit schema version
-and is validated before import. The importer does not execute or parse mod JARs,
-archives, schematics, or NBT data.
+or external database is used, except for public map tiles explicitly configured
+by the user. Exported JSON includes an explicit schema version and is validated
+before import. The importer does not execute or parse mod JARs, archives,
+schematics, or NBT data.
 
 ## Current limitations
 
