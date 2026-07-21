@@ -25,3 +25,19 @@ The image blob stays local in IndexedDB; layouts and JSON exports contain only
 its source and calibration metadata. Reattach the image when moving an export
 to another browser. Existing Xaero PNG data from the original implementation
 is migrated on first use.
+
+## JourneyMap ZIP import
+
+JourneyMap's settings screen can export the selected world dimensions to a ZIP.
+Choose **Import JourneyMap ZIP** in the map-image tab and select that export.
+The planner reads only coordinate-named PNG tiles, selects the current world
+profile's dimension and best available surface type (`day`, then `topo`,
+`biome`, or `night`), and composes a calibrated local mosaic.
+
+JourneyMap tiles are 512 pixels/blocks and are named by signed tile X/Z. This
+matches the open-source
+[JourneyMap Tools stitcher](https://github.com/TeamJM/journeymap-tools), which
+also uses a 512-pixel tile and a 16-pixel chunk grid. Very broad maps are
+downscaled to a maximum 4096-pixel edge while retaining the correct
+pixels-per-block calibration. Empty/unexplored tiles remain transparent so the
+seed-biome fallback can show through.

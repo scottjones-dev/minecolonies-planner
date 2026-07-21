@@ -71,6 +71,8 @@ Vercel environment table, deployment procedure, and production smoke test.
    generator. Optionally attach a north-up PNG, JPEG, or WebP from Xaero,
    JourneyMap, VoxelMap, MapWriter, or another map tool and calibrate its
    top-left Minecraft X/Z coordinate and pixels-per-block scale.
+   JourneyMap users can instead import its world-export ZIP directly; the
+   planner composes and positions the current dimension's explored tiles.
 5. Open planner settings in the header to configure the server's initial
    claim radius, commute thresholds, and overlays. Place the Town Hall first;
    later blueprints must fit completely inside land claimed earlier in the

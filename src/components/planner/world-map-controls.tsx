@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPinned, Trash2, Upload } from "lucide-react";
+import { ArchiveRestore, MapPinned, Trash2, Upload } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { importJourneyMapArchive } from "@/lib/journeymap-import";
 import {
   getRasterMapWorldRect,
   isSupportedRasterFile,
@@ -60,6 +61,7 @@ function sourceForFile(
 
 export function WorldMapControls() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const journeyMapInputRef = useRef<HTMLInputElement>(null);
   const migrationAttempted = useRef(false);
   const world = usePlannerStore((state) => state.world);
   const setWorldProfile = usePlannerStore((state) => state.setWorldProfile);
@@ -134,6 +136,37 @@ export function WorldMapControls() {
     }
   };
 
+  const readJourneyMapArchive = async (file: File) => {
+    setSaving(true);
+    try {
+      const result = await importJourneyMapArchive(file, profile.dimension);
+      setPendingBlob(result.blob);
+      setSource({
+        kind: "raster",
+        assetId: crypto.randomUUID(),
+        preset: "journeymap",
+        fileName: result.fileName,
+        imageWidth: result.imageWidth,
+        imageHeight: result.imageHeight,
+        originX: result.originX,
+        originZ: result.originZ,
+        pixelsPerBlock: result.pixelsPerBlock,
+        opacity: source?.opacity ?? 0.78,
+      });
+      toast.success(
+        `Composed ${result.tileCount.toLocaleString()} JourneyMap tiles from ${result.sourceDirectory}.`,
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "That JourneyMap export could not be imported.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const updateSourceNumber = (
     field: "originX" | "originZ" | "pixelsPerBlock" | "opacity",
     value: number,
@@ -203,6 +236,17 @@ export function WorldMapControls() {
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) void readImage(file);
+          event.target.value = "";
+        }}
+      />
+      <input
+        ref={journeyMapInputRef}
+        type="file"
+        accept=".zip,application/zip"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) void readJourneyMapArchive(file);
           event.target.value = "";
         }}
       />
@@ -391,16 +435,27 @@ export function WorldMapControls() {
                       mod.
                     </p>
                   )}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="mt-3"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Upload aria-hidden="true" />
-                    {source ? "Choose another image" : "Choose map image"}
-                  </Button>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload aria-hidden="true" />
+                      {source ? "Choose another image" : "Choose map image"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={saving}
+                      onClick={() => journeyMapInputRef.current?.click()}
+                    >
+                      <ArchiveRestore aria-hidden="true" />
+                      {saving ? "Reading export…" : "Import JourneyMap ZIP"}
+                    </Button>
+                  </div>
                 </div>
                 {source ? (
                   <>
