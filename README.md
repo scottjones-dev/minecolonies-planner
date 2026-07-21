@@ -9,7 +9,7 @@ tool.
 It provides a block grid, upgrade-aware footprints, collision and square
 colony-boundary checks, residence-to-work assignments, commute warnings,
 level-aware guard coverage, source-derived top-down building previews, named
-local saves, calibrated Xaero world-map backgrounds, and versioned JSON
+local saves, seed-biome context, calibrated map-mod backgrounds, and versioned JSON
 transfer.
 
 The repository also includes a reproducible build-time extractor for
@@ -67,9 +67,10 @@ Vercel environment table, deployment procedure, and production smoke test.
    levels, inspect that level's top-down block image and front direction, assign
    a workplace residence, or delete it.
 3. Drag the map to pan and use the mouse wheel or trackpad to zoom. Buildings snap to whole Minecraft blocks.
-4. Use the map-pin button to import a PNG exported by Xaero's World Map. Enter
-   the Minecraft X/Z coordinate represented by its top-left pixel and its
-   export scale; the terrain will remain aligned beneath the planner grid.
+4. Use the map-pin button to save the world seed, Java version, dimension, and
+   generator. Optionally attach a north-up PNG, JPEG, or WebP from Xaero,
+   JourneyMap, VoxelMap, MapWriter, or another map tool and calibrate its
+   top-left Minecraft X/Z coordinate and pixels-per-block scale.
 5. Open planner settings in the header to configure the server's initial
    claim radius, commute thresholds, and overlays. Place the Town Hall first;
    later blueprints must fit completely inside land claimed earlier in the
@@ -96,7 +97,7 @@ chunk boundaries.
 ## Data and privacy
 
 Named layouts and imported style catalogues are stored in browser
-`localStorage`. An imported Xaero PNG is stored separately in browser
+`localStorage`. An imported map image is stored separately in browser
 IndexedDB so a large image does not exhaust layout storage. No account, server,
 or external database is used. Exported JSON includes an explicit schema version
 and is validated before import. The importer does not execute or parse mod JARs,
@@ -114,8 +115,10 @@ archives, schematics, or NBT data.
   texture, height lighting, and roof-edge shading. Exact Minecraft or modpack
   textures require the corresponding user-owned resource-pack assets, which
   are not redistributed by this site.
-- Xaero backgrounds accept north-up PNG exports up to 100 MB. Calibration is
-  saved in the browser but is not embedded in planner JSON exports.
+- Map backgrounds accept north-up PNG, JPEG, and WebP images up to 100 MB. The
+  layout JSON includes source/calibration metadata but not the local image blob.
+- Seed previews use cubiomes for supported vanilla Java biome placement. They
+  do not represent explored chunks, player builds, datapacks, or modded terrain.
 - The canvas is optimized for desktop planning. Small screens can view the map and header actions, while the full building library and inspector require a large viewport.
 - Plans are device/browser-local unless exported manually. Clearing site storage removes unexported layouts and imported styles.
 - There is no terrain, elevation, road/pathfinding, resource-cost, worker simulation, multiplayer, or cloud synchronization.
@@ -128,3 +131,7 @@ MineColonies team. Generated blueprint metadata is derived from the pinned
 MineColonies and Structurize sources identified in
 [`docs/minecolonies-source.md`](docs/minecolonies-source.md) and retains its
 GPL-3.0 source attribution.
+
+Vanilla Java biome previews use the MIT-licensed
+[cubiomes](https://github.com/Cubitect/cubiomes); the pinned revision and
+license are recorded in [`third_party/cubiomes`](third_party/cubiomes).

@@ -1,11 +1,13 @@
+import { isWorldProfile } from "@/lib/world-map";
 import type {
   PlannerMapState,
   PlannerRules,
   PlannerSnapshot,
 } from "@/stores/planner-store";
 import type { BuildingRotation, PlacedBuilding } from "@/types/minecolonies";
+import { defaultWorldProfile } from "@/types/world-map";
 
-export const LAYOUT_SCHEMA_VERSION = 1;
+export const LAYOUT_SCHEMA_VERSION = 2;
 export const LOCAL_LAYOUTS_STORAGE_KEY =
   "minecolonies-planner.local-layouts.v1";
 
@@ -110,7 +112,8 @@ export function isPlannerSnapshot(value: unknown): value is PlannerSnapshot {
     typeof value.activeStylePackId !== "string" ||
     value.activeStylePackId.length === 0 ||
     !isPlannerMap(value.map) ||
-    !isPlannerRules(value.rules)
+    !isPlannerRules(value.rules) ||
+    !isWorldProfile(value.world)
   ) {
     return false;
   }
@@ -127,33 +130,62 @@ export function isPlannerSnapshot(value: unknown): value is PlannerSnapshot {
   );
 }
 
-function isLocalLayout(value: unknown): value is LocalLayout {
-  return (
-    isRecord(value) &&
-    value.schemaVersion === LAYOUT_SCHEMA_VERSION &&
-    typeof value.id === "string" &&
-    value.id.length > 0 &&
-    typeof value.name === "string" &&
-    value.name.trim().length > 0 &&
-    value.name.length <= 80 &&
-    isIsoDate(value.createdAt) &&
-    isIsoDate(value.updatedAt) &&
-    isPlannerSnapshot(value.planner)
-  );
+export function normalizePlannerSnapshot(
+  value: unknown,
+): PlannerSnapshot | null {
+  if (!isRecord(value)) return null;
+  const candidate = {
+    ...value,
+    world: value.world ?? { ...defaultWorldProfile },
+  };
+  return isPlannerSnapshot(candidate) ? candidate : null;
+}
+
+function normalizeLocalLayout(value: unknown): LocalLayout | null {
+  if (
+    !isRecord(value) ||
+    (value.schemaVersion !== 1 &&
+      value.schemaVersion !== LAYOUT_SCHEMA_VERSION) ||
+    typeof value.id !== "string" ||
+    value.id.length === 0 ||
+    typeof value.name !== "string" ||
+    value.name.trim().length === 0 ||
+    value.name.length > 80 ||
+    !isIsoDate(value.createdAt) ||
+    !isIsoDate(value.updatedAt)
+  ) {
+    return null;
+  }
+  const planner = normalizePlannerSnapshot(value.planner);
+  return planner
+    ? {
+        schemaVersion: LAYOUT_SCHEMA_VERSION,
+        id: value.id,
+        name: value.name,
+        createdAt: value.createdAt,
+        updatedAt: value.updatedAt,
+        planner,
+      }
+    : null;
 }
 
 export function parseLocalLayoutCatalog(value: unknown): LocalLayoutCatalog {
   if (
     !isRecord(value) ||
-    value.schemaVersion !== LAYOUT_SCHEMA_VERSION ||
+    (value.schemaVersion !== 1 &&
+      value.schemaVersion !== LAYOUT_SCHEMA_VERSION) ||
     !Array.isArray(value.layouts) ||
-    !value.layouts.every(isLocalLayout) ||
     (value.activeLayoutId !== null && typeof value.activeLayoutId !== "string")
   ) {
     throw new Error("Saved layouts use an invalid or unsupported format.");
   }
 
-  const ids = new Set(value.layouts.map((layout) => layout.id));
+  const layouts = value.layouts.map(normalizeLocalLayout);
+  if (layouts.some((layout) => layout === null)) {
+    throw new Error("Saved layouts use an invalid or unsupported format.");
+  }
+  const normalizedLayouts = layouts as LocalLayout[];
+  const ids = new Set(normalizedLayouts.map((layout) => layout.id));
 
   if (
     ids.size !== value.layouts.length ||
@@ -162,7 +194,11 @@ export function parseLocalLayoutCatalog(value: unknown): LocalLayoutCatalog {
     throw new Error("Saved layout identifiers are inconsistent.");
   }
 
-  return value as LocalLayoutCatalog;
+  return {
+    schemaVersion: LAYOUT_SCHEMA_VERSION,
+    activeLayoutId: value.activeLayoutId as string | null,
+    layouts: normalizedLayouts,
+  };
 }
 
 export function createEmptyCatalog(): LocalLayoutCatalog {

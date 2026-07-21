@@ -10,7 +10,7 @@ import { PlannerDndContext } from "@/components/planner/planner-dnd-context";
 import { PlannerMapPanel } from "@/components/planner/planner-map-panel";
 import { PlannerStatusBar } from "@/components/planner/planner-status-bar";
 import { PlannerTransferControls } from "@/components/planner/planner-transfer-controls";
-import { XaeroMapControls } from "@/components/planner/xaero-map-controls";
+import { WorldMapControls } from "@/components/planner/world-map-controls";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -55,7 +55,7 @@ export default function PlannerPage() {
           aria-label="Planner actions"
         >
           <LocalLayoutControls />
-          <XaeroMapControls />
+          <WorldMapControls />
           <PlannerTransferControls />
           <ColonyBoundarySettings />
           <KeyboardShortcutsHelp />

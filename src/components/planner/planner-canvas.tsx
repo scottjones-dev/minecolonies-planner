@@ -27,6 +27,11 @@ import {
   worldBlockToCanvasCoordinate,
 } from "@/lib/planner-coordinates";
 import {
+  canRenderSeedTerrain,
+  generateSeedTerrainImage,
+  type SeedTerrainImage,
+} from "@/lib/seed-terrain";
+import {
   findBuildingCollisions,
   getCollidingBuildingIds,
 } from "@/lib/validation/collisions";
@@ -41,9 +46,9 @@ import {
   getGuardMapRange,
   isGuardBuilding,
 } from "@/lib/validation/guard-coverage";
-import { getXaeroMapWorldRect } from "@/lib/xaero-map";
+import { getRasterMapWorldRect } from "@/lib/world-map";
 import { usePlannerStore } from "@/stores/planner-store";
-import { useXaeroMapStore } from "@/stores/xaero-map-store";
+import { useWorldMapStore } from "@/stores/world-map-store";
 
 const CHUNK_SIZE = 16;
 const MIN_ZOOM = 0.25;
@@ -111,8 +116,11 @@ export function PlannerCanvas() {
   const moveOriginRef = useRef<{ x: number; z: number } | null>(null);
   const [size, setSize] = useState<Size>({ width: 0, height: 0 });
   const [movingBuildingId, setMovingBuildingId] = useState<string | null>(null);
-  const [xaeroImage, setXaeroImage] = useState<HTMLImageElement | null>(null);
-  const xaeroMap = useXaeroMapStore((state) => state.map);
+  const [rasterImage, setRasterImage] = useState<HTMLImageElement | null>(null);
+  const [seedImage, setSeedImage] = useState<HTMLImageElement | null>(null);
+  const [seedTerrain, setSeedTerrain] = useState<SeedTerrainImage | null>(null);
+  const rasterMap = useWorldMapStore((state) => state.map);
+  const world = usePlannerStore((state) => state.world);
   const { zoom, panX, panY } = usePlannerStore((state) => state.map);
   const {
     colonyRadiusChunks,
@@ -153,23 +161,70 @@ export function PlannerCanvas() {
   }, []);
 
   useEffect(() => {
-    if (!xaeroMap) {
-      setXaeroImage(null);
+    if (!rasterMap) {
+      setRasterImage(null);
       return;
     }
 
     const image = new window.Image();
-    image.onload = () => setXaeroImage(image);
-    image.src = xaeroMap.imageUrl;
+    image.onload = () => setRasterImage(image);
+    image.src = rasterMap.imageUrl;
 
     return () => {
       image.onload = null;
     };
-  }, [xaeroMap]);
+  }, [rasterMap]);
 
-  const xaeroWorldRect = xaeroMap
-    ? getXaeroMapWorldRect(xaeroMap.calibration)
+  const rasterWorldRect = rasterMap
+    ? getRasterMapWorldRect(rasterMap.source)
     : null;
+
+  const seedOrigin = useMemo(() => {
+    const centerX = (size.width / 2 - panX) / zoom / BLOCK_SIZE;
+    const centerZ = (size.height / 2 - panY) / zoom / BLOCK_SIZE;
+    return {
+      x: Math.floor((centerX - 512) / 256) * 256,
+      z: Math.floor((centerZ - 512) / 256) * 256,
+    };
+  }, [panX, panY, size.height, size.width, zoom]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!canRenderSeedTerrain(world)) {
+      setSeedImage(null);
+      setSeedTerrain((current) => {
+        if (current) URL.revokeObjectURL(current.imageUrl);
+        return null;
+      });
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      void generateSeedTerrainImage(world, seedOrigin.x, seedOrigin.z)
+        .then((terrain) => {
+          if (cancelled) {
+            URL.revokeObjectURL(terrain.imageUrl);
+            return;
+          }
+          const image = new window.Image();
+          image.onload = () => {
+            if (cancelled) return;
+            setSeedImage(image);
+            setSeedTerrain((current) => {
+              if (current) URL.revokeObjectURL(current.imageUrl);
+              return terrain;
+            });
+          };
+          image.src = terrain.imageUrl;
+        })
+        .catch(() => {
+          if (!cancelled) setSeedImage(null);
+        });
+    }, 180);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [seedOrigin.x, seedOrigin.z, world]);
 
   const gridLines = useMemo(
     () => getGridLines(size, zoom, panX, panY),
@@ -268,14 +323,34 @@ export function PlannerCanvas() {
           onWheel={handleWheel}
         >
           <Layer listening={false}>
-            {xaeroImage && xaeroMap && xaeroWorldRect ? (
+            {seedImage && seedTerrain ? (
               <KonvaImage
-                image={xaeroImage}
-                x={xaeroWorldRect.x * BLOCK_SIZE}
-                y={xaeroWorldRect.z * BLOCK_SIZE}
-                width={xaeroWorldRect.width * BLOCK_SIZE}
-                height={xaeroWorldRect.depth * BLOCK_SIZE}
-                opacity={xaeroMap.calibration.opacity}
+                image={seedImage}
+                x={seedTerrain.originX * BLOCK_SIZE}
+                y={seedTerrain.originZ * BLOCK_SIZE}
+                width={
+                  seedTerrain.pixelWidth *
+                  seedTerrain.blocksPerPixel *
+                  BLOCK_SIZE
+                }
+                height={
+                  seedTerrain.pixelHeight *
+                  seedTerrain.blocksPerPixel *
+                  BLOCK_SIZE
+                }
+                opacity={0.48}
+                imageSmoothingEnabled={false}
+                listening={false}
+              />
+            ) : null}
+            {rasterImage && rasterMap && rasterWorldRect ? (
+              <KonvaImage
+                image={rasterImage}
+                x={rasterWorldRect.x * BLOCK_SIZE}
+                y={rasterWorldRect.z * BLOCK_SIZE}
+                width={rasterWorldRect.width * BLOCK_SIZE}
+                height={rasterWorldRect.depth * BLOCK_SIZE}
+                opacity={rasterMap.source.opacity}
                 imageSmoothingEnabled={false}
                 listening={false}
               />

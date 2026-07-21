@@ -1,4 +1,4 @@
-import { isPlannerSnapshot } from "@/lib/local-layouts";
+import { normalizePlannerSnapshot } from "@/lib/local-layouts";
 import type { PlannerSnapshot } from "@/stores/planner-store";
 import type {
   BuildingCategory,
@@ -14,12 +14,13 @@ import type {
 import { mineColoniesBuildingCategories } from "@/types/minecolonies";
 
 export const TRANSFER_SCHEMA_VERSION = 1;
+export const LAYOUT_TRANSFER_SCHEMA_VERSION = 2;
 export const IMPORTED_STYLE_PACKS_STORAGE_KEY =
   "minecolonies-planner.imported-styles.v1";
 
 export type LayoutTransferDocument = {
   kind: "minecolonies-planner-layout";
-  schemaVersion: typeof TRANSFER_SCHEMA_VERSION;
+  schemaVersion: typeof LAYOUT_TRANSFER_SCHEMA_VERSION;
   name: string;
   exportedAt: string;
   planner: PlannerSnapshot;
@@ -235,7 +236,7 @@ export function isStylePack(value: unknown): value is StylePack {
   });
 }
 
-function assertSupportedVersion(value: Record<string, unknown>): void {
+function assertStylePackVersion(value: Record<string, unknown>): void {
   if (value.schemaVersion !== TRANSFER_SCHEMA_VERSION) {
     throw new Error(
       `Unsupported schema version: ${String(value.schemaVersion)}. Expected version ${TRANSFER_SCHEMA_VERSION}.`,
@@ -250,22 +251,34 @@ export function parsePlannerTransferDocument(
     throw new Error("The selected file does not contain a JSON object.");
   }
 
-  assertSupportedVersion(value);
-
   if (value.kind === "minecolonies-planner-layout") {
+    if (
+      value.schemaVersion !== 1 &&
+      value.schemaVersion !== LAYOUT_TRANSFER_SCHEMA_VERSION
+    ) {
+      throw new Error(
+        `Unsupported layout schema version: ${String(value.schemaVersion)}.`,
+      );
+    }
+    const planner = normalizePlannerSnapshot(value.planner);
     if (
       typeof value.name !== "string" ||
       value.name.trim().length === 0 ||
       typeof value.exportedAt !== "string" ||
-      !isPlannerSnapshot(value.planner)
+      !planner
     ) {
       throw new Error("The colony layout does not match the expected schema.");
     }
 
-    return value as LayoutTransferDocument;
+    return {
+      ...value,
+      schemaVersion: LAYOUT_TRANSFER_SCHEMA_VERSION,
+      planner,
+    } as LayoutTransferDocument;
   }
 
   if (value.kind === "minecolonies-style-catalog") {
+    assertStylePackVersion(value);
     const stylePack = normalizeStylePack(value.stylePack);
     if (typeof value.exportedAt !== "string" || !isStylePack(stylePack)) {
       throw new Error(
@@ -287,7 +300,7 @@ export function createLayoutTransferDocument(
 ): LayoutTransferDocument {
   return {
     kind: "minecolonies-planner-layout",
-    schemaVersion: TRANSFER_SCHEMA_VERSION,
+    schemaVersion: LAYOUT_TRANSFER_SCHEMA_VERSION,
     name,
     exportedAt: new Date().toISOString(),
     planner,

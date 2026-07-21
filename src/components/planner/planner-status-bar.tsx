@@ -5,10 +5,12 @@ import { findBuildingCollisions } from "@/lib/validation/collisions";
 import { findColonyBoundaryViolations } from "@/lib/validation/colony-boundary";
 import { findCommuteResults } from "@/lib/validation/commute";
 import { usePlannerStore } from "@/stores/planner-store";
+import { worldMapSourceLabels } from "@/types/world-map";
 
 export function PlannerStatusBar() {
   const buildings = usePlannerStore((state) => state.buildings);
   const zoom = usePlannerStore((state) => state.map.zoom);
+  const world = usePlannerStore((state) => state.world);
   const {
     colonyRadiusChunks,
     preferredCommuteDistance,
@@ -40,6 +42,13 @@ export function PlannerStatusBar() {
         </span>
       </div>
       <div className="flex items-center gap-4">
+        {world.mapSource ? (
+          <span className="hidden md:inline">
+            Map: {worldMapSourceLabels[world.mapSource.preset]}
+          </span>
+        ) : world.seed ? (
+          <span className="hidden md:inline">Map: seed biomes</span>
+        ) : null}
         <span className="hidden sm:inline">Position: X 0 · Z 0</span>
         <span>Zoom: {Math.round(zoom * 100)}%</span>
       </div>
