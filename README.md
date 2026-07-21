@@ -8,7 +8,8 @@ tool.
 
 It provides a block grid, upgrade-aware footprints, collision and square
 colony-boundary checks, residence-to-work assignments, commute warnings,
-level-aware guard coverage, named local saves, and versioned JSON transfer.
+level-aware guard coverage, source-derived top-down building previews, named
+local saves, and versioned JSON transfer.
 
 The repository also includes a reproducible build-time extractor for
 source-backed MineColonies rules and blueprint geometry. See
@@ -58,8 +59,12 @@ Vercel environment table, deployment procedure, and production smoke test.
 
 ## MVP usage
 
-1. Choose a style and drag a building from the library onto the map.
-2. Select a placed building to rotate it, choose current/reserved upgrade levels, assign a workplace residence, or delete it.
+1. Choose a style and drag a building from the library onto the map. The visible
+   level is centred on the exact drop position even when its source anchor is
+   off-centre.
+2. Select a placed building to rotate it, choose current/reserved upgrade
+   levels, inspect that level's top-down block image and front direction, assign
+   a workplace residence, or delete it.
 3. Drag the map to pan and use the mouse wheel or trackpad to zoom. Buildings snap to whole Minecraft blocks.
 4. Open planner settings in the header to configure the server's initial
    claim radius, commute thresholds, and overlays. Place the Town Hall first;

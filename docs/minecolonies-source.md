@@ -26,13 +26,18 @@ pnpm minecolonies:extract
 
 The extractor uses only Node.js built-ins. It reads the gzip-compressed NBT
 blueprints directly and derives each footprint from `size_x`, `size_y`,
-`size_z`, and Structurize's `primary_offset`. It currently captures:
+`size_z`, and Structurize's `primary_offset`. It decodes Structurize's packed
+block palette in its source-defined Y/Z/X order to generate a compact top-down
+image from the highest visible block in every column. The hut block's facing
+property supplies the blueprint front marker when present. It currently
+captures:
 
 - all 9,445 blueprints across the 23 bundled MineColonies style packs, grouped
   into 3,423 selectable variants;
 - each pack's nine in-game categories, nested subcategories, authors,
   description, and build-tool display order;
-- exact dimensions, anchors, relative bounds, level, and source path;
+- exact dimensions, anchors, relative bounds, level, source path, top-down
+  block image, and hut/front direction;
 - colony configuration defaults;
 - the exact registered colony-building types that can expand claims;
 - generic, Town Hall, Guard Tower, Gate House, Barracks, and Barracks Tower

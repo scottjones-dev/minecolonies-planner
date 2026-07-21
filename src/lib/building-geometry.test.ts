@@ -3,6 +3,7 @@ import {
   getEntranceMarker,
   getLevelFootprint,
   getReservedFootprint,
+  getRotatedDirection,
   rotatePoint,
 } from "@/lib/building-geometry";
 import type { BuildingLevelDefinition } from "@/types/minecolonies";
@@ -25,6 +26,13 @@ const nonSquareLevel: BuildingLevelDefinition = {
 };
 
 describe("building rotations", () => {
+  it("rotates cardinal blueprint directions with the building", () => {
+    expect(getRotatedDirection("north", 0)).toBe("north");
+    expect(getRotatedDirection("north", 90)).toBe("east");
+    expect(getRotatedDirection("west", 180)).toBe("east");
+    expect(getRotatedDirection("south", 270)).toBe("east");
+  });
+
   it("rotates points clockwise through all four orientations", () => {
     expect(rotatePoint({ x: 2, z: 1 }, 0)).toEqual({ x: 2, z: 1 });
     expect(rotatePoint({ x: 2, z: 1 }, 90)).toEqual({ x: -1, z: 2 });
